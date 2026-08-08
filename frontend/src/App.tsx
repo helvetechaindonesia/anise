@@ -16,10 +16,23 @@ import {
   Camera,
   Check,
   ChatCircleText,
+  MapPin,
+  Notebook,
+  BookOpen,
+  User,
+  WarningCircle,
+  Heart,
+  PushPin,
   CellSignalFull,
   WifiHigh,
   BatteryFull,
-  MapPin
+  Sun,
+  Star,
+  Basketball,
+  ForkKnife,
+  UsersThree,
+  Moon,
+  Fire
 } from '@phosphor-icons/react';
 
 // --- TYPES & DUMMY DATA ---
@@ -40,8 +53,21 @@ interface TugasItem {
   due: string;
   desc: string;
   points: number;
-  status: 'ditugaskan' | 'selesai' | 'terlambat';
+  status: 'Belum Dikerjakan' | 'Selesai' | 'Terlewat';
   submittedFile?: string;
+}
+
+interface JurnalTimeline {
+  id: number;
+  time: string;
+  subject: string;
+  teacher: string;
+  topic: string;
+  hasTask: boolean;
+  notes?: string;
+  postedAt: string;
+  likes: number;
+  comments: number;
 }
 
 interface PoinMutasi {
@@ -51,6 +77,16 @@ interface PoinMutasi {
   points: number;
   type: 'prestasi' | 'pelanggaran';
   notes: string;
+}
+
+interface HabitItem {
+  id: string;
+  title: string;
+  desc: string;
+  iconName: any;
+  colorClass: string;
+  isDone: boolean;
+  streak: number;
 }
 
 export default function App() {
@@ -76,15 +112,42 @@ export default function App() {
   const [newChatInput, setNewChatInput] = useState('');
 
   // State Tugas
-  const [tugasTab, setTugasTab] = useState<'ditugaskan' | 'selesai' | 'terlambat'>('ditugaskan');
+  const [tugasTab, setTugasTab] = useState<'Belum Dikerjakan' | 'Selesai' | 'Terlewat'>('Belum Dikerjakan');
   const [selectedTugas, setSelectedTugas] = useState<TugasItem | null>(null);
+
+  // --- JURNAL TIMELINE DUMMY DATA ---
+  const [jurnalList] = useState<JurnalTimeline[]>([
+    {
+      id: 1,
+      time: '07:00 - 08:30',
+      subject: 'Matematika Peminatan',
+      teacher: 'Bpk. Ahmad Susanto',
+      topic: 'Trigonometri Lanjut & Analisis Gelombang',
+      hasTask: true,
+      postedAt: '5 menit yang lalu',
+      likes: 24,
+      comments: 12
+    },
+    {
+      id: 2,
+      time: '08:30 - 10:00',
+      subject: 'Sejarah Indonesia',
+      teacher: 'Ibu Ratna Kumala',
+      topic: 'Perang Dunia II & Kemerdekaan RI',
+      hasTask: false,
+      notes: '"Jangan lupa bawa buku cetak Sejarah Jilid 2 besok ya anak-anak!"',
+      postedAt: '2 jam yang lalu',
+      likes: 45,
+      comments: 8
+    }
+  ]);
   const [uploadFile, setUploadFile] = useState<string>('');
 
   const [tugasList, setTugasList] = useState<TugasItem[]>([
-    { id: 1, subject: 'Matematika Peminatan', title: 'Trigonometri Lanjut & Analisis Gelombang', due: 'Besok, 12:00 WIB', desc: 'Kerjakan soal latihan A-C pada buku paket halaman 45-47. Tulis tangan dan upload format PDF.', points: 100, status: 'ditugaskan' },
-    { id: 2, subject: 'Bahasa Inggris', title: 'Analytical Exposition Writing Essay', due: '12 Aug, 23:59 WIB', desc: 'Write a 500-word essay about the impact of artificial intelligence in modern classroom management.', points: 80, status: 'ditugaskan' },
-    { id: 3, subject: 'Fisika', title: 'Laporan Praktikum Efek Fotolistrik', due: 'Kemarin', desc: 'Tugas praktikum laboratorium minggu lalu.', points: 150, status: 'terlambat' },
-    { id: 4, subject: 'Kimia', title: 'Senyawa Turunan Benzena', due: 'Selesai 3 hari lalu', desc: 'Tugas mandiri tata nama benzena.', points: 90, status: 'selesai', submittedFile: 'tugas_benzena_budi.pdf' }
+    { id: 1, subject: 'Matematika Peminatan', title: 'Trigonometri Lanjut & Analisis Gelombang', due: 'Besok, 12:00 WIB', desc: 'Kerjakan soal latihan A-C pada buku paket halaman 45-47. Tulis tangan dan upload format PDF.', points: 100, status: 'Belum Dikerjakan' },
+    { id: 2, subject: 'Bahasa Inggris', title: 'Analytical Exposition Writing Essay', due: '12 Aug, 23:59 WIB', desc: 'Write a 500-word essay about the impact of artificial intelligence in modern classroom management.', points: 80, status: 'Belum Dikerjakan' },
+    { id: 3, subject: 'Fisika', title: 'Laporan Praktikum Efek Fotolistrik', due: 'Kemarin', desc: 'Tugas praktikum laboratorium minggu lalu.', points: 150, status: 'Terlewat' },
+    { id: 4, subject: 'Kimia', title: 'Senyawa Turunan Benzena', due: 'Selesai 3 hari lalu', desc: 'Tugas mandiri tata nama benzena.', points: 90, status: 'Selesai', submittedFile: 'tugas_benzena_budi.pdf' }
   ]);
 
   // State Poin
@@ -120,12 +183,40 @@ export default function App() {
   const startPresensi = () => {
     setShowPresensiModal(true);
     setPresensiStep('gps');
-    // Simulate GPS detection
     setTimeout(() => {
       setUserLocation({ lat: -6.2088, lng: 106.8456 });
       setPresensiStep('face');
-    }, 1500);
+    }, 2000);
   };
+
+  // State Pembiasaan (Habit Tracker)
+  const [habits, setHabits] = useState<HabitItem[]>([
+    { id: 'h1', title: 'Bangun Pagi', desc: 'Sebelum jam 05:00', iconName: Sun, colorClass: 'bg-amber-100 text-amber-600 border-amber-200', isDone: true, streak: 12 },
+    { id: 'h2', title: 'Beribadah', desc: 'Sesuai agama masing-masing', iconName: Star, colorClass: 'bg-emerald-100 text-emerald-600 border-emerald-200', isDone: true, streak: 8 },
+    { id: 'h3', title: 'Berolahraga', desc: 'Minimal 15 menit', iconName: Basketball, colorClass: 'bg-rose-100 text-rose-600 border-rose-200', isDone: false, streak: 2 },
+    { id: 'h4', title: 'Makan Sehat & Bergizi', desc: 'Sayur, lauk, dan buah', iconName: ForkKnife, colorClass: 'bg-orange-100 text-orange-600 border-orange-200', isDone: false, streak: 0 },
+    { id: 'h5', title: 'Gemar Belajar', desc: 'Membaca atau mengulang materi', iconName: BookOpen, colorClass: 'bg-blue-100 text-blue-600 border-blue-200', isDone: false, streak: 5 },
+    { id: 'h6', title: 'Bermasyarakat', desc: 'Bersosialisasi & berbuat baik', iconName: UsersThree, colorClass: 'bg-indigo-100 text-indigo-600 border-indigo-200', isDone: true, streak: 3 },
+    { id: 'h7', title: 'Tidur Cepat', desc: 'Sebelum jam 22:00', iconName: Moon, colorClass: 'bg-purple-100 text-purple-600 border-purple-200', isDone: false, streak: 1 }
+  ]);
+  const [pembiasaanTab, setPembiasaanTab] = useState<'hari_ini' | 'rekap_bulanan'>('hari_ini');
+
+  const toggleHabit = (id: string) => {
+    setHabits(habits.map(h => {
+      if (h.id === id) {
+        const newlyDone = !h.isDone;
+        return {
+          ...h,
+          isDone: newlyDone,
+          streak: newlyDone ? h.streak + 1 : Math.max(0, h.streak - 1)
+        };
+      }
+      return h;
+    }));
+  };
+
+  const doneHabitsCount = habits.filter(h => h.isDone).length;
+  const habitProgress = Math.round((doneHabitsCount / habits.length) * 100);
 
   const finishFaceTracking = () => {
     setPresensiStep('success');
@@ -166,10 +257,10 @@ export default function App() {
     }, 1000);
   };
 
-  const handleUploadTugas = (tugasId: number) => {
+  const handleSubmitTugas = (tugasId: number) => {
     setTugasList(tugasList.map(t => {
       if (t.id === tugasId) {
-        return { ...t, status: 'selesai', submittedFile: uploadFile || 'file_tugas_terunggah.pdf' };
+        return { ...t, status: 'Selesai', submittedFile: uploadFile || 'file_tugas_terunggah.pdf' };
       }
       return t;
     }));
@@ -323,21 +414,119 @@ export default function App() {
             </div>
           )}
 
-          {/* TAB 2: TUGAS */}
-          {activeTab === 'tugas' && (
+          {/* TAB 2: JURNAL HARIAN */}
+          {activeTab === 'jurnal' && (
             <div className="space-y-5 pt-5">
               <div>
-                <h2 className="text-xl font-bold text-[#19414d]">Jurnal Penugasan</h2>
-                <p className="text-xs text-[#6b6375]">Kelola tugas harian dan tenggat waktu akademis Anda</p>
+                <h2 className="text-xl font-bold text-[#19414d]">Jurnal Harian</h2>
+                <p className="text-xs text-[#6b6375]">Rekap materi harian dan penugasan aktif Anda</p>
+              </div>
+
+              {/* Lihat Tugas Card */}
+              <div 
+                onClick={() => setActiveTab('daftar_tugas')}
+                className="bg-gradient-to-br from-[#19414d] to-[#122e36] rounded-2xl p-4 text-white flex items-center justify-between shadow-lg shadow-[#19414d]/20 cursor-pointer hover:scale-[1.02] active:scale-[0.98] transition-transform"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center backdrop-blur-sm">
+                    <BookOpen className="w-6 h-6 text-emerald-400" weight="duotone" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-[15px] text-[#fcfbf7]">Lihat Daftar Tugas</h3>
+                    <p className="text-[11px] text-[#fcfbf7]/80 mt-0.5">Kelola PR dan tenggat waktu Anda</p>
+                  </div>
+                </div>
+                <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
+                  <CaretRight className="w-4 h-4 text-white" weight="bold" />
+                </div>
+              </div>
+
+              {/* JURNAL TIMELINE FEED */}
+              <div className="space-y-4 pt-2">
+                {jurnalList.map((j) => (
+                  <div key={j.id} className="p-4 rounded-2xl bg-white border border-[#e5e4e7] shadow-sm hover:shadow-md transition-all">
+                    {/* Social Header */}
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-10 h-10 rounded-full bg-[#19414d] text-white flex items-center justify-center font-bold flex-shrink-0">
+                        {j.teacher.charAt(0)}
+                      </div>
+                      <div className="flex-1">
+                        <h4 className="text-sm font-bold text-[#121212] leading-none">{j.teacher}</h4>
+                        <p className="text-[11px] text-[#6b6375] mt-1 font-medium flex items-center gap-1.5">
+                          <span className="text-[#19414d]">{j.subject}</span>
+                          <span>•</span>
+                          <span>{j.postedAt}</span>
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Content Body */}
+                    <div className="space-y-3 mb-4 pl-1">
+                      <div>
+                        <p className="text-xs font-bold text-[#19414d] flex items-center gap-1.5 mb-1">
+                          <PushPin className="w-4 h-4 text-rose-500" weight="fill" /> MATERI HARI INI:
+                        </p>
+                        <p className="text-sm font-semibold text-[#121212] leading-relaxed">{j.topic}</p>
+                      </div>
+
+                      {j.notes && (
+                        <div className="pt-2">
+                          <p className="text-xs font-bold text-[#19414d] flex items-center gap-1.5 mb-1">
+                            <ChatCircleText className="w-4 h-4 text-[#19414d]" weight="fill" /> PESAN DARI GURU:
+                          </p>
+                          <p className="text-[13px] text-[#121212] leading-relaxed italic border-l-2 border-[#19414d]/20 pl-2">
+                            {j.notes}
+                          </p>
+                        </div>
+                      )}
+                      
+                      {j.hasTask && (
+                        <div className="pt-2">
+                          <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-md">
+                            <CheckCircle className="w-3 h-3" weight="fill" /> Dilengkapi Tugas Baru
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                    
+                    {/* Social Footer */}
+                    <div className="pt-3 border-t border-[#e5e4e7] flex flex-wrap items-center gap-4 text-xs font-bold text-[#6b6375]">
+                      <button className="flex items-center gap-1.5 hover:text-[#19414d] transition-colors">
+                        <ChatCircleText className="w-5 h-5" weight="duotone" /> {j.comments} Komentar
+                      </button>
+                      <button className="flex items-center gap-1.5 hover:text-rose-500 transition-colors">
+                        <Heart className="w-5 h-5" weight="duotone" /> {j.likes} Suka
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* TAB: DAFTAR TUGAS */}
+          {activeTab === 'daftar_tugas' && (
+            <div className="space-y-5 pt-5">
+              <div className="flex items-center gap-3">
+                <button 
+                  onClick={() => setActiveTab('jurnal')}
+                  className="w-10 h-10 rounded-full bg-white border border-[#e5e4e7] flex items-center justify-center text-[#19414d] hover:bg-[#19414d]/5 transition-colors"
+                >
+                  <CaretRight className="w-5 h-5 rotate-180" weight="bold" />
+                </button>
+                <div>
+                  <h2 className="text-xl font-bold text-[#19414d]">Daftar Tugas</h2>
+                  <p className="text-xs text-[#6b6375]">Kelola PR dan tenggat waktu akademis Anda</p>
+                </div>
               </div>
 
               {/* Tab Category Filter */}
-              <div className="flex rounded-lg bg-white p-1 border border-[#e5e4e7] gap-0.5">
-                {(['ditugaskan', 'selesai', 'terlambat'] as const).map(tab => (
+              <div className="flex rounded-lg bg-white p-1 border border-[#e5e4e7] gap-0.5 overflow-x-auto custom-scrollbar">
+                {(['Belum Dikerjakan', 'Selesai', 'Terlewat'] as const).map(tab => (
                   <button
                     key={tab}
                     onClick={() => setTugasTab(tab)}
-                    className={`flex-1 text-center py-2 text-xs font-bold rounded-md capitalize transition-all ${
+                    className={`flex-1 min-w-max text-center px-4 py-2 text-[10px] sm:text-xs font-bold rounded-md capitalize transition-all ${
                       tugasTab === tab 
                         ? 'bg-[#19414d] text-white shadow-sm' 
                         : 'text-[#6b6375] hover:text-[#121212]'
@@ -373,8 +562,11 @@ export default function App() {
                         <p className="text-xs text-[#6b6375] line-clamp-2 mt-1">{t.desc}</p>
                       </div>
                       <div className="flex justify-between items-center pt-2 border-t border-[#e5e4e7] text-[10px] font-semibold">
-                        <span className="text-rose-500 flex items-center gap-1">
-                          <Clock className="w-3.5 h-3.5" />
+                        <span className={`flex items-center gap-1 ${
+                          t.status === 'Terlewat' ? 'text-rose-500' : 
+                          t.status === 'Selesai' ? 'text-emerald-500' : 'text-amber-600'
+                        }`}>
+                          {t.status === 'Selesai' ? <CheckCircle className="w-3.5 h-3.5" weight="fill" /> : <Clock className="w-3.5 h-3.5" />}
                           {t.due}
                         </span>
                         <span className="text-[#19414d] flex items-center gap-1 font-bold">
@@ -385,6 +577,196 @@ export default function App() {
                   ))
                 )}
               </div>
+            </div>
+          )}
+
+          {/* TAB: PEMBIASAAN (HABIT TRACKER) */}
+          {activeTab === 'pembiasaan' && (
+            <div className="space-y-6 pt-5">
+              <div className="flex items-center gap-3">
+                <button 
+                  onClick={() => setActiveTab('home')}
+                  className="w-10 h-10 rounded-full bg-white border border-[#e5e4e7] flex items-center justify-center text-[#19414d] hover:bg-[#19414d]/5 transition-colors"
+                >
+                  <CaretRight className="w-5 h-5 rotate-180" weight="bold" />
+                </button>
+                <div>
+                  <h2 className="text-xl font-bold text-[#19414d]">Pembiasaan</h2>
+                  <p className="text-xs text-[#6b6375]">Track 7 Karakter Unggul Harian Anda</p>
+                </div>
+              </div>
+
+              {/* Tab Hari Ini vs Rekap Bulanan */}
+              <div className="flex bg-[#19414d]/5 rounded-xl p-1.5 border border-[#19414d]/10">
+                <button
+                  onClick={() => setPembiasaanTab('hari_ini')}
+                  className={`flex-1 flex items-center justify-center py-2.5 text-xs font-bold rounded-lg transition-all ${
+                    pembiasaanTab === 'hari_ini'
+                      ? 'bg-white text-[#19414d] shadow-sm'
+                      : 'text-[#6b6375] hover:text-[#19414d]'
+                  }`}
+                >
+                  Hari Ini
+                </button>
+                <button
+                  onClick={() => setPembiasaanTab('rekap_bulanan')}
+                  className={`flex-1 flex items-center justify-center py-2.5 text-xs font-bold rounded-lg transition-all ${
+                    pembiasaanTab === 'rekap_bulanan'
+                      ? 'bg-white text-[#19414d] shadow-sm'
+                      : 'text-[#6b6375] hover:text-[#19414d]'
+                  }`}
+                >
+                  Rekap Bulan Ini
+                </button>
+              </div>
+
+              {pembiasaanTab === 'hari_ini' && (
+                <>
+                  {/* Habit Progress Banner */}
+                  <div className="bg-gradient-to-br from-[#19414d] to-[#122e36] text-white p-5 rounded-2xl shadow-lg relative overflow-hidden">
+                    <div className="relative z-10">
+                      <div className="flex justify-between items-end mb-3">
+                        <div>
+                          <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider block mb-1">PROGRES HARI INI</span>
+                          <h3 className="text-2xl font-black">{doneHabitsCount} <span className="text-sm font-medium text-white/60">/ 7 Selesai</span></h3>
+                        </div>
+                        <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center backdrop-blur-sm border border-white/20">
+                          <Fire className="w-6 h-6 text-amber-400" weight="fill" />
+                        </div>
+                      </div>
+                      <div className="w-full h-2.5 bg-white/10 rounded-full overflow-hidden">
+                        <div 
+                          className="h-full bg-gradient-to-r from-emerald-400 to-teal-300 rounded-full transition-all duration-1000 ease-out"
+                          style={{ width: `${habitProgress}%` }}
+                        />
+                      </div>
+                      <p className="text-[10px] text-white/70 mt-2 font-medium">
+                        {habitProgress === 100 ? 'Luar Biasa! Semua pembiasaan tercapai hari ini! 🎉' : 'Ayo selesaikan pembiasaanmu hari ini! 💪'}
+                      </p>
+                    </div>
+                    
+                    {/* Decorative Elements */}
+                    <div className="absolute top-[-20%] right-[-10%] w-32 h-32 bg-emerald-400/20 rounded-full blur-2xl pointer-events-none" />
+                    <div className="absolute bottom-[-20%] left-[-10%] w-24 h-24 bg-blue-400/20 rounded-full blur-xl pointer-events-none" />
+                  </div>
+
+                  {/* Habit List */}
+                  <div className="space-y-3">
+                {habits.map(habit => {
+                  const Icon = habit.iconName;
+                  return (
+                    <div 
+                      key={habit.id}
+                      onClick={() => toggleHabit(habit.id)}
+                      className={`relative overflow-hidden flex items-center p-4 rounded-xl border transition-all duration-300 cursor-pointer ${
+                        habit.isDone 
+                          ? 'bg-emerald-50/50 border-emerald-200 shadow-sm' 
+                          : 'bg-white border-[#e5e4e7] hover:border-[#19414d]/30 hover:shadow-sm'
+                      }`}
+                    >
+                      {/* Left Icon Area */}
+                      <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 border ${
+                        habit.isDone ? 'bg-emerald-500 text-white border-emerald-600' : habit.colorClass
+                      } transition-colors duration-300`}>
+                        <Icon className="w-6 h-6" weight={habit.isDone ? 'fill' : 'duotone'} />
+                      </div>
+
+                      {/* Text Content */}
+                      <div className="ml-4 flex-1">
+                        <h4 className={`text-sm font-bold transition-colors duration-300 ${habit.isDone ? 'text-emerald-900' : 'text-[#121212]'}`}>
+                          {habit.title}
+                        </h4>
+                        <p className={`text-[11px] font-medium mt-0.5 transition-colors duration-300 ${habit.isDone ? 'text-emerald-700/70' : 'text-[#6b6375]'}`}>
+                          {habit.desc}
+                        </p>
+                      </div>
+
+                      {/* Right Side: Streak & Checkmark */}
+                      <div className="flex items-center gap-3 shrink-0">
+                        <div className={`flex flex-col items-center justify-center px-2 py-1 rounded-md ${
+                          habit.isDone ? 'bg-emerald-100' : 'bg-[#fcfbf7]'
+                        }`}>
+                          <span className={`text-[9px] font-bold flex items-center gap-0.5 ${
+                            habit.streak > 0 ? 'text-amber-500' : 'text-[#6b6375]/50'
+                          }`}>
+                            <Fire className="w-3 h-3" weight={habit.streak > 0 ? "fill" : "regular"} /> {habit.streak}
+                          </span>
+                        </div>
+                        
+                        <div className={`w-6 h-6 rounded-full flex items-center justify-center border-2 transition-all duration-300 ${
+                          habit.isDone ? 'bg-emerald-500 border-emerald-500 text-white scale-110' : 'bg-transparent border-[#e5e4e7] text-transparent'
+                        }`}>
+                          <Check className="w-4 h-4" weight="bold" />
+                        </div>
+                      </div>
+
+                      {/* Done overlay ripple effect (aesthetic only) */}
+                      {habit.isDone && (
+                        <div className="absolute inset-0 bg-gradient-to-r from-emerald-400/5 to-transparent pointer-events-none" />
+                      )}
+                    </div>
+                  );
+                })}
+                  </div>
+                </>
+              )}
+
+              {pembiasaanTab === 'rekap_bulanan' && (
+                <div className="space-y-5">
+                  {/* Monthly Stats */}
+                  <div className="bg-white p-5 rounded-2xl border border-[#e5e4e7] shadow-sm flex items-center justify-between">
+                    <div>
+                      <h3 className="text-sm font-bold text-[#121212]">Agustus 2026</h3>
+                      <p className="text-[11px] text-[#6b6375] font-medium mt-1">15 / 20 Hari Sempurna (75%)</p>
+                    </div>
+                    <div className="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-600">
+                      <Star className="w-6 h-6" weight="fill" />
+                    </div>
+                  </div>
+
+                  {/* Contribution Grid */}
+                  <div className="bg-white p-5 rounded-2xl border border-[#e5e4e7] shadow-sm">
+                    <div className="flex justify-between items-center mb-4">
+                      <h4 className="text-xs font-bold text-[#19414d] uppercase tracking-wider">Peta Konsistensi</h4>
+                      <div className="flex gap-2">
+                        <div className="flex items-center gap-1"><div className="w-2 h-2 rounded bg-emerald-500"></div><span className="text-[9px] text-[#6b6375] font-bold">Penuh</span></div>
+                        <div className="flex items-center gap-1"><div className="w-2 h-2 rounded bg-emerald-200"></div><span className="text-[9px] text-[#6b6375] font-bold">Sebagian</span></div>
+                        <div className="flex items-center gap-1"><div className="w-2 h-2 rounded bg-gray-100"></div><span className="text-[9px] text-[#6b6375] font-bold">Kosong</span></div>
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-7 gap-2">
+                      {['S','S','R','K','J','S','M'].map((day, i) => (
+                        <div key={i} className="text-[9px] font-bold text-center text-[#6b6375] mb-1">{day}</div>
+                      ))}
+                      
+                      {/* Simulating 4 weeks of a month */}
+                      {Array.from({length: 28}, (_, i) => {
+                        const isWeekend = (i % 7 === 5) || (i % 7 === 6);
+                        
+                        let bgColor = 'bg-gray-100 border-transparent';
+                        if (isWeekend) {
+                          bgColor = 'bg-gray-50 flex items-center justify-center text-[8px] text-gray-300';
+                        } else {
+                          // Dummy distribution
+                          const rand = Math.random();
+                          if (rand > 0.4) bgColor = 'bg-emerald-500 shadow-sm border-emerald-600';
+                          else if (rand > 0.15) bgColor = 'bg-emerald-200 border-emerald-300';
+                        }
+
+                        return (
+                          <div 
+                            key={i} 
+                            className={`aspect-square rounded-md border ${bgColor} transition-transform hover:scale-110 cursor-default`}
+                          >
+                            {isWeekend ? '💤' : ''}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
@@ -622,32 +1004,36 @@ export default function App() {
                 </span>
               </div>
 
-              <div className="bg-[#fcfbf7] p-3 rounded-lg border border-[#e5e4e7] text-xs text-[#6b6375] leading-relaxed">
+              <div className="p-4 bg-[#19414d]/5 rounded-xl border border-[#19414d]/10 mb-6 text-sm text-[#121212] leading-relaxed">
                 {selectedTugas.desc}
               </div>
-
-              {selectedTugas.status === 'ditugaskan' && (
-                <div className="space-y-2">
-                  <label className="text-[11px] font-bold text-[#121212] block">Unggah Lampiran Tugas (PDF / Link)</label>
-                  <div className="flex gap-2">
-                    <input 
-                      type="text" 
-                      placeholder="Masukkan nama_file.pdf atau URL link tugas"
-                      value={uploadFile}
-                      onChange={(e) => setUploadFile(e.target.value)}
-                      className="flex-1 text-xs p-2.5 rounded-lg border border-[#e5e4e7] focus:outline-none focus:border-[#19414d]"
-                    />
-                    <button 
-                      onClick={() => handleUploadTugas(selectedTugas.id)}
-                      className="px-4 py-2.5 bg-[#19414d] text-white font-bold text-xs rounded-lg hover:bg-[#19414d]/90 transition-all flex items-center gap-1.5"
-                    >
-                      <UploadSimple className="w-4 h-4" /> Kumpulkan
-                    </button>
+              {selectedTugas.status === 'Belum Dikerjakan' && (
+                <div className="space-y-4">
+                  <div className="border-2 border-dashed border-[#e5e4e7] rounded-xl p-8 flex flex-col items-center justify-center text-center bg-[#fcfbf7] hover:bg-[#19414d]/5 hover:border-[#19414d]/30 transition-colors cursor-pointer group">
+                    <UploadSimple className="w-8 h-8 text-[#19414d] mb-2 group-hover:-translate-y-1 transition-transform" />
+                    <p className="text-sm font-bold text-[#19414d]">Upload File Tugas</p>
+                    <p className="text-xs text-[#6b6375] mt-1">PDF, JPG, PNG (Max 10MB)</p>
                   </div>
+                  <input 
+                    type="text" 
+                    placeholder="Pesan tambahan untuk guru..." 
+                    value={uploadFile}
+                    onChange={(e) => setUploadFile(e.target.value)}
+                    className="w-full text-xs p-3 rounded-lg border border-[#e5e4e7] focus:outline-none focus:border-[#19414d] bg-[#fcfbf7]"
+                  />
+                  <button 
+                    onClick={() => {
+                      handleSubmitTugas(selectedTugas.id);
+                      setSelectedTugas(null);
+                    }}
+                    className="w-full bg-[#19414d] text-white font-bold py-3.5 rounded-xl shadow-lg shadow-[#19414d]/20 hover:scale-[1.02] active:scale-[0.98] transition-all text-sm"
+                  >
+                    Submit Tugas Sekarang
+                  </button>
                 </div>
               )}
 
-              {selectedTugas.status === 'selesai' && (
+              {selectedTugas.status === 'Selesai' && (
                 <div className="p-3 bg-emerald-50 text-emerald-800 rounded-lg border border-emerald-200 text-xs font-medium flex items-center gap-2">
                   <Check className="w-4.5 h-4.5 text-emerald-600" />
                   <span>Tugas Anda telah terkumpul: <span className="font-bold">{selectedTugas.submittedFile}</span></span>

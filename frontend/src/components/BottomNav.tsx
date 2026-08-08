@@ -40,7 +40,7 @@ const BottomNav: React.FC<BottomNavProps> = ({ activeTab, setActiveTab, startPre
         <div className="flex gap-1 sm:gap-2">
           {[
             { id: 'home', icon: House, label: 'Home' },
-            { id: 'tugas', icon: BookOpen, label: 'Tugas' },
+            { id: 'jurnal', icon: BookOpen, label: 'Jurnal' },
           ].map(renderTab)}
         </div>
 
