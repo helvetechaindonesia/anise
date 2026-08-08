@@ -1,0 +1,16 @@
+{
+  "short_name": "Anise",
+  "name": "Anise Manajemen Pendidikan",
+  "icons": [
+    {
+      "src": "vite.svg",
+      "type": "image/svg+xml",
+      "sizes": "any"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#fcfbf7",
+  "theme_color": "#19414d",
+  "display": "standalone",
+  "orientation": "portrait"
+}
