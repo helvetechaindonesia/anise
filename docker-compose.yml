@@ -12,10 +12,38 @@ services:
       - VITE_PORT=5173
 
   backend:
-    image: php:8.3-cli-alpine
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
     working_dir: /var/www/html
     volumes:
       - ./backend:/var/www/html
     ports:
       - "8000:8000"
     command: php -S 0.0.0.0:8000 -t public
+    depends_on:
+      - db
+
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: anise_user
+      POSTGRES_PASSWORD: anise_password
+      POSTGRES_DB: anise_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - pgdata:/var/lib/postgresql/data
+
+  pgweb:
+    image: sosedoff/pgweb
+    environment:
+      PGWEB_DATABASE_URL: postgres://anise_user:anise_password@db:5432/anise_db?sslmode=disable
+    ports:
+      - "5050:8081"
+    depends_on:
+      - db
+
+volumes:
+  pgdata:

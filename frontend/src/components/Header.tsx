@@ -8,7 +8,7 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
   return (
-    <header className="sticky top-0 z-40 bg-[#fcfbf7]/80 backdrop-blur-md text-[#19414d] px-5 pt-10 sm:pt-12 pb-2 flex items-center justify-between rounded-t-[36px] sm:rounded-t-[44px]">
+    <header className="sticky top-0 z-40 bg-[#fcfbf7]/80 backdrop-blur-md text-[#19414d] px-5 pt-[max(env(safe-area-inset-top),16px)] pb-2 flex items-center justify-between">
       <div className="flex items-center gap-2">
         <img src="/assets/logo-smk.png" alt="Logo SMK N 1 Sragi" className="w-9 h-9 object-contain shrink-0" />
         <div className="flex flex-col">

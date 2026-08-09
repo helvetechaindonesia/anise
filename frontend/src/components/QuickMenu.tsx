@@ -14,11 +14,11 @@ const QuickMenu: React.FC<QuickMenuProps> = ({ startPresensi, setActiveTab }) =>
         
         {/* ROW 1 */}
         <button 
-          onClick={startPresensi}
+          onClick={() => setActiveTab('presensi')}
           className="flex flex-col items-center justify-center text-center cursor-pointer group"
         >
-          <div className="w-14 h-14 rounded-full bg-[#19414d] flex items-center justify-center text-white shadow-lg shadow-[#19414d]/20 group-hover:scale-105 active:scale-95 transition-all">
-            <Scan className="w-7 h-7" weight="duotone" />
+          <div className="w-12 h-12 rounded-full bg-[#19414d] flex items-center justify-center text-white shadow-lg shadow-[#19414d]/20 group-hover:scale-105 active:scale-95 transition-all">
+            <Scan className="w-6 h-6" weight="duotone" />
           </div>
           <span className="text-[10px] font-bold mt-2.5 text-[#121212] tracking-tight leading-tight">Presensi</span>
         </button>
@@ -27,8 +27,8 @@ const QuickMenu: React.FC<QuickMenuProps> = ({ startPresensi, setActiveTab }) =>
           onClick={() => setActiveTab('daftar_tugas')}
           className="flex flex-col items-center justify-center text-center cursor-pointer group"
         >
-          <div className="w-14 h-14 rounded-full bg-[#19414d] flex items-center justify-center text-white shadow-lg shadow-[#19414d]/20 group-hover:scale-105 active:scale-95 transition-all">
-            <Notebook className="w-7 h-7" weight="duotone" />
+          <div className="w-12 h-12 rounded-full bg-[#19414d] flex items-center justify-center text-white shadow-lg shadow-[#19414d]/20 group-hover:scale-105 active:scale-95 transition-all">
+            <Notebook className="w-6 h-6" weight="duotone" />
           </div>
           <span className="text-[10px] font-bold mt-2.5 text-[#121212] tracking-tight leading-tight">Tugas</span>
         </button>
@@ -37,8 +37,8 @@ const QuickMenu: React.FC<QuickMenuProps> = ({ startPresensi, setActiveTab }) =>
           onClick={() => setActiveTab('pembiasaan')}
           className="flex flex-col items-center justify-center text-center cursor-pointer group"
         >
-          <div className="w-14 h-14 rounded-full bg-[#19414d] flex items-center justify-center text-white shadow-lg shadow-[#19414d]/20 group-hover:scale-105 active:scale-95 transition-all">
-            <CheckSquareOffset className="w-7 h-7" weight="duotone" />
+          <div className="w-12 h-12 rounded-full bg-[#19414d] flex items-center justify-center text-white shadow-lg shadow-[#19414d]/20 group-hover:scale-105 active:scale-95 transition-all">
+            <CheckSquareOffset className="w-6 h-6" weight="duotone" />
           </div>
           <span className="text-[10px] font-bold mt-2.5 text-[#121212] tracking-tight leading-tight">Pembiasaan</span>
         </button>
@@ -48,8 +48,8 @@ const QuickMenu: React.FC<QuickMenuProps> = ({ startPresensi, setActiveTab }) =>
           onClick={() => setActiveTab('poin')}
           className="flex flex-col items-center justify-center text-center cursor-pointer group"
         >
-          <div className="w-14 h-14 rounded-full bg-[#19414d] flex items-center justify-center text-white shadow-lg shadow-[#19414d]/20 group-hover:scale-105 active:scale-95 transition-all">
-            <Trophy className="w-7 h-7" weight="duotone" />
+          <div className="w-12 h-12 rounded-full bg-[#19414d] flex items-center justify-center text-white shadow-lg shadow-[#19414d]/20 group-hover:scale-105 active:scale-95 transition-all">
+            <Trophy className="w-6 h-6" weight="duotone" />
           </div>
           <span className="text-[10px] font-bold mt-2.5 text-[#121212] tracking-tight leading-tight">Poin & Prestasi</span>
         </button>
@@ -57,15 +57,15 @@ const QuickMenu: React.FC<QuickMenuProps> = ({ startPresensi, setActiveTab }) =>
         <button 
           className="flex flex-col items-center justify-center text-center cursor-pointer group"
         >
-          <div className="w-14 h-14 rounded-full bg-[#19414d] flex items-center justify-center text-white shadow-lg shadow-[#19414d]/20 group-hover:scale-105 active:scale-95 transition-all">
-            <ClipboardText className="w-7 h-7" weight="duotone" />
+          <div className="w-12 h-12 rounded-full bg-[#19414d] flex items-center justify-center text-white shadow-lg shadow-[#19414d]/20 group-hover:scale-105 active:scale-95 transition-all">
+            <ClipboardText className="w-6 h-6" weight="duotone" />
           </div>
           <span className="text-[10px] font-bold mt-2.5 text-[#121212] tracking-tight leading-tight">Agenda Penilaian</span>
         </button>
 
         <button className="flex flex-col items-center justify-center text-center cursor-pointer group">
-          <div className="w-14 h-14 rounded-full bg-[#19414d] flex items-center justify-center text-white shadow-lg shadow-[#19414d]/20 group-hover:scale-105 active:scale-95 transition-all">
-            <WarningCircle className="w-7 h-7" weight="duotone" />
+          <div className="w-12 h-12 rounded-full bg-[#19414d] flex items-center justify-center text-white shadow-lg shadow-[#19414d]/20 group-hover:scale-105 active:scale-95 transition-all">
+            <WarningCircle className="w-6 h-6" weight="duotone" />
           </div>
           <span className="text-[10px] font-bold mt-2.5 text-[#121212] tracking-tight leading-tight">Lapor Kesiswaan</span>
         </button>
