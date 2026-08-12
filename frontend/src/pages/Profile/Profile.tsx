@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ShieldCheck, Bookmarks, Question, CaretRight, Scan, PencilSimple, Check, X, SignOut } from '@phosphor-icons/react';
 import { useAppStore } from '../../store/useAppStore';
+import { getDefaultAvatar } from '../../utils/avatar';
 import FaceEnrollment from '../../components/FaceEnrollment';
 
 export default function Profile() {
@@ -34,9 +35,9 @@ export default function Profile() {
   return (
     <div className="space-y-6 pt-5 pb-10">
       <div className="text-center py-4 relative">
-        <div className="w-20 h-20 bg-gradient-to-tr from-[#19414d] to-teal-500 rounded-full mx-auto p-0.5 shadow-md overflow-hidden relative">
+        <div className="w-24 h-24 rounded-full border-4 border-white shadow-lg mx-auto overflow-hidden bg-[#19414d]/5">
           <img
-            src={userProfile?.avatar_url || "/assets/budi.png"}
+            src={userProfile?.avatar_url || getDefaultAvatar(userProfile?.gender)}
             alt={userProfile?.full_name || "Profile"}
             className="w-full h-full object-cover rounded-full"
           />

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import type { User } from '../types/User';
 import FaceEnrollment from './FaceEnrollment';
 import { CheckCircle, WarningCircle, Camera } from '@phosphor-icons/react';
+import { getDefaultAvatar } from '../utils/avatar';
 
 interface ProfileTabProps {
   userProfile: User | null;
@@ -19,11 +20,7 @@ export default function ProfileTab({ userProfile, onFaceEnrollmentSuccess }: Pro
     <div className="space-y-6 pt-5 animate-in fade-in duration-300">
       <div className="flex flex-col items-center">
         <div className="w-24 h-24 rounded-full bg-[#19414d]/10 flex items-center justify-center overflow-hidden mb-3 border-4 border-white shadow-lg">
-          {userProfile.avatar_url ? (
-            <img src={userProfile.avatar_url} alt="Profile" className="w-full h-full object-cover" />
-          ) : (
-            <span className="text-3xl font-bold text-[#19414d]">{userProfile.full_name.charAt(0)}</span>
-          )}
+          <img src={userProfile.avatar_url || getDefaultAvatar(userProfile.gender)} alt="Profile" className="w-full h-full object-cover" />
         </div>
         <h2 className="text-xl font-bold text-[#121212]">{userProfile.full_name}</h2>
         <p className="text-sm text-[#6b6375] capitalize">{userProfile.role_type}</p>

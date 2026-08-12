@@ -1,5 +1,6 @@
 import React from 'react';
 import { QrCode } from '@phosphor-icons/react';
+import { getDefaultAvatar } from '../utils/avatar';
 
 import type { User } from '../types/User';
 
@@ -26,7 +27,7 @@ const DigitalCard: React.FC<DigitalCardProps> = ({ hasPresensiToday, role, setAc
         {/* Left Side: Photo Frame (Fluid Responsive) */}
         <div className="w-[38%] max-w-[140px] aspect-[3/4] bg-white/10 rounded-xl border-2 border-white/40 overflow-hidden flex flex-col justify-end shrink-0 relative shadow-xl z-20">
           <img 
-            src={userProfile?.avatar_url || "/assets/budi.png"} 
+            src={userProfile?.avatar_url || getDefaultAvatar(userProfile?.gender)} 
             alt={userProfile?.full_name || "Pelajar"} 
             className="absolute inset-0 w-full h-full object-cover"
           />

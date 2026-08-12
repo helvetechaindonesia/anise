@@ -10,18 +10,18 @@ export interface Notification {
 }
 
 export interface TugasItem {
-  id: number;
+  id: string;
   subject: string;
   title: string;
   due: string;
   desc: string;
   points: number;
-  status: 'Belum Dikerjakan' | 'Selesai' | 'Terlewat';
+  status: 'Selesai' | 'Belum Dikerjakan' | 'Terlewat' | 'Minta Izin' | 'Izin Diberikan' | 'Izin Ditolak';
   submittedFile?: string;
 }
 
 export interface JurnalTimeline {
-  id: number;
+  id: string;
   time: string;
   subject: string;
   teacher: string;
@@ -31,6 +31,14 @@ export interface JurnalTimeline {
   postedAt: string;
   likes: number;
   comments: number;
+  teaching_date?: string;
+  start_time?: string;
+  end_time?: string;
+  link?: string;
+  images?: string[];
+  isLiked?: boolean;
+  has_scanned?: boolean;
+  has_rated?: boolean;
 }
 
 export interface PoinMutasi {

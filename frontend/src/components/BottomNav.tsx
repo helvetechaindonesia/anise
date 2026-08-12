@@ -14,54 +14,44 @@ const BottomNav: React.FC<BottomNavProps> = ({ activeTab, setActiveTab, startPre
       <button 
         key={tab.id}
         onClick={() => setActiveTab(tab.id as any)}
-        className={`flex items-center justify-center h-[40px] rounded-full transition-all duration-[500ms] ease-[cubic-bezier(0.34,1.56,0.64,1)] cursor-pointer ${
-          isActive 
-            ? 'bg-white text-[#19414d] px-3.5 shadow-md' 
-            : 'bg-transparent text-white/60 hover:text-white hover:bg-white/10 w-[40px]'
-        }`}
+        className="flex flex-col items-center justify-center w-full h-full cursor-pointer group"
       >
-        <tab.icon className="w-5 h-5 shrink-0" weight={isActive ? 'duotone' : 'regular'} />
-        <div className={`grid transition-all duration-[500ms] ease-[cubic-bezier(0.34,1.56,0.64,1)] ${
-          isActive ? 'grid-cols-[1fr] opacity-100 ml-2 translate-x-0' : 'grid-cols-[0fr] opacity-0 ml-0 -translate-x-2'
-        }`}>
-          <span className="overflow-hidden font-bold text-[12px] tracking-wide whitespace-nowrap">
-            {tab.label}
-          </span>
-        </div>
+        <tab.icon 
+          className={`w-6 h-6 mb-1 transition-colors ${isActive ? 'text-white' : 'text-white/50 group-hover:text-white/80'}`} 
+          weight={isActive ? 'fill' : 'regular'} 
+        />
+        <span className={`text-[10px] font-medium transition-colors ${isActive ? 'text-white' : 'text-white/50 group-hover:text-white/80'}`}>
+          {tab.label}
+        </span>
       </button>
     );
   };
 
   return (
     <div className="z-40 w-full shrink-0 relative">
-      <nav className="bg-[#19414d]/90 backdrop-blur-2xl rounded-t-[20px] shadow-[0_-10px_30px_rgba(25,65,77,0.2)] border-t border-white/15 flex items-center justify-between px-4 pt-2 pb-[max(env(safe-area-inset-bottom),10px)]">
+      <nav className="bg-[#19414d]/90 backdrop-blur-2xl rounded-t-[20px] shadow-[0_-10px_30px_rgba(25,65,77,0.2)] border-t border-white/15 px-2 pt-2 pb-[max(env(safe-area-inset-bottom),10px)] h-[70px]">
         
-        {/* Left Tabs */}
-        <div className="flex gap-1 sm:gap-2">
-          {[
-            { id: 'home', icon: House, label: 'Home' },
-            { id: 'jurnal', icon: BookOpen, label: 'Jurnal' },
-          ].map(renderTab)}
+        {/* Grid of 5 columns */}
+        <div className="grid grid-cols-5 h-full items-center">
+          {renderTab({ id: 'home', icon: House, label: 'Home' })}
+          {renderTab({ id: 'jurnal', icon: BookOpen, label: 'Jadwal' })}
+          
+          {/* Empty space for center button */}
+          <div className="flex justify-center items-center pointer-events-none" />
+
+          {renderTab({ id: 'poin', icon: Trophy, label: 'Poin' })}
+          {renderTab({ id: 'profile', icon: User, label: 'Profile' })}
         </div>
 
         {/* Center Floating Action Button */}
-        <div className="absolute left-1/2 -translate-x-1/2 -top-[14px]">
+        <div className="absolute left-1/2 -translate-x-1/2 -top-[24px]">
           <button 
             onClick={startPresensi}
-            className="w-[48px] h-[48px] rounded-full bg-emerald-500 border-[3px] border-[#fcfbf7] shadow-[0_8px_20px_rgba(16,185,129,0.3)] flex flex-col items-center justify-center text-white hover:scale-110 active:scale-95 transition-all cursor-pointer group"
+            className="w-[56px] h-[56px] rounded-full bg-emerald-500 border-[4px] border-[#fcfbf7] shadow-[0_8px_20px_rgba(16,185,129,0.3)] flex flex-col items-center justify-center text-white hover:scale-105 active:scale-95 transition-all cursor-pointer group"
           >
-            <Scan className="w-5 h-5 group-hover:rotate-12 transition-transform duration-300" weight="bold" />
+            <Scan className="w-6 h-6 group-hover:rotate-12 transition-transform duration-300" weight="bold" />
           </button>
         </div>
-
-        {/* Right Tabs */}
-        <div className="flex gap-1 sm:gap-2">
-          {[
-            { id: 'poin', icon: Trophy, label: 'Poin' },
-            { id: 'profile', icon: User, label: 'Profile' }
-          ].map(renderTab)}
-        </div>
-
       </nav>
     </div>
   );

@@ -74,19 +74,44 @@ export default function App() {
     return <Login />;
   }
 
-  const finishFaceTracking = () => {
-    useAppStore.getState().setPresensiStep('success');
-    setTimeout(() => {
-      setShowPresensiModal(false);
-      useAppStore.getState().setHasPresensiToday(true);
-      useDataStore.getState().addNotification({
-        id: Date.now(),
-        title: 'Presensi Sukses (Wajah + GPS)',
-        time: 'Baru saja',
-        desc: 'Kehadiran tercatat di area sekolah',
-        type: 'info'
+  const finishFaceTracking = async (photoBase64: string, location: { lat: number, lng: number }) => {
+    try {
+      const res = await fetch('/api/presensi', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          user_id: useAppStore.getState().userProfile?.id,
+          lat: location.lat,
+          lng: location.lng,
+          snapshot: photoBase64
+        })
       });
-    }, 2000);
+      
+      const data = await res.json();
+      if (res.ok && data.status === 'success') {
+        useAppStore.getState().setPresensiStep('success');
+        setTimeout(() => {
+          setShowPresensiModal(false);
+          useAppStore.getState().setHasPresensiToday(true);
+          useDataStore.getState().addNotification({
+            id: Date.now(),
+            title: `Presensi Sukses (${data.data.status_absen})`,
+            time: 'Baru saja',
+            desc: data.message,
+            type: 'info'
+          });
+        }, 2000);
+      } else {
+        alert(data.message || 'Gagal melakukan presensi');
+        setShowPresensiModal(false);
+      }
+    } catch (err) {
+      alert('Gagal terhubung ke server');
+      setShowPresensiModal(false);
+    }
   };
 
   const handleSendChatMessage = () => {
@@ -143,17 +168,6 @@ export default function App() {
 
         {/* BOTTOM NAVIGATION BAR */}
         <BottomNav activeTab={activeTab} setActiveTab={setActiveTab} startPresensi={startPresensi} />
-
-        {/* FLOATING ACTION BUTTON (AI CHAT) - Fixed floating above bottom navbar inside mobile screen */}
-        <div className="absolute bottom-24 sm:bottom-28 right-4 z-40">
-          <button
-            onClick={() => setShowAiChat(!showAiChat)}
-            className="w-13 h-13 rounded-full bg-[#19414d] text-white shadow-xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all cursor-pointer border border-[#fcfbf7]/25"
-          >
-            <ChatCircleText className="w-6.5 h-6.5" weight="duotone" />
-            <span className="absolute -top-1 -right-1 w-3 h-3 bg-emerald-500 rounded-full border-2 border-[#fcfbf7]" />
-          </button>
-        </div>
 
         {/* MODAL PRESENSI GEOLOKASI + FACE TRACKING (REAL CAM) */}
         {showPresensiModal && (

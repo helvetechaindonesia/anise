@@ -12,8 +12,10 @@
   "dependencies": {
     "@phosphor-icons/react": "^2.1.10",
     "face-api.js": "^0.22.2",
+    "html5-qrcode": "^2.3.8",
     "localtunnel": "^2.0.2",
     "lucide-react": "^1.30.0",
+    "qrcode.react": "^4.2.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "zustand": "^5.0.14"

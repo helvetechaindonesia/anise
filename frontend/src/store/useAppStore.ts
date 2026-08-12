@@ -13,6 +13,7 @@ interface AppState {
   hasPresensiToday: boolean;
   userLocation: { lat: number; lng: number } | null;
   showAiChat: boolean;
+  selectedTeacherFilter: { id: string; name: string } | null;
   
   // Actions
   setIsAuthenticated: (auth: boolean) => void;
@@ -28,6 +29,7 @@ interface AppState {
   setHasPresensiToday: (has: boolean) => void;
   setUserLocation: (loc: { lat: number; lng: number } | null) => void;
   setShowAiChat: (show: boolean) => void;
+  setSelectedTeacherFilter: (filter: { id: string; name: string } | null) => void;
   startPresensi: () => void;
 }
 
@@ -43,6 +45,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   hasPresensiToday: false,
   userLocation: null,
   showAiChat: false,
+  selectedTeacherFilter: null,
 
   setIsAuthenticated: (auth) => set({ isAuthenticated: auth }),
   setIsInitializing: (init) => set({ isInitializing: init }),
@@ -83,6 +86,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   setHasPresensiToday: (has) => set({ hasPresensiToday: has }),
   setUserLocation: (loc) => set({ userLocation: loc }),
   setShowAiChat: (show) => set({ showAiChat: show }),
+  setSelectedTeacherFilter: (filter) => set({ selectedTeacherFilter: filter }),
   
   startPresensi: () => {
     set({ showPresensiModal: true, presensiStep: 'gps' });

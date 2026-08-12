@@ -1,13 +1,81 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { CaretRight, Fire, Check, Star } from '@phosphor-icons/react';
 import { useAppStore } from '../../store/useAppStore';
 import { useDataStore } from '../../store/useDataStore';
 
 export default function Pembiasaan() {
   const setActiveTab = useAppStore((state) => state.setActiveTab);
-  const { habits, toggleHabit } = useDataStore();
+  const { habits, toggleHabit, setHabitsData } = useDataStore();
+  const token = localStorage.getItem('token');
   
   const [pembiasaanTab, setPembiasaanTab] = useState<'hari_ini' | 'rekap_bulanan'>('hari_ini');
+  const [monthlyData, setMonthlyData] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Initial fetch for today's habits
+  useEffect(() => {
+    fetch('/api/siswa/habits', {
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.status === 'success') {
+          setHabitsData(data.done_today, data.streaks);
+        }
+      })
+      .catch(err => console.error("Failed to load habits:", err))
+      .finally(() => setIsLoading(false));
+  }, [token, setHabitsData]);
+
+  // Fetch monthly stats when tab changes
+  useEffect(() => {
+    if (pembiasaanTab === 'rekap_bulanan') {
+      fetch('/api/siswa/habits/month', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.status === 'success') {
+            setMonthlyData(data.data);
+          }
+        })
+        .catch(err => console.error("Failed to load monthly habits:", err));
+    }
+  }, [pembiasaanTab, token]);
+
+  const handleToggleHabit = async (habitId: string) => {
+    const habit = habits.find(h => h.id === habitId);
+    if (!habit) return;
+    
+    const targetIsDone = !habit.isDone;
+    
+    // Optimistic UI update
+    toggleHabit(habitId);
+    
+    try {
+      const res = await fetch('/api/siswa/habits/toggle', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          habit_id: habitId,
+          is_done: targetIsDone
+        })
+      });
+      const data = await res.json();
+      if (data.status !== 'success') {
+        // Revert on error
+        toggleHabit(habitId);
+        alert('Gagal menyimpan pembiasaan');
+      }
+    } catch (err) {
+      // Revert on error
+      toggleHabit(habitId);
+      alert('Gagal terhubung ke server');
+    }
+  };
 
   const doneHabitsCount = habits.filter(h => h.isDone).length;
   const habitProgress = Math.round((doneHabitsCount / habits.length) * 100);
@@ -86,7 +154,7 @@ export default function Pembiasaan() {
               return (
                 <div
                   key={habit.id}
-                  onClick={() => toggleHabit(habit.id)}
+                  onClick={() => handleToggleHabit(habit.id)}
                   className={`relative overflow-hidden flex items-center p-4 rounded-xl border transition-all duration-300 cursor-pointer ${habit.isDone
                       ? 'bg-emerald-50/50 border-emerald-200 shadow-sm'
                       : 'bg-white border-[#e5e4e7] hover:border-[#19414d]/30 hover:shadow-sm'
@@ -140,8 +208,8 @@ export default function Pembiasaan() {
           {/* Monthly Stats */}
           <div className="bg-white p-5 rounded-2xl border border-[#e5e4e7] shadow-sm flex items-center justify-between">
             <div>
-              <h3 className="text-sm font-bold text-[#121212]">Agustus 2026</h3>
-              <p className="text-[11px] text-[#6b6375] font-medium mt-1">15 / 20 Hari Sempurna (75%)</p>
+              <h3 className="text-sm font-bold text-[#121212]">{new Date().toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })}</h3>
+              <p className="text-[11px] text-[#6b6375] font-medium mt-1">Hari dengan kebiasaan tercatat: {monthlyData.length} hari</p>
             </div>
             <div className="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-600">
               <Star className="w-6 h-6" weight="fill" />
@@ -164,25 +232,39 @@ export default function Pembiasaan() {
                 <div key={i} className="text-[9px] font-bold text-center text-[#6b6375] mb-1">{day}</div>
               ))}
 
-              {/* Simulating 4 weeks of a month */}
-              {Array.from({ length: 28 }, (_, i) => {
-                const isWeekend = (i % 7 === 5) || (i % 7 === 6);
+              {Array.from({ length: 31 }, (_, i) => {
+                const dayDate = i + 1;
+                // create date string YYYY-MM-DD
+                const currentDate = new Date();
+                const year = currentDate.getFullYear();
+                const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+                const dayStr = String(dayDate).padStart(2, '0');
+                const dateStr = `${year}-${month}-${dayStr}`;
+
+                const dateObj = new Date(dateStr);
+                const isWeekend = dateObj.getDay() === 0 || dateObj.getDay() === 6;
+
+                // find if there is data for this date
+                const dayData = monthlyData.find(d => d.date === dateStr);
+                const count = dayData ? parseInt(dayData.count) : 0;
 
                 let bgColor = 'bg-gray-100 border-transparent';
-                if (isWeekend) {
+                if (isWeekend && count === 0) {
                   bgColor = 'bg-gray-50 flex items-center justify-center text-[8px] text-gray-300';
-                } else {
-                  const rand = Math.random();
-                  if (rand > 0.4) bgColor = 'bg-emerald-500 shadow-sm border-emerald-600';
-                  else if (rand > 0.15) bgColor = 'bg-emerald-200 border-emerald-300';
+                } else if (count > 0) {
+                  if (count === 7) bgColor = 'bg-emerald-500 shadow-sm border-emerald-600';
+                  else bgColor = 'bg-emerald-200 border-emerald-300';
+                } else if (dateObj > new Date()) {
+                  bgColor = 'bg-white border-dashed border-[#e5e4e7] opacity-50';
                 }
 
                 return (
                   <div
                     key={i}
+                    title={`${dateStr}: ${count} Kebiasaan`}
                     className={`aspect-square rounded-md border ${bgColor} transition-transform hover:scale-110 cursor-default`}
                   >
-                    {isWeekend ? '💤' : ''}
+                    {isWeekend && count === 0 ? '💤' : ''}
                   </div>
                 );
               })}

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <rect width="100" height="100" fill="#e0e0e0"/>
+  <!-- Hair silhouette -->
+  <path d="M50 15c-12 0-22 9-22 22v15c0 5 3 10 7 12 0 6 3 10 3 10s2 2 12 2 12-2 12-2 3-4 3-10c4-2 7-7 7-12V37c0-13-10-22-22-22z" fill="#9e9e9e"/>
+  <!-- Face -->
+  <circle cx="50" cy="38" r="14" fill="#e0e0e0"/>
+  <path d="M50 54c-12.464 0-23 9.536-23 21v15h46V75c0-11.464-10.536-21-23-21z" fill="#9e9e9e"/>
+</svg>

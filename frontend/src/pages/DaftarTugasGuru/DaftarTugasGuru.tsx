@@ -9,14 +9,35 @@ export default function DaftarTugasGuru() {
   
   // Form State
   const [form, setForm] = useState({
-    kelas: '',
-    mapel: '',
+    journal_id: '',
     judul: '',
     deskripsi: '',
     deadline: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+  
+  // Journals List for Dropdown
+  const [journals, setJournals] = useState<any[]>([]);
+
+  useEffect(() => {
+    // Fetch Jurnals untuk dropdown
+    const fetchJournals = async () => {
+      try {
+        const res = await fetch('/api/jurnal/guru', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+        if (data.status === 'success') {
+          // Hanya ambil jurnal yang belum punya tugas, backend tidak otomatis mem-filter jadi biarkan semua dulu (nanti akan gagal di post jika sudah punya)
+          setJournals(data.data || []);
+        }
+      } catch (err) {
+        console.error("Gagal load daftar jurnal:", err);
+      }
+    };
+    fetchJournals();
+  }, [token]);
   
   // Pantau State
   const [daftarTugas, setDaftarTugas] = useState<any[]>([]);
@@ -61,7 +82,7 @@ export default function DaftarTugasGuru() {
       const data = await res.json();
       if (data.status === 'success') {
         setSubmitSuccess(true);
-        setForm({ kelas: '', mapel: '', judul: '', deskripsi: '', deadline: '' });
+        setForm({ journal_id: '', judul: '', deskripsi: '', deadline: '' });
         setTimeout(() => setSubmitSuccess(false), 3000);
       } else {
         alert(data.message || 'Gagal menyimpan tugas');
@@ -120,29 +141,21 @@ export default function DaftarTugasGuru() {
             </div>
           )}
 
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-1.5">
-              <label className="text-[11px] font-bold text-[#6b6375]">Kelas / Rombel *</label>
-              <input
-                type="text"
-                required
-                value={form.kelas}
-                onChange={(e) => setForm({...form, kelas: e.target.value})}
-                placeholder="Cth: XII RPL 1"
-                className="w-full bg-[#fcfbf7] border border-[#e5e4e7] rounded-xl px-3 py-2.5 text-[13px] text-[#121212] focus:outline-none focus:border-[#19414d] focus:ring-1 focus:ring-[#19414d] transition-all"
-              />
-            </div>
-            <div className="space-y-1.5">
-              <label className="text-[11px] font-bold text-[#6b6375]">Mata Pelajaran *</label>
-              <input
-                type="text"
-                required
-                value={form.mapel}
-                onChange={(e) => setForm({...form, mapel: e.target.value})}
-                placeholder="Cth: Pemrograman Dasar"
-                className="w-full bg-[#fcfbf7] border border-[#e5e4e7] rounded-xl px-3 py-2.5 text-[13px] text-[#121212] focus:outline-none focus:border-[#19414d] focus:ring-1 focus:ring-[#19414d] transition-all"
-              />
-            </div>
+          <div className="space-y-1.5">
+            <label className="text-[11px] font-bold text-[#6b6375]">Pilih Jurnal (Tautan Tugas) *</label>
+            <select
+              required
+              value={form.journal_id}
+              onChange={(e) => setForm({...form, journal_id: e.target.value})}
+              className="w-full bg-[#fcfbf7] border border-[#e5e4e7] rounded-xl px-3 py-2.5 text-[13px] text-[#121212] focus:outline-none focus:border-[#19414d] focus:ring-1 focus:ring-[#19414d] transition-all"
+            >
+              <option value="">-- Pilih Jurnal Mengajar --</option>
+              {journals.map((j) => (
+                <option key={j.id} value={j.id}>
+                  {j.tanggal} | {j.kelas} - {j.mapel}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div className="space-y-1.5">
