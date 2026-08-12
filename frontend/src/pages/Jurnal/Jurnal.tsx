@@ -1,11 +1,24 @@
-import React from 'react';
-import { BookOpen, CaretRight, PushPin, ChatCircleText, CheckCircle, Heart } from '@phosphor-icons/react';
+import React, { useEffect } from 'react';
+import { BookOpen, CaretRight, PushPin, ChatCircleText, CheckCircle, Heart, SpinnerGap } from '@phosphor-icons/react';
 import { useAppStore } from '../../store/useAppStore';
 import { useDataStore } from '../../store/useDataStore';
 
 export default function Jurnal() {
   const setActiveTab = useAppStore((state) => state.setActiveTab);
-  const jurnalList = useDataStore((state) => state.jurnalList);
+  const { jurnalList, setJurnalList } = useDataStore();
+  const [isLoading, setIsLoading] = React.useState(true);
+
+  useEffect(() => {
+    fetch('/api/jurnal')
+      .then(res => res.json())
+      .then(json => {
+        if (json.status === 'success') {
+          setJurnalList(json.data);
+        }
+      })
+      .catch(err => console.error("Gagal load jurnal:", err))
+      .finally(() => setIsLoading(false));
+  }, []);
 
   return (
     <div className="space-y-5 pt-5 animate-in fade-in duration-200">
@@ -35,7 +48,17 @@ export default function Jurnal() {
 
       {/* JURNAL TIMELINE FEED */}
       <div className="space-y-4 pt-2">
-        {jurnalList.map((j) => (
+        {isLoading ? (
+          <div className="flex flex-col items-center justify-center py-10 opacity-70">
+            <SpinnerGap className="w-8 h-8 text-[#19414d] animate-spin mb-2" />
+            <p className="text-xs text-[#19414d] font-bold">Memuat Jurnal...</p>
+          </div>
+        ) : jurnalList.length === 0 ? (
+          <div className="text-center py-10">
+            <p className="text-sm text-[#6b6375]">Belum ada jurnal untuk kelas ini hari ini.</p>
+          </div>
+        ) : (
+          jurnalList.map((j) => (
           <div key={j.id} className="p-4 rounded-2xl bg-white border border-[#e5e4e7] shadow-sm hover:shadow-md transition-all">
             {/* Social Header */}
             <div className="flex items-center gap-3 mb-4">
@@ -91,7 +114,7 @@ export default function Jurnal() {
               </button>
             </div>
           </div>
-        ))}
+        )))}
       </div>
     </div>
   );

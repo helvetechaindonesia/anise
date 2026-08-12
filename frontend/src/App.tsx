@@ -2,51 +2,77 @@ import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
 import BottomNav from './components/BottomNav';
 import PresensiCamera from './components/PresensiCamera';
-import { ChatCircleText, Sparkle } from '@phosphor-icons/react';
+import { ChatCircleText, Sparkle, SpinnerGap } from '@phosphor-icons/react';
 import { useAppStore } from './store/useAppStore';
 import { useDataStore } from './store/useDataStore';
 
-// Import Pages
 import Home from './pages/Home/Home';
 import Jurnal from './pages/Jurnal/Jurnal';
+import JurnalGuru from './pages/JurnalGuru/JurnalGuru';
 import DaftarTugas from './pages/DaftarTugas/DaftarTugas';
+import DaftarTugasGuru from './pages/DaftarTugasGuru/DaftarTugasGuru';
 import Pembiasaan from './pages/Pembiasaan/Pembiasaan';
 import Poin from './pages/Poin/Poin';
 import Notifikasi from './pages/Notifikasi/Notifikasi';
 import RiwayatPresensi from './pages/RiwayatPresensi/RiwayatPresensi';
 import Profile from './pages/Profile/Profile';
+import Login from './pages/Login/Login';
 
 export default function App() {
-  const { activeTab, setActiveTab, showPresensiModal, setShowPresensiModal, showAiChat, setShowAiChat, startPresensi, setUserProfile } = useAppStore();
+  const { 
+    token, setToken, isAuthenticated, setIsAuthenticated, isInitializing, setIsInitializing,
+    activeTab, setActiveTab, showPresensiModal, setShowPresensiModal, showAiChat, setShowAiChat, startPresensi, setUserProfile 
+  } = useAppStore();
   const { chatMessages, addChatMessage } = useDataStore();
 
-  // Fetch real user data from Backend
   useEffect(() => {
-    fetch('/api/user/me')
+    if (!token) {
+      setIsInitializing(false);
+      return;
+    }
+
+    fetch('/api/user/me', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
       .then(res => res.json())
       .then(json => {
         if (json.status === 'success' && json.data) {
-          // Sync backend data to Zustand
-          setUserProfile({
-            id: json.data.id,
-            full_name: json.data.full_name,
-            username: json.data.username,
-            email: json.data.email,
-            role_type: json.data.role_type,
-            avatar_url: json.data.avatar_url,
-            face_descriptor: json.data.face_descriptor,
-            nisn: json.data.nisn,
-            nis: json.data.nis,
-            class_name: json.data.class_name,
-            behavior_points: json.data.behavior_points
-          });
+          setUserProfile(json.data);
+          setIsAuthenticated(true);
+        } else {
+          setToken(null);
+          setIsAuthenticated(false);
         }
       })
-      .catch(err => console.error("Gagal load profil:", err));
-  }, []);
+      .catch(err => {
+        console.error("Gagal verifikasi token:", err);
+        setToken(null);
+        setIsAuthenticated(false);
+      })
+      .finally(() => {
+        setIsInitializing(false);
+      });
+  }, [token]);
 
   // Dummy AI Chat logic and local input state
   const [newChatInput, setNewChatInput] = useState('');
+
+  if (isInitializing) {
+    return (
+      <div className="min-h-screen bg-[#fcfbf7] flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <SpinnerGap className="w-10 h-10 text-[#19414d] animate-spin" />
+          <p className="text-[#19414d] font-bold text-sm">Memuat Aplikasi...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return <Login />;
+  }
 
   const finishFaceTracking = () => {
     useAppStore.getState().setPresensiStep('success');
@@ -91,8 +117,8 @@ export default function App() {
   const renderActiveTab = () => {
     switch (activeTab) {
       case 'home': return <Home />;
-      case 'jurnal': return <Jurnal />;
-      case 'daftar_tugas': return <DaftarTugas />;
+      case 'jurnal': return useAppStore.getState().userProfile?.role_type?.toLowerCase() === 'guru' ? <JurnalGuru /> : <Jurnal />;
+      case 'daftar_tugas': return useAppStore.getState().userProfile?.role_type?.toLowerCase() === 'guru' ? <DaftarTugasGuru /> : <DaftarTugas />;
       case 'pembiasaan': return <Pembiasaan />;
       case 'poin': return <Poin />;
       case 'notifikasi': return <Notifikasi />;

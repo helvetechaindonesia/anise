@@ -11,6 +11,7 @@ interface DataState {
   chatMessages: { sender: 'user' | 'bot', text: string }[];
   
   // Actions
+  setJurnalList: (jurnals: JurnalTimeline[]) => void;
   addNotification: (notif: Notification) => void;
   updateTugasStatus: (id: number, status: TugasItem['status']) => void;
   addPoinMutasi: (mutasi: PoinMutasi) => void;
@@ -30,10 +31,7 @@ export const useDataStore = create<DataState>((set) => ({
     { id: 3, subject: 'Fisika', title: 'Laporan Praktikum Efek Fotolistrik', due: 'Kemarin', desc: 'Tugas praktikum laboratorium minggu lalu.', points: 150, status: 'Terlewat' },
     { id: 4, subject: 'Kimia', title: 'Senyawa Turunan Benzena', due: 'Selesai 3 hari lalu', desc: 'Tugas mandiri tata nama benzena.', points: 90, status: 'Selesai', submittedFile: 'tugas_benzena_budi.pdf' }
   ],
-  jurnalList: [
-    { id: 1, time: '07:00 - 08:30', subject: 'Matematika Peminatan', teacher: 'Bpk. Ahmad Susanto', topic: 'Trigonometri Lanjut & Analisis Gelombang', hasTask: true, postedAt: '5 menit yang lalu', likes: 24, comments: 12 },
-    { id: 2, time: '08:30 - 10:00', subject: 'Sejarah Indonesia', teacher: 'Ibu Ratna Kumala', topic: 'Perang Dunia II & Kemerdekaan RI', hasTask: false, notes: '"Jangan lupa bawa buku cetak Sejarah Jilid 2 besok ya anak-anak!"', postedAt: '2 jam yang lalu', likes: 45, comments: 8 }
-  ],
+  jurnalList: [],
   mutasiPoin: [
     { id: 1, title: 'Juara 1 Lomba Coding Nasional', date: '06 Aug 2026', points: 50, type: 'prestasi', notes: 'Diberikan langsung oleh Kepala Sekolah' },
     { id: 2, title: 'Terlambat Masuk Sekolah (>15 Menit)', date: '04 Aug 2026', points: -10, type: 'pelanggaran', notes: 'Toleransi keterlambatan habis' },
@@ -53,6 +51,7 @@ export const useDataStore = create<DataState>((set) => ({
     { sender: 'bot', text: 'Halo Budi! Saya adalah Anise AI Assistant. Ada yang bisa saya bantu terkait jadwal pelajaran, tugas, atau poin prestasi Anda?' }
   ],
 
+  setJurnalList: (jurnals) => set({ jurnalList: jurnals }),
   addNotification: (notif) => set((state) => ({ notifications: [notif, ...state.notifications] })),
   updateTugasStatus: (id, status) => set((state) => ({
     tugasList: state.tugasList.map(t => t.id === id ? { ...t, status } : t)

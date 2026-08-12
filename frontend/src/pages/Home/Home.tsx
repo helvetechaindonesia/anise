@@ -6,7 +6,7 @@ import { useAppStore } from '../../store/useAppStore';
 import { useDataStore } from '../../store/useDataStore';
 
 export default function Home() {
-  const { setActiveTab, role, hasPresensiToday, startPresensi } = useAppStore();
+  const { setActiveTab, role, hasPresensiToday, startPresensi, userProfile } = useAppStore();
   const mutasiPoin = useDataStore((state) => state.mutasiPoin);
 
   const totalPoin = 100 + mutasiPoin.reduce((acc, curr) => acc + curr.points, 0);
@@ -22,7 +22,7 @@ export default function Home() {
           <div className="bg-white rounded-[9px] p-3 h-full w-full">
             <div className="mb-2">
               <h2 className="text-[15px] font-extrabold text-[#19414d] tracking-tight">
-                Selamat {new Date().getHours() < 11 ? 'Pagi' : new Date().getHours() < 15 ? 'Siang' : new Date().getHours() < 18 ? 'Sore' : 'Malam'}, Budi!!
+                Selamat {new Date().getHours() < 11 ? 'Pagi' : new Date().getHours() < 15 ? 'Siang' : new Date().getHours() < 18 ? 'Sore' : 'Malam'}, {userProfile?.full_name?.split(' ')[0] || 'Pelajar'}!!
               </h2>
             </div>
             <div className="flex items-center gap-2">
@@ -36,7 +36,7 @@ export default function Home() {
       </div>
 
       {/* Pelajar Card / ID Card Digital */}
-      <DigitalCard hasPresensiToday={hasPresensiToday} role={role} setActiveTab={setActiveTab} />
+      <DigitalCard hasPresensiToday={hasPresensiToday} role={role} setActiveTab={setActiveTab} userProfile={userProfile} />
 
       {/* Quick Menu */}
       <QuickMenu startPresensi={startPresensi} setActiveTab={setActiveTab} />

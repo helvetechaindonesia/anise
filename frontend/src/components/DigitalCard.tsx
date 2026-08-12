@@ -44,7 +44,7 @@ const DigitalCard: React.FC<DigitalCardProps> = ({ hasPresensiToday, role, setAc
           </div>
 
           <h2 className="text-[clamp(10px,6.3cqw,16px)] font-black text-white tracking-wide uppercase leading-tight mb-2 sm:mb-2.5 [text-shadow:1px_1px_2px_rgba(0,0,0,0.6),-1px_-1px_1px_rgba(255,255,255,0.4)] whitespace-nowrap">
-            {role === 'siswa' ? 'KARTU PELAJAR DIGITAL' : 'KARTU PENGAJAR DIGITAL'}
+            {userProfile?.role_type?.toLowerCase() === 'guru' ? 'KARTU PENGAJAR DIGITAL' : 'KARTU PELAJAR DIGITAL'}
           </h2>
 
           <div className="w-[90%] h-[1.5px] bg-black/50 border-b border-white/60 mb-2.5 sm:mb-3"></div>
@@ -55,26 +55,54 @@ const DigitalCard: React.FC<DigitalCardProps> = ({ hasPresensiToday, role, setAc
               <span className="w-[3cqw] max-w-[8px] text-white font-bold shrink-0">:</span>
               <span className="font-semibold text-white flex-1 whitespace-nowrap truncate">{userProfile?.full_name || '-'}</span>
             </div>
-            <div className="flex items-center">
-              <span className="w-[20cqw] max-w-[45px] font-bold text-white shrink-0">NISN</span>
-              <span className="w-[3cqw] max-w-[8px] text-white font-bold shrink-0">:</span>
-              <span className="font-semibold text-white flex-1 whitespace-nowrap truncate">{userProfile?.nisn || '-'}</span>
-            </div>
-            <div className="flex items-center">
-              <span className="w-[20cqw] max-w-[45px] font-bold text-white shrink-0">NIS</span>
-              <span className="w-[3cqw] max-w-[8px] text-white font-bold shrink-0">:</span>
-              <span className="font-semibold text-white flex-1 whitespace-nowrap truncate">{userProfile?.nis || '-'}</span>
-            </div>
-            <div className="flex items-center">
-              <span className="w-[20cqw] max-w-[45px] font-bold text-white shrink-0">Kelas</span>
-              <span className="w-[3cqw] max-w-[8px] text-white font-bold shrink-0">:</span>
-              <span className="font-semibold text-white flex-1 whitespace-nowrap truncate">{userProfile?.class_name || '-'}</span>
-            </div>
-            <div className="flex items-center">
-              <span className="w-[20cqw] max-w-[45px] font-bold text-white shrink-0">Role</span>
-              <span className="w-[3cqw] max-w-[8px] text-white font-bold shrink-0">:</span>
-              <span className="font-semibold text-white flex-1 capitalize whitespace-nowrap truncate">{userProfile?.role_type || role}</span>
-            </div>
+            
+            {userProfile?.role_type?.toLowerCase() === 'guru' ? (
+              <>
+                <div className="flex items-center">
+                  <span className="w-[20cqw] max-w-[45px] font-bold text-white shrink-0">NIP/NUP</span>
+                  <span className="w-[3cqw] max-w-[8px] text-white font-bold shrink-0">:</span>
+                  <span className="font-semibold text-white flex-1 whitespace-nowrap truncate">{userProfile?.nip_nuptk || '-'}</span>
+                </div>
+                <div className="flex items-center">
+                  <span className="w-[20cqw] max-w-[45px] font-bold text-white shrink-0">Mapel</span>
+                  <span className="w-[3cqw] max-w-[8px] text-white font-bold shrink-0">:</span>
+                  <span className="font-semibold text-white flex-1 whitespace-nowrap truncate">{userProfile?.subjects || '-'}</span>
+                </div>
+                <div className="flex items-center">
+                  <span className="w-[20cqw] max-w-[45px] font-bold text-white shrink-0">Walas</span>
+                  <span className="w-[3cqw] max-w-[8px] text-white font-bold shrink-0">:</span>
+                  <span className="font-semibold text-white flex-1 whitespace-nowrap truncate">{userProfile?.homeroom_class || '-'}</span>
+                </div>
+                <div className="flex items-center">
+                  <span className="w-[20cqw] max-w-[45px] font-bold text-white shrink-0">Tugas</span>
+                  <span className="w-[3cqw] max-w-[8px] text-white font-bold shrink-0">:</span>
+                  <span className="font-semibold text-white flex-1 capitalize whitespace-nowrap truncate">{userProfile?.structural_roles || '-'}</span>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="flex items-center">
+                  <span className="w-[20cqw] max-w-[45px] font-bold text-white shrink-0">NISN</span>
+                  <span className="w-[3cqw] max-w-[8px] text-white font-bold shrink-0">:</span>
+                  <span className="font-semibold text-white flex-1 whitespace-nowrap truncate">{userProfile?.nisn || '-'}</span>
+                </div>
+                <div className="flex items-center">
+                  <span className="w-[20cqw] max-w-[45px] font-bold text-white shrink-0">NIS</span>
+                  <span className="w-[3cqw] max-w-[8px] text-white font-bold shrink-0">:</span>
+                  <span className="font-semibold text-white flex-1 whitespace-nowrap truncate">{userProfile?.nis || '-'}</span>
+                </div>
+                <div className="flex items-center">
+                  <span className="w-[20cqw] max-w-[45px] font-bold text-white shrink-0">Kelas</span>
+                  <span className="w-[3cqw] max-w-[8px] text-white font-bold shrink-0">:</span>
+                  <span className="font-semibold text-white flex-1 whitespace-nowrap truncate">{userProfile?.class_name || '-'}</span>
+                </div>
+                <div className="flex items-center">
+                  <span className="w-[20cqw] max-w-[45px] font-bold text-white shrink-0">Role</span>
+                  <span className="w-[3cqw] max-w-[8px] text-white font-bold shrink-0">:</span>
+                  <span className="font-semibold text-white flex-1 capitalize whitespace-nowrap truncate">{userProfile?.role_type || role}</span>
+                </div>
+              </>
+            )}
           </div>
 
         </div>

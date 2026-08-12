@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { ShieldCheck, Bookmarks, Question, CaretRight, Scan, PencilSimple, Check, X } from '@phosphor-icons/react';
+import { ShieldCheck, Bookmarks, Question, CaretRight, Scan, PencilSimple, Check, X, SignOut } from '@phosphor-icons/react';
 import { useAppStore } from '../../store/useAppStore';
 import FaceEnrollment from '../../components/FaceEnrollment';
 
 export default function Profile() {
-  const { role, setRole, userProfile, updateUserProfile } = useAppStore();
+  const { role, setRole, userProfile, updateUserProfile, logout } = useAppStore();
   
   const [isEditing, setIsEditing] = useState(false);
   const [showEnrollment, setShowEnrollment] = useState(false);
@@ -170,6 +170,15 @@ export default function Profile() {
           Pindah ke {role === 'siswa' ? 'Guru' : 'Siswa'}
         </button>
       </div>
+
+      {/* Logout Action Button */}
+      <button 
+        onClick={() => logout()}
+        className="w-full py-4 mt-2 bg-rose-50 text-rose-600 font-bold text-sm rounded-xl border border-rose-200 flex items-center justify-center gap-2 hover:bg-rose-100 transition-all shadow-sm"
+      >
+        <SignOut className="w-5 h-5" weight="bold" />
+        Sign Out / Keluar
+      </button>
 
       {showEnrollment && (
         <FaceEnrollment 

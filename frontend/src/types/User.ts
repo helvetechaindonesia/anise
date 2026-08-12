@@ -15,4 +15,10 @@ export interface User {
   class_name?: string;
   major_name?: string;
   academic_year?: string;
+  
+  // Guru Specific Fields
+  nip_nuptk?: string;
+  subjects?: string;
+  homeroom_class?: string;
+  structural_roles?: string;
 }

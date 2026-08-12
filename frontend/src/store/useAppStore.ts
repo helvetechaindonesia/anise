@@ -3,6 +3,9 @@ import type { Role, User } from '../types';
 
 interface AppState {
   activeTab: string;
+  isAuthenticated: boolean;
+  isInitializing: boolean;
+  token: string | null;
   role: Role;
   userProfile: User | null;
   showPresensiModal: boolean;
@@ -12,6 +15,10 @@ interface AppState {
   showAiChat: boolean;
   
   // Actions
+  setIsAuthenticated: (auth: boolean) => void;
+  setIsInitializing: (init: boolean) => void;
+  setToken: (token: string | null) => void;
+  logout: () => void;
   setActiveTab: (tab: string) => void;
   setRole: (role: Role) => void;
   setUserProfile: (profile: User | null) => void;
@@ -24,29 +31,44 @@ interface AppState {
   startPresensi: () => void;
 }
 
-const defaultProfile: User = {
-  id: 'c0eebc99-9c0b-4ef8-bb6d-6bb9bd380a13',
-  full_name: 'Budi Setiawan',
-  username: 'budis',
-  email: 'budi@sekolah.id',
-  role_type: 'siswa',
-  avatar_url: '/assets/budi.png',
-  nisn: '0089271822',
-  nis: '21221001',
-  class_name: 'XI RPL 1',
-  behavior_points: 100,
-};
-
 export const useAppStore = create<AppState>((set, get) => ({
   activeTab: 'home',
+  isAuthenticated: false,
+  isInitializing: true,
+  token: localStorage.getItem('anise_token'),
   role: 'siswa',
-  userProfile: defaultProfile,
+  userProfile: null,
   showPresensiModal: false,
   presensiStep: 'gps',
   hasPresensiToday: false,
   userLocation: null,
   showAiChat: false,
 
+  setIsAuthenticated: (auth) => set({ isAuthenticated: auth }),
+  setIsInitializing: (init) => set({ isInitializing: init }),
+  setToken: (token) => {
+    if (token) {
+      localStorage.setItem('anise_token', token);
+    } else {
+      localStorage.removeItem('anise_token');
+    }
+    set({ token });
+  },
+  logout: async () => {
+    const token = get().token;
+    if (token) {
+      try {
+        await fetch('/api/logout', {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+      } catch (e) {
+        console.error('Logout error:', e);
+      }
+    }
+    localStorage.removeItem('anise_token');
+    set({ isAuthenticated: false, userProfile: null, token: null });
+  },
   setActiveTab: (tab) => set({ activeTab: tab }),
   setRole: (role) => set({ role }),
   setUserProfile: (profile) => set({ userProfile: profile }),
