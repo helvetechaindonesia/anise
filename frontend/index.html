@@ -82,8 +82,8 @@
     </div>
 
     <script>
-      // Hanya muncul jika diakses via PWA / Aplikasi
-      if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone || window.matchMedia('(display-mode: fullscreen)').matches) {
+      // Hanya muncul jika diakses via PWA / Aplikasi Native Capacitor
+      if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone || window.matchMedia('(display-mode: fullscreen)').matches || (window.Capacitor && window.Capacitor.isNative)) {
         document.getElementById('welcome-splash').style.display = 'flex';
       }
     </script>
