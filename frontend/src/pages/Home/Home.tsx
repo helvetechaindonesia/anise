@@ -21,6 +21,19 @@ export default function Home() {
   const [poinData, setPoinData] = useState<{ finalScore: number, grade: string } | null>(null);
   const kpiGuruData = useDataStore((state) => state.kpiGuruData);
 
+  const dummyGuruJournals = [
+    { id: 1, class: '10 IPA 1', subject: 'Matematika', time: '07:15 - 08:45', status: 'active', start_time: '07:15' },
+    { id: 2, class: '10 IPS 2', subject: 'Matematika', time: '09:00 - 10:30', status: 'upcoming', start_time: '09:00' },
+    { id: 3, class: '11 IPA 1', subject: 'Matematika', time: '13:00 - 14:30', status: 'unrated', start_time: '13:00' }
+  ].sort((a, b) => {
+    if (a.status === 'active' && b.status !== 'active') return -1;
+    if (a.status !== 'active' && b.status === 'active') return 1;
+    if (a.status === 'upcoming' && b.status === 'upcoming') return a.start_time.localeCompare(b.start_time);
+    if (a.status === 'upcoming' && b.status === 'unrated') return -1;
+    if (a.status === 'unrated' && b.status === 'upcoming') return 1;
+    return 0;
+  });
+
   useEffect(() => {
     const fetchTeachers = async () => {
       setIsLoadingTeachers(true);
@@ -126,7 +139,45 @@ export default function Home() {
           <UserList className="w-4 h-4 text-[#6b6375]" weight="duotone" />
         </div>
         
-        {isLoadingTeachers ? (
+        {isGuru ? (
+          <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-none snap-x snap-mandatory">
+            {dummyGuruJournals.map(j => {
+              const isActive = j.status === 'active';
+              const isUnrated = j.status === 'unrated';
+              return (
+                <div
+                  key={j.id}
+                  onClick={() => setActiveTab('jurnal')}
+                  className={`w-[135px] h-[135px] shrink-0 rounded-2xl relative shadow-sm snap-start hover:scale-[1.02] transition-all cursor-pointer flex flex-col p-4 overflow-hidden group ${
+                    isActive 
+                      ? 'bg-gradient-to-br from-emerald-50 to-emerald-500/20 border border-emerald-300 ring-2 ring-emerald-100' 
+                      : isUnrated
+                      ? 'bg-gradient-to-br from-rose-50 to-rose-500/10 border border-rose-200'
+                      : 'bg-gradient-to-br from-[#fcfbf7] to-[#19414d]/10 border border-[#e5e4e7]'
+                  }`}
+                >
+                  <div className={`absolute -right-4 -bottom-4 w-16 h-16 rounded-full group-hover:scale-150 transition-transform duration-500 ${isActive ? 'bg-emerald-500/10' : isUnrated ? 'bg-rose-500/10' : 'bg-[#19414d]/10'}`} />
+                  
+                  <div className="flex justify-between items-start mb-auto z-10 relative">
+                    <span className={`text-[10px] font-black px-2 py-1 rounded-md border shadow-sm ${isActive ? 'bg-emerald-500 text-white border-emerald-600' : isUnrated ? 'bg-rose-100 text-rose-700 border-rose-200' : 'bg-white text-[#19414d] border-[#e5e4e7]'}`}>
+                      {j.class}
+                    </span>
+                    {isActive && <div className="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse border border-white shadow-sm" />}
+                    {isUnrated && <div className="w-2.5 h-2.5 bg-rose-500 rounded-full border border-white shadow-sm" />}
+                  </div>
+
+                  <div className="z-10 relative">
+                    <h5 className={`text-[13px] font-bold leading-tight mb-1 ${isActive ? 'text-emerald-900' : isUnrated ? 'text-rose-900' : 'text-[#121212]'}`}>{j.subject}</h5>
+                    <div className={`flex items-center gap-1.5 text-[10px] font-semibold ${isActive ? 'text-emerald-700' : isUnrated ? 'text-rose-700' : 'text-[#6b6375]'}`}>
+                      <Clock className="w-3.5 h-3.5" weight="bold" />
+                      <span>{j.time}</span>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ) : isLoadingTeachers ? (
           <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-none">
             {[1, 2, 3].map(i => (
               <div key={i} className="w-[135px] h-[135px] shrink-0 bg-[#e5e4e7] rounded-2xl animate-pulse" />
