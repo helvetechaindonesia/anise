@@ -99,7 +99,7 @@ export default function AgendaPenilaian() {
 
   if (isCreating) {
     return (
-      <div className="fixed inset-0 bg-[#f8fafc] z-50 overflow-y-auto">
+      <div className="absolute inset-0 bg-[#f8fafc] z-50 overflow-y-auto w-full">
         <div className="sticky top-0 bg-white border-b border-[#e5e4e7] px-4 py-4 flex items-center justify-between z-10">
           <div className="flex items-center gap-3">
             <button
@@ -122,7 +122,7 @@ export default function AgendaPenilaian() {
           <div className="space-y-4 bg-white p-5 rounded-2xl border border-[#e5e4e7] shadow-sm">
             
             {/* Kelas & Mapel */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="flex flex-col gap-4">
               <div className="space-y-1.5">
                 <label className="text-[10px] font-bold text-[#6b6375] uppercase tracking-wider">Kelas / Rombel</label>
                 <select 
@@ -176,7 +176,7 @@ export default function AgendaPenilaian() {
             </div>
 
             {/* Tanggal & Waktu */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="flex flex-col gap-4">
               <div className="space-y-1.5">
                 <label className="text-[10px] font-bold text-[#6b6375] uppercase tracking-wider">Tanggal</label>
                 <input 
