@@ -36,7 +36,7 @@ export interface JurnalTimeline {
   end_time?: string;
   link?: string;
   images?: string[];
-  isLiked?: boolean;
+  isLiked: boolean;
   has_scanned?: boolean;
   has_rated?: boolean;
 }

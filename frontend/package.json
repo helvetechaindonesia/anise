@@ -1,15 +1,16 @@
 {
-  "name": "frontend",
+  "name": "anise",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "vite build",
     "lint": "oxlint",
     "preview": "vite preview"
   },
   "dependencies": {
+    "@capacitor/android": "^8.5.0",
     "@phosphor-icons/react": "^2.1.10",
     "face-api.js": "^0.22.2",
     "html5-qrcode": "^2.3.8",
