@@ -16,6 +16,78 @@
     <title>Anise - Manajemen Pendidikan</title>
   </head>
   <body class="bg-[#fcfbf7] text-[#121212] antialiased select-none">
+    <style>
+      #welcome-splash {
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        width: 100vw;
+        background-color: #1a414d;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 9999;
+        transition: opacity 0.5s ease-out;
+      }
+      .splash-logo {
+        width: 120px;
+        height: 120px;
+        margin-bottom: 8px;
+        opacity: 0;
+        /* Spin & Scale up, then bounce down */
+        animation: spinBounce 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+      }
+      .splash-title {
+        color: white; 
+        font-family: 'Inter', sans-serif; 
+        font-weight: 900; 
+        font-size: 2.5rem; 
+        margin: 0; 
+        letter-spacing: -0.05em;
+        opacity: 0;
+        /* Fade in up after logo animation */
+        animation: fadeInUp 0.8s ease-out 0.8s forwards;
+      }
+      .splash-subtitle {
+        color: rgba(255,255,255,0.7); 
+        font-family: 'Inter', sans-serif; 
+        font-weight: 400; /* Tipis (Reguler) */
+        font-size: 0.9rem; 
+        margin: 0; 
+        margin-top: -4px;
+        opacity: 0;
+        /* Fade in up after title */
+        animation: fadeInUp 0.8s ease-out 1.1s forwards;
+      }
+      
+      @keyframes spinBounce {
+        0% { transform: scale(0) rotate(-180deg); opacity: 0; }
+        70% { transform: scale(1.3) rotate(10deg); opacity: 1; }
+        100% { transform: scale(1) rotate(0deg); opacity: 1; }
+      }
+      @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(15px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+    </style>
+    
+    <div id="welcome-splash">
+      <img src="/assets/Logo-apk.svg" alt="Anise Logo" class="splash-logo" />
+      <div style="display: flex; flex-direction: column; align-items: center;">
+        <h1 class="splash-title">Anise</h1>
+        <p class="splash-subtitle">by Helvetecha</p>
+      </div>
+    </div>
+
+    <script>
+      // Hanya muncul jika diakses via PWA / Aplikasi
+      if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone || window.matchMedia('(display-mode: fullscreen)').matches) {
+        document.getElementById('welcome-splash').style.display = 'flex';
+      }
+    </script>
+
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

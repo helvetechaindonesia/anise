@@ -32,6 +32,19 @@ export default function App() {
   const { chatMessages, addChatMessage } = useDataStore();
 
   useEffect(() => {
+    // Graceful fade out for the custom animated splash screen
+    const splash = document.getElementById('welcome-splash');
+    if (splash && window.getComputedStyle(splash).display !== 'none') {
+      setTimeout(() => {
+        splash.style.opacity = '0';
+        setTimeout(() => {
+          splash.remove();
+        }, 500);
+      }, 2500); // Wait 2.5 seconds to let all CSS animations finish
+    }
+  }, []);
+
+  useEffect(() => {
     if (!token) {
       setIsInitializing(false);
       return;
