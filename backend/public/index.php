@@ -946,11 +946,11 @@ if ($uri === '/api/notifikasi/guru' && $_SERVER['REQUEST_METHOD'] === 'GET') {
                 sts.id as submission_id,
                 sts.submission_text as reason,
                 sts.submitted_at,
-                sp.name as student_name,
+                u.full_name as student_name,
                 c.name as class_name,
                 jt.title as task_title
             FROM student_task_submissions sts
-            JOIN siswa_profiles sp ON sts.student_id = sp.user_id
+            JOIN users u ON sts.student_id = u.id
             JOIN journal_tasks jt ON sts.journal_task_id = jt.id
             JOIN journals j ON jt.journal_id = j.id
             JOIN classes c ON j.class_id = c.id

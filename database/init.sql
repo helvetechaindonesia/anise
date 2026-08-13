@@ -11,7 +11,7 @@ CREATE TYPE semester_type AS ENUM ('GANJIL', 'GENAP');
 CREATE TYPE class_student_status AS ENUM ('AKTIF', 'PINDAH_KELAS');
 CREATE TYPE day_of_week_type AS ENUM ('SENIN', 'SELASA', 'RABU', 'KAMIS', 'JUMAT', 'SABTU');
 CREATE TYPE teacher_attendance_status AS ENUM ('HADIR', 'TERLAMBAT', 'IZIN', 'ALPA');
-CREATE TYPE submission_status AS ENUM ('DIKIRIM', 'TERLAMBAT', 'REVISI');
+CREATE TYPE submission_status AS ENUM ('DIKIRIM', 'TERLAMBAT', 'REVISI', 'MINTA_IZIN', 'IZIN_DIBERIKAN', 'IZIN_DITOLAK');
 
 -- 2. USERS TABLE
 CREATE TABLE users (
@@ -427,4 +427,19 @@ CREATE TABLE IF NOT EXISTS student_habits_log (
     date DATE NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT uniq_student_habit_log_dt UNIQUE (student_id, habit_id, date)
+);
+
+-- 33. NOTIFICATIONS
+CREATE TYPE notification_type AS ENUM ('INFO', 'TUGAS', 'JURNAL', 'SISTEM', 'IZIN_TUGAS');
+
+CREATE TABLE IF NOT EXISTS notifications (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    sender_id UUID REFERENCES users(id) ON DELETE SET NULL,
+    type notification_type NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    message TEXT NOT NULL,
+    is_read BOOLEAN DEFAULT false,
+    reference_id UUID,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
