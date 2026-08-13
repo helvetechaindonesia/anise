@@ -4,6 +4,7 @@ import { useAppStore } from '../../store/useAppStore';
 import { getDefaultAvatar } from '../../utils/avatar';
 import FaceEnrollment from '../../components/FaceEnrollment';
 import ChangePasswordModal from '../../components/ChangePasswordModal';
+import PusatBantuanModal from '../../components/PusatBantuanModal';
 
 export default function Profile() {
   const { role, setRole, userProfile, updateUserProfile, logout } = useAppStore();
@@ -11,6 +12,7 @@ export default function Profile() {
   const [isEditing, setIsEditing] = useState(false);
   const [showEnrollment, setShowEnrollment] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [showHelpModal, setShowHelpModal] = useState(false);
   
   const [editForm, setEditForm] = useState({
     full_name: userProfile?.full_name || '',
@@ -135,6 +137,16 @@ export default function Profile() {
           </div>
           <CaretRight className="w-4 h-4 text-[#6b6375]" />
         </div>
+        <div 
+          onClick={() => setShowHelpModal(true)}
+          className="p-3.5 flex justify-between items-center text-xs hover:bg-[#19414d]/5 transition-colors cursor-pointer"
+        >
+          <div className="flex items-center gap-2.5 font-bold text-[#121212]">
+            <Question className="w-5 h-5 text-[#19414d]" weight="duotone" />
+            Pusat Bantuan
+          </div>
+          <CaretRight className="w-4 h-4 text-[#6b6375]" />
+        </div>
       </div>
 
 
@@ -157,6 +169,10 @@ export default function Profile() {
 
       {showPasswordModal && (
         <ChangePasswordModal onClose={() => setShowPasswordModal(false)} />
+      )}
+
+      {showHelpModal && (
+        <PusatBantuanModal onClose={() => setShowHelpModal(false)} />
       )}
     </div>
   );
