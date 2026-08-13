@@ -19,6 +19,7 @@ const BottomNav: React.FC<BottomNavProps> = ({ activeTab, setActiveTab, startPre
         key={tab.id}
         onClick={() => {
           useAppStore.getState().setSelectedJournalGuru(null);
+          useAppStore.getState().setSelectedTugasGuru(null);
           setActiveTab(tab.id as any);
         }}
         className="flex flex-col items-center justify-center w-full h-full cursor-pointer group"

@@ -16,6 +16,7 @@ interface AppState {
   showAiChat: boolean;
   selectedTeacherFilter: { id: string; name: string } | null;
   selectedJournalGuru: any | null;
+  selectedTugasGuru: any | null;
   
   // Actions
   setIsAuthenticated: (auth: boolean) => void;
@@ -33,6 +34,7 @@ interface AppState {
   setShowAiChat: (show: boolean) => void;
   setSelectedTeacherFilter: (filter: { id: string; name: string } | null) => void;
   setSelectedJournalGuru: (journal: any | null) => void;
+  setSelectedTugasGuru: (tugas: any | null) => void;
   startPresensi: () => void;
 }
 
@@ -50,6 +52,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   showAiChat: false,
   selectedTeacherFilter: null,
   selectedJournalGuru: null,
+  selectedTugasGuru: null,
 
   setIsAuthenticated: (auth) => set({ isAuthenticated: auth }),
   setIsInitializing: (init) => set({ isInitializing: init }),
@@ -92,6 +95,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   setShowAiChat: (show) => set({ showAiChat: show }),
   setSelectedTeacherFilter: (filter) => set({ selectedTeacherFilter: filter }),
   setSelectedJournalGuru: (journal) => set({ selectedJournalGuru: journal }),
+  setSelectedTugasGuru: (tugas) => set({ selectedTugasGuru: tugas }),
   
   startPresensi: () => {
     set({ showPresensiModal: true, presensiStep: 'gps' });

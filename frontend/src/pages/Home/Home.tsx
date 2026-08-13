@@ -83,10 +83,38 @@ export default function Home() {
       }
     };
 
-    if (token && role === 'siswa') {
-      fetchTeachers();
-      fetchTasks();
-      fetchPoin();
+    const fetchTasksGuru = async () => {
+      setIsLoadingTasks(true);
+      try {
+        const res = await fetch(API_BASE_URL + '/api/tugas/guru', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+        if (data.status === 'success' && data.data && data.data.length > 0) {
+          setLatestTasks(data.data.slice(0, 7));
+        } else {
+          // Dummy data fallback for demo
+          setLatestTasks([
+            { id: 201, title: 'Tugas Proyek Tengah Semester', subject: 'Matematika - 10 IPA 1', due: 'Besok, 23:59', status: 'Belum Dikerjakan' },
+            { id: 202, title: 'Latihan Soal Matriks', subject: 'Matematika - 11 IPA 1', due: 'Senin Depan', status: 'Belum Dikerjakan' },
+            { id: 203, title: 'Tugas Harian 1', subject: 'Matematika - 10 IPS 2', due: 'Selesai', status: 'Selesai' },
+          ]);
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setIsLoadingTasks(false);
+      }
+    };
+
+    if (token) {
+      if (role === 'siswa') {
+        fetchTeachers();
+        fetchTasks();
+        fetchPoin();
+      } else if (role === 'guru') {
+        fetchTasksGuru();
+      }
     }
   }, [token, role]);
 
@@ -296,7 +324,14 @@ export default function Home() {
               return (
                 <div key={tugas.id} className="flex flex-col">
                   <div 
-                    onClick={() => setActiveTab('daftar_tugas')} 
+                    onClick={() => {
+                      if (isGuru) {
+                        useAppStore.getState().setSelectedTugasGuru(tugas);
+                        setActiveTab('daftar_tugas');
+                      } else {
+                        setActiveTab('daftar_tugas');
+                      }
+                    }} 
                     className="flex items-center justify-between py-3 cursor-pointer group"
                   >
                     <div className="flex items-center gap-3 overflow-hidden">
