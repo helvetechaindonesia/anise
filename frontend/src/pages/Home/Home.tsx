@@ -113,11 +113,11 @@ export default function Home() {
     };
 
     if (token) {
-      if (role === 'siswa') {
+      if (role?.toLowerCase() === 'siswa') {
         fetchTeachers();
         fetchTasks();
         fetchPoin();
-      } else if (role === 'guru') {
+      } else if (role?.toLowerCase() === 'guru') {
         fetchTasksGuru();
       }
     }
