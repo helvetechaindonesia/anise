@@ -6,8 +6,8 @@ import { useDataStore } from '../../store/useDataStore';
 
 export default function Pembiasaan() {
   const setActiveTab = useAppStore((state) => state.setActiveTab);
+  const token = useAppStore((state) => state.token);
   const { habits, toggleHabit, setHabitsData } = useDataStore();
-  const token = localStorage.getItem('token');
   
   const [pembiasaanTab, setPembiasaanTab] = useState<'hari_ini' | 'rekap_bulanan'>('hari_ini');
   const [monthlyData, setMonthlyData] = useState<any[]>([]);
