@@ -83,16 +83,30 @@ export default function KpiGuru() {
         </div>
 
         {/* Final Predikat */}
-        <div className="bg-gradient-to-r from-[#19414d]/5 to-transparent p-5 border-t border-[#e5e4e7] flex justify-between items-center">
-          <div className="flex items-center gap-2">
-            <Target className="w-5 h-5 text-[#19414d]" weight="duotone" />
-            <div>
-              <h4 className="font-bold text-[#19414d] text-sm">Predikat Kinerja Akhir</h4>
-              <p className="text-[10px] text-[#6b6375] font-semibold mt-0.5">Total Skor: {kpiData.score} / 100</p>
+        <div className="bg-gradient-to-r from-[#19414d]/5 to-transparent p-5 border-t border-[#e5e4e7]">
+          <div className="flex justify-between items-center mb-3">
+            <div className="flex items-center gap-2">
+              <Target className="w-5 h-5 text-[#19414d]" weight="duotone" />
+              <div>
+                <h4 className="font-bold text-[#19414d] text-sm">Predikat Kinerja Akhir</h4>
+                <p className="text-[10px] text-[#6b6375] font-semibold mt-0.5">Total Skor: {kpiData.score} / 100</p>
+              </div>
+            </div>
+            <div className={`px-4 py-1.5 rounded-xl text-xs font-black border ${getBadgeColor(kpiData.predikatAkhir)} shadow-sm`}>
+              {kpiData.predikatAkhir}
             </div>
           </div>
-          <div className={`px-4 py-1.5 rounded-xl text-xs font-black border ${getBadgeColor(kpiData.predikatAkhir)} shadow-sm`}>
-            {kpiData.predikatAkhir}
+          
+          {/* Progress Bar */}
+          <div className="w-full bg-[#e5e4e7] rounded-full h-2.5 overflow-hidden shadow-inner">
+            <div 
+              className={`h-full rounded-full transition-all duration-1000 ${
+                kpiData.score >= 90 ? 'bg-emerald-500' : 
+                kpiData.score >= 75 ? 'bg-blue-500' : 
+                'bg-amber-500'
+              }`} 
+              style={{ width: `${Math.min((kpiData.score / 100) * 100, 100)}%` }}
+            ></div>
           </div>
         </div>
       </div>
