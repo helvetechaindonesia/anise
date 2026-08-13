@@ -18,7 +18,9 @@ export default function Profile() {
     full_name: userProfile?.full_name || '',
     class_name: userProfile?.class_name || '',
     nisn: userProfile?.nisn || '',
-    nis: userProfile?.nis || ''
+    nis: userProfile?.nis || '',
+    nip_nuptk: userProfile?.nip_nuptk || '',
+    subjects: userProfile?.subjects || '',
   });
 
   const handleSaveProfile = () => {
@@ -31,7 +33,9 @@ export default function Profile() {
       full_name: userProfile?.full_name || '',
       class_name: userProfile?.class_name || '',
       nisn: userProfile?.nisn || '',
-      nis: userProfile?.nis || ''
+      nis: userProfile?.nis || '',
+      nip_nuptk: userProfile?.nip_nuptk || '',
+      subjects: userProfile?.subjects || '',
     });
     setIsEditing(false);
   };
@@ -121,26 +125,49 @@ export default function Profile() {
                 className="w-full mt-1 p-2.5 text-sm bg-white border border-[#e5e4e7] rounded-xl focus:border-[#19414d] focus:outline-none"
               />
             </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="text-[10px] font-bold text-[#6b6375] uppercase ml-1">Kelas</label>
-                <input 
-                  type="text" 
-                  value={editForm.class_name}
-                  onChange={(e) => setEditForm({...editForm, class_name: e.target.value})}
-                  className="w-full mt-1 p-2.5 text-sm bg-white border border-[#e5e4e7] rounded-xl focus:border-[#19414d] focus:outline-none"
-                />
+            {userProfile?.role_type?.toLowerCase() === 'guru' ? (
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-[10px] font-bold text-[#6b6375] uppercase ml-1">NIP/NUPTK</label>
+                  <input 
+                    type="text" 
+                    value={editForm.nip_nuptk}
+                    onChange={(e) => setEditForm({...editForm, nip_nuptk: e.target.value})}
+                    className="w-full mt-1 p-2.5 text-sm bg-white border border-[#e5e4e7] rounded-xl focus:border-[#19414d] focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="text-[10px] font-bold text-[#6b6375] uppercase ml-1">Mata Pelajaran</label>
+                  <input 
+                    type="text" 
+                    value={editForm.subjects}
+                    onChange={(e) => setEditForm({...editForm, subjects: e.target.value})}
+                    className="w-full mt-1 p-2.5 text-sm bg-white border border-[#e5e4e7] rounded-xl focus:border-[#19414d] focus:outline-none"
+                  />
+                </div>
               </div>
-              <div>
-                <label className="text-[10px] font-bold text-[#6b6375] uppercase ml-1">NISN</label>
-                <input 
-                  type="text" 
-                  value={editForm.nisn}
-                  onChange={(e) => setEditForm({...editForm, nisn: e.target.value})}
-                  className="w-full mt-1 p-2.5 text-sm bg-white border border-[#e5e4e7] rounded-xl focus:border-[#19414d] focus:outline-none"
-                />
+            ) : (
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-[10px] font-bold text-[#6b6375] uppercase ml-1">Kelas</label>
+                  <input 
+                    type="text" 
+                    value={editForm.class_name}
+                    onChange={(e) => setEditForm({...editForm, class_name: e.target.value})}
+                    className="w-full mt-1 p-2.5 text-sm bg-white border border-[#e5e4e7] rounded-xl focus:border-[#19414d] focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="text-[10px] font-bold text-[#6b6375] uppercase ml-1">NISN</label>
+                  <input 
+                    type="text" 
+                    value={editForm.nisn}
+                    onChange={(e) => setEditForm({...editForm, nisn: e.target.value})}
+                    className="w-full mt-1 p-2.5 text-sm bg-white border border-[#e5e4e7] rounded-xl focus:border-[#19414d] focus:outline-none"
+                  />
+                </div>
               </div>
-            </div>
+            )}
             <div className="flex gap-2 pt-2">
               <button 
                 onClick={handleCancelEdit}
