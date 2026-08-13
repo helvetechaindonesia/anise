@@ -18,7 +18,10 @@ function JurnalDashboard({ onSelectJournal }: { onSelectJournal: (j: any) => voi
           <h2 className="text-xl font-black text-[#19414d] tracking-tight">Jurnal Mengajar</h2>
           <p className="text-xs text-[#6b6375] font-medium mt-0.5">Riwayat KBM & Laporan</p>
         </div>
-        <button className="w-10 h-10 bg-[#19414d] text-white rounded-full flex items-center justify-center shadow-lg hover:scale-105 transition-transform">
+        <button 
+          onClick={() => onSelectJournal({ id: Date.now(), class: 'Pilih Kelas', subject: 'Pilih Mata Pelajaran', time: 'Sekarang', status: 'active', materi: '' })}
+          className="w-10 h-10 bg-[#19414d] text-white rounded-full flex items-center justify-center shadow-lg hover:scale-105 transition-transform"
+        >
           <Plus className="w-5 h-5" weight="bold" />
         </button>
       </div>
