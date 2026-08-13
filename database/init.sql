@@ -418,3 +418,13 @@ CREATE TABLE IF NOT EXISTS student_reports (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+-- 32. STUDENT HABITS LOG (Pembiasaan)
+CREATE TABLE IF NOT EXISTS student_habits_log (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    student_id UUID REFERENCES siswa_profiles(user_id) ON DELETE CASCADE,
+    habit_id VARCHAR(50) NOT NULL,
+    date DATE NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT uniq_student_habit_log_dt UNIQUE (student_id, habit_id, date)
+);

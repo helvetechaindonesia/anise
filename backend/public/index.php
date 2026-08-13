@@ -2390,4 +2390,182 @@ if ($uri === '/api/siswa/reports' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     exit;
 }
 
+// Endpoint: Get Habits for Today & Streaks
+if ($uri === '/api/siswa/habits' && $_SERVER['REQUEST_METHOD'] === 'GET') {
+    $authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
+    if (empty($authHeader) && function_exists('apache_request_headers')) {
+        $headers = apache_request_headers();
+        $authHeader = $headers['Authorization'] ?? '';
+    }
+    $userId = null;
+    $role = null;
+    if (preg_match('/Bearer\s(\S+)/', $authHeader, $matches)) {
+        $payload = verify_jwt($matches[1], $jwt_secret);
+        if ($payload && isset($payload['user_id'])) {
+            $userId = $payload['user_id'];
+            $role = $payload['role'];
+        }
+    }
+    if (!$userId || $role !== 'SISWA') {
+        http_response_code(401);
+        echo json_encode(['status' => 'error', 'message' => 'Unauthorized']);
+        exit;
+    }
+
+    try {
+        $today = date('Y-m-d');
+        // Fetch today's done habits
+        $stmt = $pdo->prepare("SELECT habit_id FROM student_habits_log WHERE student_id = :uid AND date = :today");
+        $stmt->execute(['uid' => $userId, 'today' => $today]);
+        $doneToday = $stmt->fetchAll(PDO::FETCH_COLUMN);
+
+        // Fetch all logs to calculate streaks (simple continuous count from yesterday backwards)
+        $stmtAll = $pdo->prepare("SELECT habit_id, date FROM student_habits_log WHERE student_id = :uid ORDER BY date DESC");
+        $stmtAll->execute(['uid' => $userId]);
+        $allLogs = $stmtAll->fetchAll(PDO::FETCH_ASSOC);
+
+        $logsByHabit = [];
+        foreach ($allLogs as $log) {
+            $logsByHabit[$log['habit_id']][] = $log['date'];
+        }
+
+        $streaks = [];
+        $habitIds = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'h7'];
+        
+        foreach ($habitIds as $hId) {
+            $streak = 0;
+            if (isset($logsByHabit[$hId])) {
+                $dates = $logsByHabit[$hId];
+                $checkDate = new DateTime($today);
+                
+                // If they haven't done it today, start checking from yesterday
+                if (!in_array($today, $dates)) {
+                    $checkDate->modify('-1 day');
+                }
+                
+                foreach ($dates as $d) {
+                    if ($d === $checkDate->format('Y-m-d')) {
+                        $streak++;
+                        $checkDate->modify('-1 day');
+                    } else if ($d > $checkDate->format('Y-m-d')) {
+                        // ignore dates in the future or today if we skipped it
+                        continue;
+                    } else {
+                        // gap found
+                        break;
+                    }
+                }
+            }
+            $streaks[$hId] = $streak;
+        }
+
+        echo json_encode(['status' => 'success', 'done_today' => $doneToday, 'streaks' => $streaks]);
+    } catch (PDOException $e) {
+        http_response_code(500);
+        echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+    }
+    exit;
+}
+
+// Endpoint: Toggle Habit
+if ($uri === '/api/siswa/habits/toggle' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
+    if (empty($authHeader) && function_exists('apache_request_headers')) {
+        $headers = apache_request_headers();
+        $authHeader = $headers['Authorization'] ?? '';
+    }
+    $userId = null;
+    $role = null;
+    if (preg_match('/Bearer\s(\S+)/', $authHeader, $matches)) {
+        $payload = verify_jwt($matches[1], $jwt_secret);
+        if ($payload && isset($payload['user_id'])) {
+            $userId = $payload['user_id'];
+            $role = $payload['role'];
+        }
+    }
+    if (!$userId || $role !== 'SISWA') {
+        http_response_code(401);
+        echo json_encode(['status' => 'error', 'message' => 'Unauthorized']);
+        exit;
+    }
+
+    $input = json_decode(file_get_contents('php://input'), true);
+    $habitId = $input['habit_id'] ?? '';
+    $isDone = $input['is_done'] ?? false;
+
+    if (empty($habitId)) {
+        http_response_code(400);
+        echo json_encode(['status' => 'error', 'message' => 'Habit ID required']);
+        exit;
+    }
+
+    try {
+        $today = date('Y-m-d');
+        if ($isDone) {
+            $stmt = $pdo->prepare("
+                INSERT INTO student_habits_log (student_id, habit_id, date) 
+                VALUES (:uid, :hid, :today) 
+                ON CONFLICT (student_id, habit_id, date) DO NOTHING
+            ");
+            $stmt->execute(['uid' => $userId, 'hid' => $habitId, 'today' => $today]);
+        } else {
+            $stmt = $pdo->prepare("
+                DELETE FROM student_habits_log 
+                WHERE student_id = :uid AND habit_id = :hid AND date = :today
+            ");
+            $stmt->execute(['uid' => $userId, 'hid' => $habitId, 'today' => $today]);
+        }
+        echo json_encode(['status' => 'success']);
+    } catch (PDOException $e) {
+        http_response_code(500);
+        echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+    }
+    exit;
+}
+
+// Endpoint: Get Monthly Habit Stats
+if ($uri === '/api/siswa/habits/month' && $_SERVER['REQUEST_METHOD'] === 'GET') {
+    $authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
+    if (empty($authHeader) && function_exists('apache_request_headers')) {
+        $headers = apache_request_headers();
+        $authHeader = $headers['Authorization'] ?? '';
+    }
+    $userId = null;
+    $role = null;
+    if (preg_match('/Bearer\s(\S+)/', $authHeader, $matches)) {
+        $payload = verify_jwt($matches[1], $jwt_secret);
+        if ($payload && isset($payload['user_id'])) {
+            $userId = $payload['user_id'];
+            $role = $payload['role'];
+        }
+    }
+    if (!$userId || $role !== 'SISWA') {
+        http_response_code(401);
+        echo json_encode(['status' => 'error', 'message' => 'Unauthorized']);
+        exit;
+    }
+
+    try {
+        // Current month bounds
+        $firstDay = date('Y-m-01');
+        $lastDay = date('Y-m-t');
+
+        $stmt = $pdo->prepare("
+            SELECT TO_CHAR(date, 'YYYY-MM-DD') as date, COUNT(habit_id) as count
+            FROM student_habits_log
+            WHERE student_id = :uid AND date >= :start AND date <= :end
+            GROUP BY date
+            ORDER BY date ASC
+        ");
+        $stmt->execute(['uid' => $userId, 'start' => $firstDay, 'end' => $lastDay]);
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        echo json_encode(['status' => 'success', 'data' => $data]);
+    } catch (PDOException $e) {
+        http_response_code(500);
+        echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+    }
+    exit;
+}
+
 echo json_encode(['app' => 'Anise API Server', 'version' => '1.0']);
