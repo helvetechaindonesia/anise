@@ -26,7 +26,7 @@ function TugasDashboard({ onSelectTugas, onAddTugas }: { onSelectTugas: (t: any)
             due: t.deadline || t.due || '-',
             desc: t.deskripsi || t.desc || '',
             points: 100,
-            status: (t.dikumpulkan && t.totalSiswa && t.dikumpulkan === t.totalSiswa) ? 'Selesai' : 'Belum Dikerjakan'
+            status: (t.dikumpulkan && t.totalSiswa && t.dikumpulkan === t.totalSiswa) ? 'Selesai' : 'Aktif'
           }));
           setTasks(mappedTasks);
         }

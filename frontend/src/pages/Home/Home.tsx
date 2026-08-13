@@ -99,7 +99,7 @@ export default function Home() {
             due: t.deadline || t.due || '-',
             desc: t.deskripsi || t.desc || '',
             points: 100,
-            status: (t.dikumpulkan && t.totalSiswa && t.dikumpulkan === t.totalSiswa) ? 'Selesai' : 'Belum Dikerjakan'
+            status: (t.dikumpulkan && t.totalSiswa && t.dikumpulkan === t.totalSiswa) ? 'Selesai' : 'Aktif'
           }));
           setLatestTasks(mappedTasks.slice(0, 7));
         } else {
@@ -330,7 +330,7 @@ export default function Home() {
                 StatusIcon = XCircle;
                 statusColor = "text-rose-500";
                 statusBg = "bg-rose-50";
-              } else if (tugas.status === 'Belum Dikerjakan') {
+              } else if (tugas.status === 'Belum Dikerjakan' || tugas.status === 'Aktif') {
                 StatusIcon = FileText;
                 statusColor = "text-blue-500";
                 statusBg = "bg-blue-50";

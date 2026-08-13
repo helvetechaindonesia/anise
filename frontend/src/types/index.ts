@@ -16,7 +16,7 @@ export interface TugasItem {
   due: string;
   desc: string;
   points: number;
-  status: 'Selesai' | 'Belum Dikerjakan' | 'Terlewat' | 'Minta Izin' | 'Izin Diberikan' | 'Izin Ditolak';
+  status: 'Selesai' | 'Belum Dikerjakan' | 'Terlewat' | 'Minta Izin' | 'Izin Diberikan' | 'Izin Ditolak' | 'Aktif';
   submittedFile?: string;
 }
 
