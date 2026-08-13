@@ -12,7 +12,15 @@ export default function Pembiasaan() {
   
   const [pembiasaanTab, setPembiasaanTab] = useState<'hari_ini' | 'rekap_bulanan'>('hari_ini');
   const [monthlyData, setMonthlyData] = useState<any[]>([]);
-  const [radarData, setRadarData] = useState<any[]>([]);
+  const [radarData, setRadarData] = useState<any[]>([
+    { subject: 'Bangun Pagi', A: 5, fullMark: 31 },
+    { subject: 'Beribadah', A: 5, fullMark: 31 },
+    { subject: 'Berolahraga', A: 2, fullMark: 31 },
+    { subject: 'Makan Sehat', A: 0, fullMark: 31 },
+    { subject: 'Gemar Belajar', A: 0, fullMark: 31 },
+    { subject: 'Bermasyarakat', A: 0, fullMark: 31 },
+    { subject: 'Tidur Cepat', A: 0, fullMark: 31 },
+  ]);
   const [isLoading, setIsLoading] = useState(true);
 
   // Initial fetch for today's habits
@@ -226,7 +234,7 @@ export default function Pembiasaan() {
           <div className="bg-white p-5 rounded-2xl border border-[#e5e4e7] shadow-sm">
             <h4 className="text-xs font-bold text-[#19414d] uppercase tracking-wider mb-4 text-center">Sebaran Karakter Bulan Ini</h4>
             <div className="w-full flex justify-center items-center overflow-hidden">
-              <RadarChart width={300} height={250} cx="50%" cy="50%" outerRadius="70%" data={radarData}>
+              <RadarChart width={300} height={250} cx="50%" cy="50%" outerRadius={80} data={radarData}>
                 <PolarGrid stroke="#e5e4e7" />
                 <PolarAngleAxis dataKey="subject" tick={{ fill: '#6b6375', fontSize: 10, fontWeight: 600 }} />
                 <PolarRadiusAxis angle={30} domain={[0, 31]} tick={false} axisLine={false} />
