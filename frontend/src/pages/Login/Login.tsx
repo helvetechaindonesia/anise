@@ -54,7 +54,7 @@ export default function Login() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#f8fafc] to-[#e2e8f0] flex flex-col items-center justify-center p-4">
       {/* App Logo & Name */}
-      <div className="flex items-center gap-3 mb-8 animate-in slide-in-from-top-10 duration-700">
+      <div className="flex justify-center items-center w-full gap-1.5 mb-8 animate-in slide-in-from-top-10 duration-700">
         <img 
           src="/assets/logo-smk.png" 
           alt="Logo SMK N 1 Sragi" 
