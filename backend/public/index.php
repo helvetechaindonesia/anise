@@ -2550,6 +2550,7 @@ if ($uri === '/api/siswa/habits/month' && $_SERVER['REQUEST_METHOD'] === 'GET') 
         $firstDay = date('Y-m-01');
         $lastDay = date('Y-m-t');
 
+        // Data for calendar (count of habits per day)
         $stmt = $pdo->prepare("
             SELECT TO_CHAR(date, 'YYYY-MM-DD') as date, COUNT(habit_id) as count
             FROM student_habits_log
@@ -2560,7 +2561,41 @@ if ($uri === '/api/siswa/habits/month' && $_SERVER['REQUEST_METHOD'] === 'GET') 
         $stmt->execute(['uid' => $userId, 'start' => $firstDay, 'end' => $lastDay]);
         $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        echo json_encode(['status' => 'success', 'data' => $data]);
+        // Data for radar chart (distribution of habits in the current month)
+        $stmtRadar = $pdo->prepare("
+            SELECT habit_id, COUNT(id) as count
+            FROM student_habits_log
+            WHERE student_id = :uid AND date >= :start AND date <= :end
+            GROUP BY habit_id
+        ");
+        $stmtRadar->execute(['uid' => $userId, 'start' => $firstDay, 'end' => $lastDay]);
+        $radarRaw = $stmtRadar->fetchAll(PDO::FETCH_ASSOC);
+
+        $habitNames = [
+            'h1' => 'Bangun Pagi',
+            'h2' => 'Beribadah',
+            'h3' => 'Berolahraga',
+            'h4' => 'Makan Sehat',
+            'h5' => 'Gemar Belajar',
+            'h6' => 'Bermasyarakat',
+            'h7' => 'Tidur Cepat'
+        ];
+
+        $radarData = [];
+        $countsById = [];
+        foreach ($radarRaw as $r) {
+            $countsById[$r['habit_id']] = (int)$r['count'];
+        }
+
+        foreach ($habitNames as $id => $name) {
+            $radarData[] = [
+                'subject' => $name,
+                'A' => $countsById[$id] ?? 0,
+                'fullMark' => 31 // Assuming max days in a month
+            ];
+        }
+
+        echo json_encode(['status' => 'success', 'data' => $data, 'radar_data' => $radarData]);
     } catch (PDOException $e) {
         http_response_code(500);
         echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);

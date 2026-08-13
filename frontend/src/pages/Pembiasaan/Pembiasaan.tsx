@@ -1,6 +1,7 @@
 import { API_BASE_URL } from '../../utils/apiConfig';
 import React, { useState, useEffect } from 'react';
 import { CaretRight, Fire, Check, Star } from '@phosphor-icons/react';
+import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer } from 'recharts';
 import { useAppStore } from '../../store/useAppStore';
 import { useDataStore } from '../../store/useDataStore';
 
@@ -11,6 +12,7 @@ export default function Pembiasaan() {
   
   const [pembiasaanTab, setPembiasaanTab] = useState<'hari_ini' | 'rekap_bulanan'>('hari_ini');
   const [monthlyData, setMonthlyData] = useState<any[]>([]);
+  const [radarData, setRadarData] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   // Initial fetch for today's habits
@@ -38,6 +40,9 @@ export default function Pembiasaan() {
         .then(data => {
           if (data.status === 'success') {
             setMonthlyData(data.data);
+            if (data.radar_data) {
+              setRadarData(data.radar_data);
+            }
           }
         })
         .catch(err => console.error("Failed to load monthly habits:", err));
@@ -214,6 +219,21 @@ export default function Pembiasaan() {
             </div>
             <div className="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-600">
               <Star className="w-6 h-6" weight="fill" />
+            </div>
+          </div>
+
+          {/* Radar Chart */}
+          <div className="bg-white p-5 rounded-2xl border border-[#e5e4e7] shadow-sm">
+            <h4 className="text-xs font-bold text-[#19414d] uppercase tracking-wider mb-4 text-center">Sebaran Karakter Bulan Ini</h4>
+            <div className="w-full h-[250px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <RadarChart cx="50%" cy="50%" outerRadius="70%" data={radarData}>
+                  <PolarGrid stroke="#e5e4e7" />
+                  <PolarAngleAxis dataKey="subject" tick={{ fill: '#6b6375', fontSize: 10, fontWeight: 600 }} />
+                  <PolarRadiusAxis angle={30} domain={[0, 31]} tick={false} axisLine={false} />
+                  <Radar name="Skor" dataKey="A" stroke="#10b981" fill="#10b981" fillOpacity={0.4} />
+                </RadarChart>
+              </ResponsiveContainer>
             </div>
           </div>
 
