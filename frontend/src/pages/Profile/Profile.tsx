@@ -105,17 +105,7 @@ export default function Profile() {
         )}
       </div>
 
-      {/* Quick Info Grid */}
-      <div className="grid grid-cols-2 gap-3">
-        <div className="bg-white p-3 rounded-xl border border-[#e5e4e7] text-center">
-          <span className="text-[9px] uppercase tracking-wider text-[#6b6375] block">Kehadiran Bulanan</span>
-          <span className="text-base font-extrabold text-[#19414d] mt-1 block">97.8%</span>
-        </div>
-        <div className="bg-white p-3 rounded-xl border border-[#e5e4e7] text-center">
-          <span className="text-[9px] uppercase tracking-wider text-[#6b6375] block">Poin Perilaku</span>
-          <span className="text-base font-extrabold text-[#19414d] mt-1 block">{userProfile?.behavior_points || 0}</span>
-        </div>
-      </div>
+
 
       {/* Face Enrollment Action Button */}
       <div 
@@ -142,20 +132,6 @@ export default function Profile() {
           <div className="flex items-center gap-2.5 font-bold text-[#121212]">
             <ShieldCheck className="w-5 h-5 text-[#19414d]" weight="duotone" />
             Keamanan Akun
-          </div>
-          <CaretRight className="w-4 h-4 text-[#6b6375]" />
-        </div>
-        <div className="p-3.5 flex justify-between items-center text-xs hover:bg-[#19414d]/5 transition-colors cursor-pointer">
-          <div className="flex items-center gap-2.5 font-bold text-[#121212]">
-            <Bookmarks className="w-5 h-5 text-[#19414d]" weight="duotone" />
-            Kurikulum & Silabus
-          </div>
-          <CaretRight className="w-4 h-4 text-[#6b6375]" />
-        </div>
-        <div className="p-3.5 flex justify-between items-center text-xs hover:bg-[#19414d]/5 transition-colors cursor-pointer">
-          <div className="flex items-center gap-2.5 font-bold text-[#121212]">
-            <Question className="w-5 h-5 text-[#19414d]" weight="duotone" />
-            Pusat Bantuan
           </div>
           <CaretRight className="w-4 h-4 text-[#6b6375]" />
         </div>
