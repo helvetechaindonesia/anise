@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../../utils/apiConfig';
 import React, { useEffect, useState } from 'react';
 import { BookOpen, CaretRight, PushPin, ChatCircleText, CheckCircle, Heart, SpinnerGap, PaperPlaneRight, QrCode, X, Star } from '@phosphor-icons/react';
 import { Html5QrcodeScanner } from 'html5-qrcode';
@@ -36,7 +37,7 @@ export default function Jurnal() {
   const [isSubmittingRating, setIsSubmittingRating] = useState(false);
 
   useEffect(() => {
-    fetch('/api/jurnal', { headers: { 'Authorization': `Bearer ${token}` } })
+    fetch(API_BASE_URL + '/api/jurnal', { headers: { 'Authorization': `Bearer ${token}` } })
       .then(res => res.json())
       .then(json => {
         if (json.status === 'success') {
@@ -61,7 +62,7 @@ export default function Jurnal() {
     }));
 
     try {
-      await fetch('/api/jurnal/like', {
+      await fetch(API_BASE_URL + '/api/jurnal/like', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -85,7 +86,7 @@ export default function Jurnal() {
     setCommentsData([]);
 
     try {
-      const res = await fetch(`/api/jurnal/comments?journal_id=${id}`, {
+      const res = await fetch(API_BASE_URL + `/api/jurnal/comments?journal_id=${id}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await res.json();
@@ -106,7 +107,7 @@ export default function Jurnal() {
     setIsSubmittingComment(true);
     try {
       const isEditing = !!editingCommentId;
-      const res = await fetch('/api/jurnal/comment', {
+      const res = await fetch(API_BASE_URL + '/api/jurnal/comment', {
         method: isEditing ? 'PUT' : 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -153,7 +154,7 @@ export default function Jurnal() {
   const handleDeleteComment = async (commentId: string, journalId: string) => {
     if (!confirm('Hapus komentar ini?')) return;
     try {
-      const res = await fetch('/api/jurnal/comment', {
+      const res = await fetch(API_BASE_URL + '/api/jurnal/comment', {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({ comment_id: commentId })
@@ -184,7 +185,7 @@ export default function Jurnal() {
   const submitLateReason = async () => {
     if (!lateReasonText.trim() || !lateReasonJournalId) return;
     try {
-      const res = await fetch('/api/jurnal/scan_reason', {
+      const res = await fetch(API_BASE_URL + '/api/jurnal/scan_reason', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({ journal_id: lateReasonJournalId, reason: lateReasonText })
@@ -207,7 +208,7 @@ export default function Jurnal() {
     if (!ratingValue || !ratingJournalId) return;
     setIsSubmittingRating(true);
     try {
-      const res = await fetch('/api/jurnal/rate', {
+      const res = await fetch(API_BASE_URL + '/api/jurnal/rate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({ journal_id: ratingJournalId, rating: ratingValue, comment: ratingComment })
@@ -243,7 +244,7 @@ export default function Jurnal() {
         }
         setIsScannerOpen(false);
         try {
-          const res = await fetch('/api/jurnal/scan', {
+          const res = await fetch(API_BASE_URL + '/api/jurnal/scan', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
             body: JSON.stringify({ qr_data: decodedText })

@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../../utils/apiConfig';
 import React, { useState, useEffect } from 'react';
 import { CaretRight, Fire, Check, Star } from '@phosphor-icons/react';
 import { useAppStore } from '../../store/useAppStore';
@@ -14,7 +15,7 @@ export default function Pembiasaan() {
 
   // Initial fetch for today's habits
   useEffect(() => {
-    fetch('/api/siswa/habits', {
+    fetch(API_BASE_URL + '/api/siswa/habits', {
       headers: { 'Authorization': `Bearer ${token}` }
     })
       .then(res => res.json())
@@ -30,7 +31,7 @@ export default function Pembiasaan() {
   // Fetch monthly stats when tab changes
   useEffect(() => {
     if (pembiasaanTab === 'rekap_bulanan') {
-      fetch('/api/siswa/habits/month', {
+      fetch(API_BASE_URL + '/api/siswa/habits/month', {
         headers: { 'Authorization': `Bearer ${token}` }
       })
         .then(res => res.json())
@@ -53,7 +54,7 @@ export default function Pembiasaan() {
     toggleHabit(habitId);
     
     try {
-      const res = await fetch('/api/siswa/habits/toggle', {
+      const res = await fetch(API_BASE_URL + '/api/siswa/habits/toggle', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

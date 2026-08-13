@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../../utils/apiConfig';
 import React from 'react';
 import { useAppStore } from '../../store/useAppStore';
 import { useDataStore } from '../../store/useDataStore';
@@ -14,7 +15,7 @@ export default function Notifikasi() {
     setIsLoading(true);
     try {
       if (userProfile?.role_type?.toLowerCase() === 'guru') {
-        const res = await fetch('/api/notifikasi/guru', {
+        const res = await fetch(API_BASE_URL + '/api/notifikasi/guru', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await res.json();
@@ -42,7 +43,7 @@ export default function Notifikasi() {
 
     setApprovingId(submissionId);
     try {
-      const res = await fetch('/api/tugas/approve-late', {
+      const res = await fetch(API_BASE_URL + '/api/tugas/approve-late', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

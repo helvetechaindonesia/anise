@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../../utils/apiConfig';
 import React, { useState, useEffect } from 'react';
 import { PencilSimpleLine, ListChecks, Plus, CheckCircle, SpinnerGap, ChatCircleText, QrCode, X } from '@phosphor-icons/react';
 import { QRCodeSVG } from 'qrcode.react';
@@ -38,7 +39,7 @@ export default function JurnalGuru() {
 
   const fetchQr = async (jid: string, iter: number) => {
     try {
-      const res = await fetch(`/api/jurnal/qr?journal_id=${jid}&iteration=${iter}`, {
+      const res = await fetch(API_BASE_URL + `/api/jurnal/qr?journal_id=${jid}&iteration=${iter}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await res.json();
@@ -93,7 +94,7 @@ export default function JurnalGuru() {
     setCommentsData([]);
     
     try {
-      const res = await fetch(`/api/jurnal/comments?journal_id=${id}`, {
+      const res = await fetch(API_BASE_URL + `/api/jurnal/comments?journal_id=${id}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await res.json();
@@ -123,7 +124,7 @@ export default function JurnalGuru() {
   const handleDeleteComment = async (commentId: string, journalId: string) => {
     if (!confirm('Hapus komentar ini dari jurnal Anda?')) return;
     try {
-      const res = await fetch('/api/jurnal/comment', {
+      const res = await fetch(API_BASE_URL + '/api/jurnal/comment', {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({ comment_id: commentId })
@@ -144,7 +145,7 @@ export default function JurnalGuru() {
   const fetchRiwayat = async () => {
     setIsLoadingRiwayat(true);
     try {
-      const res = await fetch('/api/jurnal/guru', {
+      const res = await fetch(API_BASE_URL + '/api/jurnal/guru', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await res.json();
@@ -160,7 +161,7 @@ export default function JurnalGuru() {
 
   const fetchMeta = async () => {
     try {
-      const res = await fetch('/api/jurnal/guru/meta', {
+      const res = await fetch(API_BASE_URL + '/api/jurnal/guru/meta', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await res.json();
@@ -186,7 +187,7 @@ export default function JurnalGuru() {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      const res = await fetch('/api/jurnal/guru', {
+      const res = await fetch(API_BASE_URL + '/api/jurnal/guru', {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',

@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../../utils/apiConfig';
 import React, { useState, useEffect } from 'react';
 import { PencilSimpleLine, ListChecks, Plus, CheckCircle, SpinnerGap, CaretRight, Users, Clock } from '@phosphor-icons/react';
 import { useAppStore } from '../../store/useAppStore';
@@ -24,7 +25,7 @@ export default function DaftarTugasGuru() {
     // Fetch Jurnals untuk dropdown
     const fetchJournals = async () => {
       try {
-        const res = await fetch('/api/jurnal/guru', {
+        const res = await fetch(API_BASE_URL + '/api/jurnal/guru', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await res.json();
@@ -47,7 +48,7 @@ export default function DaftarTugasGuru() {
   const fetchDaftarTugas = async () => {
     setIsLoading(true);
     try {
-      const res = await fetch('/api/tugas/guru', {
+      const res = await fetch(API_BASE_URL + '/api/tugas/guru', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await res.json();
@@ -71,7 +72,7 @@ export default function DaftarTugasGuru() {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      const res = await fetch('/api/tugas/guru', {
+      const res = await fetch(API_BASE_URL + '/api/tugas/guru', {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',

@@ -1,3 +1,4 @@
+import { API_BASE_URL } from './utils/apiConfig';
 import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
 import BottomNav from './components/BottomNav';
@@ -31,7 +32,7 @@ export default function App() {
       return;
     }
 
-    fetch('/api/user/me', {
+    fetch(API_BASE_URL + '/api/user/me', {
       headers: {
         'Authorization': `Bearer ${token}`
       }
@@ -76,7 +77,7 @@ export default function App() {
 
   const finishFaceTracking = async (photoBase64: string, location: { lat: number, lng: number }) => {
     try {
-      const res = await fetch('/api/presensi', {
+      const res = await fetch(API_BASE_URL + '/api/presensi', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

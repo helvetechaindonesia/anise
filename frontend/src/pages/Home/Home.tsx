@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../../utils/apiConfig';
 import React, { useState, useEffect } from 'react';
 import { CaretRight, UserList } from '@phosphor-icons/react';
 import DigitalCard from '../../components/DigitalCard';
@@ -22,7 +23,7 @@ export default function Home() {
     const fetchTeachers = async () => {
       setIsLoadingTeachers(true);
       try {
-        const res = await fetch('/api/siswa/guru', {
+        const res = await fetch(API_BASE_URL + '/api/siswa/guru', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await res.json();
@@ -38,7 +39,7 @@ export default function Home() {
     const fetchTasks = async () => {
       setIsLoadingTasks(true);
       try {
-        const res = await fetch('/api/tugas', {
+        const res = await fetch(API_BASE_URL + '/api/tugas', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await res.json();

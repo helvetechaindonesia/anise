@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../../utils/apiConfig';
 import React, { useState, useEffect } from 'react';
 import { Scan, CheckCircle, Clock, CaretRight, WarningCircle, CaretDown, CaretUp, XCircle, Prohibit } from '@phosphor-icons/react';
 import { useAppStore } from '../../store/useAppStore';
@@ -12,7 +13,7 @@ export default function RiwayatPresensi() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch('/api/presensi/riwayat', {
+        const res = await fetch(API_BASE_URL + '/api/presensi/riwayat', {
           headers: {
             'Authorization': `Bearer ${token}`
           }

@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../utils/apiConfig';
 import { create } from 'zustand';
 import type { Role, User } from '../types';
 
@@ -61,7 +62,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     const token = get().token;
     if (token) {
       try {
-        await fetch('/api/logout', {
+        await fetch(API_BASE_URL + '/api/logout', {
           method: 'POST',
           headers: { 'Authorization': `Bearer ${token}` }
         });

@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../../utils/apiConfig';
 import React, { useState } from 'react';
 import { useAppStore } from '../../store/useAppStore';
 import { Leaf, SpinnerGap, Eye, EyeSlash } from '@phosphor-icons/react';
@@ -25,7 +26,7 @@ export default function Login() {
     setIsLoading(true);
 
     try {
-      const res = await fetch('/api/login', {
+      const res = await fetch(API_BASE_URL + '/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password })

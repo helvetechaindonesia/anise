@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../../utils/apiConfig';
 import React, { useState } from 'react';
 import { CaretRight, CheckCircle, Clock, UploadSimple, Check } from '@phosphor-icons/react';
 import { useAppStore } from '../../store/useAppStore';
@@ -23,7 +24,7 @@ export default function DaftarTugas() {
   const fetchTugas = async () => {
     setIsLoading(true);
     try {
-      const res = await fetch('/api/tugas', {
+      const res = await fetch(API_BASE_URL + '/api/tugas', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await res.json();
@@ -48,7 +49,7 @@ export default function DaftarTugas() {
     }
     setIsSubmitting(true);
     try {
-      const res = await fetch('/api/tugas/submit', {
+      const res = await fetch(API_BASE_URL + '/api/tugas/submit', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -85,7 +86,7 @@ export default function DaftarTugas() {
     }
     setIsSubmitting(true);
     try {
-      const res = await fetch('/api/tugas/request-late', {
+      const res = await fetch(API_BASE_URL + '/api/tugas/request-late', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

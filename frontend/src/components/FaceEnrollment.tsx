@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../utils/apiConfig';
 import React, { useEffect, useRef, useState } from 'react';
 import * as faceapi from 'face-api.js';
 import { WarningCircle, CheckCircle, Scan } from '@phosphor-icons/react';
@@ -84,7 +85,7 @@ export default function FaceEnrollment({ onSuccess, onCancel }: FaceEnrollmentPr
           // 1. Simpan ke Backend Database (PostgreSQL via PHP)
           try {
             if (userProfile?.id) {
-              const res = await fetch('/api/user/face', {
+              const res = await fetch(API_BASE_URL + '/api/user/face', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
