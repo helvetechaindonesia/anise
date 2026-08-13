@@ -272,6 +272,22 @@ if ($uri === '/api/presensi' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     try {
+        // Create table safely if not exists
+        $pdo->exec("CREATE TABLE IF NOT EXISTS attendances (
+            id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+            user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+            tanggal DATE NOT NULL,
+            jam_masuk TIMESTAMP,
+            jam_pulang_awal TIMESTAMP,
+            jam_masuk_kembali TIMESTAMP,
+            jam_pulang_akhir TIMESTAMP,
+            status VARCHAR(10) DEFAULT 'TAM',
+            is_locked BOOLEAN DEFAULT false,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            CONSTRAINT unique_user_tanggal UNIQUE (user_id, tanggal)
+        )");
+
         // Cek apakah sudah ada absen hari ini
         $stmt = $pdo->prepare("SELECT id, jam_masuk, jam_pulang_awal, jam_masuk_kembali, jam_pulang_akhir FROM attendances WHERE user_id = :uid AND tanggal = CURRENT_DATE");
         $stmt->execute(['uid' => $userId]);
@@ -307,6 +323,67 @@ if ($uri === '/api/presensi' && $_SERVER['REQUEST_METHOD'] === 'POST') {
         ]);
     } catch (PDOException $e) {
         // If table doesn't exist, we should probably run the create_attendances.sql file, but let's assume it exists or throw the DB error.
+        http_response_code(500);
+        echo json_encode(['status' => 'error', 'message' => 'Database error: ' . $e->getMessage()]);
+    }
+    exit;
+}
+
+// Endpoint: Riwayat Presensi
+if ($uri === '/api/presensi/riwayat' && $_SERVER['REQUEST_METHOD'] === 'GET') {
+    $authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
+    if (empty($authHeader) && function_exists('apache_request_headers')) {
+        $headers = apache_request_headers();
+        $authHeader = $headers['Authorization'] ?? '';
+    }
+    
+    $userId = null;
+    if (preg_match('/Bearer\s(\S+)/', $authHeader, $matches)) {
+        $jwt = $matches[1];
+        $payload = verify_jwt($jwt, $jwt_secret);
+        if ($payload && isset($payload['user_id'])) $userId = $payload['user_id'];
+    }
+
+    if (!$userId) {
+        http_response_code(401);
+        echo json_encode(['status' => 'error', 'message' => 'Unauthorized']);
+        exit;
+    }
+
+    try {
+        // Ensure table exists just in case they haven't posted yet
+        $pdo->exec("CREATE TABLE IF NOT EXISTS attendances (id UUID PRIMARY KEY DEFAULT uuid_generate_v4(), user_id UUID REFERENCES users(id) ON DELETE CASCADE, tanggal DATE NOT NULL, jam_masuk TIMESTAMP, jam_pulang_awal TIMESTAMP, jam_masuk_kembali TIMESTAMP, jam_pulang_akhir TIMESTAMP, status VARCHAR(10) DEFAULT 'TAM', is_locked BOOLEAN DEFAULT false, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, CONSTRAINT unique_user_tanggal UNIQUE (user_id, tanggal))");
+
+        $stmt = $pdo->prepare("SELECT * FROM attendances WHERE user_id = :uid ORDER BY tanggal DESC LIMIT 30");
+        $stmt->execute(['uid' => $userId]);
+        $rows = $stmt->fetchAll();
+
+        $history = [];
+        $stats = ['H' => 0, 'T' => 0, 'P' => 0, 'Pulang_Awal' => 0, 'Pulang' => 0, 'Kembali' => 0, 'TAM' => 0, 'TAP' => 0, 'TAMP' => 0, 'Sakit' => 0, 'Izin' => 0, 'Alpa' => 0];
+
+        foreach($rows as $r) {
+            $statusCode = $r['status'] === 'HADIR' ? 'H' : $r['status'];
+            // Simple mapping for demo
+            if(isset($stats[$statusCode])) $stats[$statusCode]++;
+            else if ($statusCode === 'HADIR' || $statusCode === 'H') $stats['H']++;
+            
+            $history[] = [
+                'id' => $r['id'],
+                'status' => $statusCode,
+                'tanggal' => date('d M Y', strtotime($r['tanggal'])),
+                'jam' => $r['jam_masuk'] ? date('H:i', strtotime($r['jam_masuk'])) : '-',
+                'metode' => 'Face ID'
+            ];
+        }
+
+        echo json_encode([
+            'status' => 'success',
+            'data' => [
+                'stats' => $stats,
+                'history' => $history
+            ]
+        ]);
+    } catch (PDOException $e) {
         http_response_code(500);
         echo json_encode(['status' => 'error', 'message' => 'Database error: ' . $e->getMessage()]);
     }
