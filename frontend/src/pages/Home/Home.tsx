@@ -92,7 +92,16 @@ export default function Home() {
         });
         const data = await res.json();
         if (data.status === 'success' && data.data && data.data.length > 0) {
-          setLatestTasks(data.data.slice(0, 7));
+          const mappedTasks = data.data.map((t: any) => ({
+            id: String(t.id),
+            title: t.judul || t.title || 'Tugas',
+            subject: t.mapel ? `${t.mapel} - ${t.kelas}` : (t.subject || 'Mapel'),
+            due: t.deadline || t.due || '-',
+            desc: t.deskripsi || t.desc || '',
+            points: 100,
+            status: (t.dikumpulkan && t.totalSiswa && t.dikumpulkan === t.totalSiswa) ? 'Selesai' : 'Belum Dikerjakan'
+          }));
+          setLatestTasks(mappedTasks.slice(0, 7));
         } else {
           // Dummy data fallback for demo
           setLatestTasks([
