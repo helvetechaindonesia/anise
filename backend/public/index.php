@@ -248,6 +248,71 @@ if ($uri === '/api/logout' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     exit;
 }
 
+// Endpoint: Presensi Harian Siswa/Guru
+if ($uri === '/api/presensi' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
+    if (empty($authHeader) && function_exists('apache_request_headers')) {
+        $headers = apache_request_headers();
+        $authHeader = $headers['Authorization'] ?? '';
+    }
+    
+    $userId = null;
+    if (preg_match('/Bearer\s(\S+)/', $authHeader, $matches)) {
+        $jwt = $matches[1];
+        $payload = verify_jwt($jwt, $jwt_secret);
+        if ($payload && isset($payload['user_id'])) {
+            $userId = $payload['user_id'];
+        }
+    }
+
+    if (!$userId) {
+        http_response_code(401);
+        echo json_encode(['status' => 'error', 'message' => 'Unauthorized']);
+        exit;
+    }
+
+    try {
+        // Cek apakah sudah ada absen hari ini
+        $stmt = $pdo->prepare("SELECT id, jam_masuk, jam_pulang_awal, jam_masuk_kembali, jam_pulang_akhir FROM attendances WHERE user_id = :uid AND tanggal = CURRENT_DATE");
+        $stmt->execute(['uid' => $userId]);
+        $absen = $stmt->fetch();
+
+        $status_absen = 'Masuk';
+        if (!$absen) {
+            $stmtInsert = $pdo->prepare("INSERT INTO attendances (user_id, tanggal, jam_masuk, status) VALUES (:uid, CURRENT_DATE, CURRENT_TIMESTAMP, 'HADIR')");
+            $stmtInsert->execute(['uid' => $userId]);
+        } else {
+            // Update berdasarkan kolom yang kosong
+            if (!$absen['jam_pulang_awal']) {
+                $stmtUpdate = $pdo->prepare("UPDATE attendances SET jam_pulang_awal = CURRENT_TIMESTAMP WHERE id = :id");
+                $stmtUpdate->execute(['id' => $absen['id']]);
+                $status_absen = 'Pulang Awal';
+            } else if (!$absen['jam_masuk_kembali']) {
+                $stmtUpdate = $pdo->prepare("UPDATE attendances SET jam_masuk_kembali = CURRENT_TIMESTAMP WHERE id = :id");
+                $stmtUpdate->execute(['id' => $absen['id']]);
+                $status_absen = 'Masuk Kembali';
+            } else if (!$absen['jam_pulang_akhir']) {
+                $stmtUpdate = $pdo->prepare("UPDATE attendances SET jam_pulang_akhir = CURRENT_TIMESTAMP WHERE id = :id");
+                $stmtUpdate->execute(['id' => $absen['id']]);
+                $status_absen = 'Pulang Akhir';
+            } else {
+                $status_absen = 'Sudah Lengkap';
+            }
+        }
+        
+        echo json_encode([
+            'status' => 'success', 
+            'message' => 'Presensi berhasil disimpan',
+            'data' => ['status_absen' => $status_absen]
+        ]);
+    } catch (PDOException $e) {
+        // If table doesn't exist, we should probably run the create_attendances.sql file, but let's assume it exists or throw the DB error.
+        http_response_code(500);
+        echo json_encode(['status' => 'error', 'message' => 'Database error: ' . $e->getMessage()]);
+    }
+    exit;
+}
+
 // Endpoint: Get Teachers for Student (Guru yang mengajar kelas siswa)
 if ($uri === '/api/siswa/guru' && $_SERVER['REQUEST_METHOD'] === 'GET') {
     // Auth Check
