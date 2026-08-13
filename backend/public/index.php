@@ -2059,4 +2059,154 @@ if ($uri === '/api/poin' && $_SERVER['REQUEST_METHOD'] === 'GET') {
     exit;
 }
 
+// Endpoint: Get List of Students for Teacher
+if ($uri === '/api/guru/students' && $_SERVER['REQUEST_METHOD'] === 'GET') {
+    $authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
+    if (empty($authHeader) && function_exists('apache_request_headers')) {
+        $headers = apache_request_headers();
+        $authHeader = $headers['Authorization'] ?? '';
+    }
+    $userId = null;
+    $role = null;
+    if (preg_match('/Bearer\s(\S+)/', $authHeader, $matches)) {
+        $payload = verify_jwt($matches[1], $jwt_secret);
+        if ($payload && isset($payload['user_id'])) {
+            $userId = $payload['user_id'];
+            $role = $payload['role'];
+        }
+    }
+    if (!$userId || $role !== 'GURU') {
+        http_response_code(401);
+        echo json_encode(['status' => 'error', 'message' => 'Unauthorized or not a teacher']);
+        exit;
+    }
+
+    try {
+        // TODO: RBAC Implementation
+        // If Wali Asuh -> join guru_wali_students
+        // If BK -> join guru_bk_classes
+        // For Demo: Fetch all active students
+        $stmt = $pdo->prepare("
+            SELECT s.user_id as id, u.full_name as name, s.nis, c.name as class_name 
+            FROM siswa_profiles s 
+            JOIN users u ON s.user_id = u.id 
+            LEFT JOIN class_students cs ON cs.student_id = s.user_id AND cs.status = 'AKTIF'
+            LEFT JOIN classes c ON cs.class_id = c.id
+            WHERE s.status = 'AKTIF'
+            ORDER BY c.name, u.full_name
+        ");
+        $stmt->execute();
+        $students = $stmt->fetchAll();
+
+        echo json_encode(['status' => 'success', 'data' => $students]);
+    } catch (PDOException $e) {
+        http_response_code(500);
+        echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+    }
+    exit;
+}
+
+// Endpoint: Get Point Rules (Katalog Pelanggaran & Prestasi)
+if ($uri === '/api/poin/rules' && $_SERVER['REQUEST_METHOD'] === 'GET') {
+    $authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
+    if (empty($authHeader) && function_exists('apache_request_headers')) {
+        $headers = apache_request_headers();
+        $authHeader = $headers['Authorization'] ?? '';
+    }
+    $userId = null;
+    if (preg_match('/Bearer\s(\S+)/', $authHeader, $matches)) {
+        $payload = verify_jwt($matches[1], $jwt_secret);
+        if ($payload && isset($payload['user_id'])) $userId = $payload['user_id'];
+    }
+    if (!$userId) {
+        http_response_code(401);
+        echo json_encode(['status' => 'error', 'message' => 'Unauthorized']);
+        exit;
+    }
+
+    try {
+        $stmt = $pdo->prepare("SELECT id, code, title, type, points, category FROM point_rules WHERE is_active = true ORDER BY type, category, title");
+        $stmt->execute();
+        $rules = $stmt->fetchAll();
+
+        echo json_encode(['status' => 'success', 'data' => $rules]);
+    } catch (PDOException $e) {
+        http_response_code(500);
+        echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+    }
+    exit;
+}
+
+// Endpoint: Submit New Point Log
+if ($uri === '/api/guru/poin' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
+    if (empty($authHeader) && function_exists('apache_request_headers')) {
+        $headers = apache_request_headers();
+        $authHeader = $headers['Authorization'] ?? '';
+    }
+    $userId = null;
+    $role = null;
+    if (preg_match('/Bearer\s(\S+)/', $authHeader, $matches)) {
+        $payload = verify_jwt($matches[1], $jwt_secret);
+        if ($payload && isset($payload['user_id'])) {
+            $userId = $payload['user_id'];
+            $role = $payload['role'];
+        }
+    }
+    if (!$userId || $role !== 'GURU') {
+        http_response_code(401);
+        echo json_encode(['status' => 'error', 'message' => 'Unauthorized or not a teacher']);
+        exit;
+    }
+
+    $input = json_decode(file_get_contents('php://input'), true);
+    $studentId = $input['student_id'] ?? '';
+    $ruleId = $input['point_rule_id'] ?? '';
+    $incidentDate = $input['incident_date'] ?? date('Y-m-d');
+    $notes = $input['notes'] ?? '';
+
+    if (!$studentId || !$ruleId) {
+        http_response_code(400);
+        echo json_encode(['status' => 'error', 'message' => 'Missing student_id or point_rule_id']);
+        exit;
+    }
+
+    try {
+        $stmtRule = $pdo->prepare("SELECT type, points FROM point_rules WHERE id = :id");
+        $stmtRule->execute(['id' => $ruleId]);
+        $rule = $stmtRule->fetch();
+        if (!$rule) {
+            http_response_code(404);
+            echo json_encode(['status' => 'error', 'message' => 'Rule not found']);
+            exit;
+        }
+
+        $stmtAY = $pdo->prepare("SELECT id FROM academic_years WHERE is_active = true LIMIT 1");
+        $stmtAY->execute();
+        $ay = $stmtAY->fetch();
+        $ayId = $ay ? $ay['id'] : null;
+
+        $stmt = $pdo->prepare("
+            INSERT INTO student_point_logs (id, academic_year_id, student_id, reporter_id, point_rule_id, type, points_change, description, incident_date, status)
+            VALUES (uuid_generate_v4(), :ayid, :sid, :rid, :prid, :type, :pts, :desc, :idate, 'APPROVED')
+        ");
+        $stmt->execute([
+            'ayid' => $ayId,
+            'sid' => $studentId,
+            'rid' => $userId,
+            'prid' => $ruleId,
+            'type' => $rule['type'],
+            'pts' => $rule['points'],
+            'desc' => $notes,
+            'idate' => $incidentDate
+        ]);
+
+        echo json_encode(['status' => 'success', 'message' => 'Point recorded successfully']);
+    } catch (PDOException $e) {
+        http_response_code(500);
+        echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+    }
+    exit;
+}
+
 echo json_encode(['app' => 'Anise API Server', 'version' => '1.0']);

@@ -367,3 +367,23 @@ CREATE TABLE habit_verifications (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+-- 28. GURU WALI STUDENTS (Mapping for 1 teacher to ~20 students)
+CREATE TABLE IF NOT EXISTS guru_wali_students (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    guru_id UUID REFERENCES guru_profiles(user_id) ON DELETE CASCADE,
+    student_id UUID REFERENCES siswa_profiles(user_id) ON DELETE CASCADE,
+    academic_year_id UUID REFERENCES academic_years(id) ON DELETE CASCADE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT unique_guru_wali_student UNIQUE (guru_id, student_id, academic_year_id)
+);
+
+-- 29. GURU BK CLASSES (Mapping for 1 BK teacher to ~5 classes)
+CREATE TABLE IF NOT EXISTS guru_bk_classes (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    guru_id UUID REFERENCES guru_profiles(user_id) ON DELETE CASCADE,
+    class_id UUID REFERENCES classes(id) ON DELETE CASCADE,
+    academic_year_id UUID REFERENCES academic_years(id) ON DELETE CASCADE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT unique_guru_bk_class UNIQUE (guru_id, class_id, academic_year_id)
+);
