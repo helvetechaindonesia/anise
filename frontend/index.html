@@ -16,18 +16,57 @@
     <title>Anise - Manajemen Pendidikan</title>
   </head>
   <body class="bg-[#fcfbf7] text-[#121212] antialiased select-none">
-    <div id="root">
-      <div id="welcome-splash" style="display: none; flex-direction: column; align-items: center; justify-content: center; height: 100vh; width: 100vw; background-color: #1a414d; position: fixed; top: 0; left: 0; z-index: 9999;">
-        <img src="/assets/Logo-apk.svg" alt="Anise Logo" style="width: 120px; height: 120px; margin-bottom: 8px;" />
+    <style>
+      #welcome-splash {
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        width: 100vw;
+        background-color: #1a414d;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 9999;
+        transition: opacity 0.5s ease-out;
+      }
+      .splash-logo {
+        width: 120px;
+        height: 120px;
+        margin-bottom: 8px;
+        animation: pulse 2s infinite cubic-bezier(0.4, 0, 0.6, 1);
+      }
+      .splash-text {
+        opacity: 0;
+        animation: fadeInUp 0.8s ease-out 0.5s forwards;
+      }
+      @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+      }
+      @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+    </style>
+    
+    <div id="welcome-splash">
+      <img src="/assets/Logo-apk.svg" alt="Anise Logo" class="splash-logo" />
+      <div class="splash-text" style="display: flex; flex-direction: column; align-items: center;">
         <h1 style="color: white; font-family: 'Inter', sans-serif; font-weight: 900; font-size: 2.5rem; margin: 0; letter-spacing: -0.05em;">Anise</h1>
         <p style="color: rgba(255,255,255,0.7); font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.9rem; margin: 0; margin-top: -4px;">by Helvetecha</p>
       </div>
-      <script>
-        if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone || window.matchMedia('(display-mode: fullscreen)').matches) {
-          document.getElementById('welcome-splash').style.display = 'flex';
-        }
-      </script>
     </div>
+
+    <script>
+      // Hanya muncul jika diakses via PWA / Aplikasi
+      if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone || window.matchMedia('(display-mode: fullscreen)').matches) {
+        document.getElementById('welcome-splash').style.display = 'flex';
+      }
+    </script>
+
+    <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
