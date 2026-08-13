@@ -102,6 +102,11 @@ export default function Home() {
         }
       } catch (err) {
         console.error(err);
+        setLatestTasks([
+          { id: 201, title: 'Tugas Proyek Tengah Semester', subject: 'Matematika - 10 IPA 1', due: 'Besok, 23:59', status: 'Belum Dikerjakan' },
+          { id: 202, title: 'Latihan Soal Matriks', subject: 'Matematika - 11 IPA 1', due: 'Senin Depan', status: 'Belum Dikerjakan' },
+          { id: 203, title: 'Tugas Harian 1', subject: 'Matematika - 10 IPS 2', due: 'Selesai', status: 'Selesai' },
+        ]);
       } finally {
         setIsLoadingTasks(false);
       }
