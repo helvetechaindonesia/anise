@@ -22,14 +22,26 @@ export default defineConfig({
         id: '/',
         start_url: '/',
         description: 'Sistem Presensi Digital Anise',
-        theme_color: '#19414d',
-        background_color: '#fcfbf7',
+        theme_color: '#1a414d',
+        background_color: '#1a414d',
         display: 'standalone',
         icons: [
           {
             src: '/assets/Logo-apk.svg',
             sizes: 'any',
             type: 'image/svg+xml',
+            purpose: 'any maskable'
+          },
+          {
+            src: '/assets/Logo-apk.png',
+            sizes: '192x192',
+            type: 'image/png',
+            purpose: 'any maskable'
+          },
+          {
+            src: '/assets/Logo-apk.png',
+            sizes: '512x512',
+            type: 'image/png',
             purpose: 'any maskable'
           }
         ]
