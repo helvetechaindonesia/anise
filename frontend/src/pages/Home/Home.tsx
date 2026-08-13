@@ -11,6 +11,7 @@ import { CheckCircle, Clock, XCircle, FileText, SpinnerGap } from '@phosphor-ico
 
 export default function Home() {
   const { setActiveTab, role, hasPresensiToday, startPresensi, userProfile, token, setSelectedTeacherFilter } = useAppStore();
+  const isGuru = userProfile?.role_type?.toLowerCase() === 'guru';
 
   const [teachers, setTeachers] = useState<any[]>([]);
   const [isLoadingTeachers, setIsLoadingTeachers] = useState(false);
@@ -113,15 +114,15 @@ export default function Home() {
     };
 
     if (token) {
-      if (role?.toLowerCase() === 'siswa') {
+      if (!isGuru) {
         fetchTeachers();
         fetchTasks();
         fetchPoin();
-      } else if (role?.toLowerCase() === 'guru') {
+      } else {
         fetchTasksGuru();
       }
     }
-  }, [token, role]);
+  }, [token, isGuru]);
 
 
   const handleTeacherClick = (teacher: any) => {
@@ -129,7 +130,7 @@ export default function Home() {
     setActiveTab('jurnal');
   };
 
-  const isGuru = userProfile?.role_type?.toLowerCase() === 'guru';
+
   const displayScore = isGuru ? kpiGuruData.score : (poinData?.finalScore || 100);
   const displayGrade = isGuru ? kpiGuruData.predikatAkhir : (poinData?.grade || 'Baik');
 
