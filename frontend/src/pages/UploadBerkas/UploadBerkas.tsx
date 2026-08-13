@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { UploadSimple, FilePdf, FileDoc, CheckCircle, WarningCircle, CaretLeft } from '@phosphor-icons/react';
 import { useAppStore } from '../../store/useAppStore';
+import { API_BASE_URL } from '../../utils/apiConfig';
 
 type DocumentType = 'cp' | 'tp' | 'atp' | 'ma';
 
@@ -23,22 +24,68 @@ export default function UploadBerkas() {
   ]);
   
   const [activeUploadId, setActiveUploadId] = useState<DocumentType | null>(null);
+  const { token } = useAppStore();
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, id: DocumentType) => {
+  const dummySubjectId = 'f0eebc99-9c0b-4ef8-bb6d-6bb9bd380a16';
+  const dummyAcademicYearId = 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11';
+
+  React.useEffect(() => {
+    const fetchDocs = async () => {
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/guru/administrasi?academic_year_id=${dummyAcademicYearId}&subject_id=${dummySubjectId}`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+        if (data.status === 'success' && data.data) {
+          setDocuments(docs => docs.map(doc => {
+            const found = data.data.find((d: any) => d.document_type.toLowerCase() === doc.id.toLowerCase());
+            if (found) {
+              return { ...doc, status: 'uploaded', filename: found.file_name };
+            }
+            return doc;
+          }));
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    if (token) fetchDocs();
+  }, [token]);
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>, id: DocumentType) => {
     const file = e.target.files?.[0];
     if (file) {
-      // Simulate file upload
       setActiveUploadId(id);
       
-      setTimeout(() => {
-        setDocuments(docs => docs.map(doc => {
-          if (doc.id === id) {
-            return { ...doc, status: 'uploaded', filename: file.name };
-          }
-          return doc;
-        }));
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('document_type', id.toUpperCase());
+      formData.append('subject_id', dummySubjectId);
+      formData.append('academic_year_id', dummyAcademicYearId);
+
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/guru/administrasi/upload`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${token}` },
+          body: formData
+        });
+        const data = await res.json();
+        if (data.status === 'success') {
+          setDocuments(docs => docs.map(doc => {
+            if (doc.id === id) {
+              return { ...doc, status: 'uploaded', filename: file.name };
+            }
+            return doc;
+          }));
+        } else {
+          alert('Upload gagal: ' + data.message);
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Terjadi kesalahan saat mengunggah file.');
+      } finally {
         setActiveUploadId(null);
-      }, 1500);
+      }
     }
   };
 

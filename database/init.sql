@@ -443,3 +443,20 @@ CREATE TABLE IF NOT EXISTS notifications (
     reference_id UUID,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+-- 34. TEACHING ADMINISTRATIONS
+CREATE TYPE teaching_doc_type AS ENUM ('CP', 'TP', 'ATP', 'MA');
+
+CREATE TABLE teaching_administrations (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    teacher_id UUID REFERENCES guru_profiles(user_id) ON DELETE CASCADE,
+    subject_id UUID REFERENCES subjects(id) ON DELETE CASCADE,
+    academic_year_id UUID REFERENCES academic_years(id) ON DELETE CASCADE,
+    document_type teaching_doc_type NOT NULL,
+    file_name VARCHAR(255) NOT NULL,
+    file_url TEXT NOT NULL,
+    file_size INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT uniq_teacher_doc UNIQUE (teacher_id, subject_id, academic_year_id, document_type)
+);

@@ -2654,4 +2654,150 @@ if ($uri === '/api/user/password' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     exit;
 }
 
+// Endpoint: Administrasi Mengajar Guru (CP, TP, ATP, MA)
+if ($uri === '/api/guru/administrasi' && $_SERVER['REQUEST_METHOD'] === 'GET') {
+    $authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
+    if (empty($authHeader) && function_exists('apache_request_headers')) {
+        $headers = apache_request_headers();
+        $authHeader = $headers['Authorization'] ?? '';
+    }
+    
+    $userId = null;
+    if (preg_match('/Bearer\s(\S+)/', $authHeader, $matches)) {
+        $jwt = $matches[1];
+        $payload = verify_jwt($jwt, $jwt_secret);
+        if ($payload && isset($payload['user_id'])) {
+            $userId = $payload['user_id'];
+        }
+    }
+
+    if (!$userId) {
+        http_response_code(401);
+        echo json_encode(['status' => 'error', 'message' => 'Unauthorized']);
+        exit;
+    }
+
+    $academicYearId = $_GET['academic_year_id'] ?? null;
+    $subjectId = $_GET['subject_id'] ?? null;
+
+    try {
+        $query = "SELECT * FROM teaching_administrations WHERE teacher_id = :tid";
+        $params = [':tid' => $userId];
+
+        if ($academicYearId) {
+            $query .= " AND academic_year_id = :ayid";
+            $params[':ayid'] = $academicYearId;
+        }
+        if ($subjectId) {
+            $query .= " AND subject_id = :sid";
+            $params[':sid'] = $subjectId;
+        }
+
+        $stmt = $pdo->prepare($query);
+        $stmt->execute($params);
+        $docs = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        echo json_encode(['status' => 'success', 'data' => $docs]);
+    } catch (PDOException $e) {
+        http_response_code(500);
+        echo json_encode(['status' => 'error', 'message' => 'Database error: ' . $e->getMessage()]);
+    }
+    exit;
+}
+
+if ($uri === '/api/guru/administrasi/upload' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
+    if (empty($authHeader) && function_exists('apache_request_headers')) {
+        $headers = apache_request_headers();
+        $authHeader = $headers['Authorization'] ?? '';
+    }
+    
+    $userId = null;
+    if (preg_match('/Bearer\s(\S+)/', $authHeader, $matches)) {
+        $jwt = $matches[1];
+        $payload = verify_jwt($jwt, $jwt_secret);
+        if ($payload && isset($payload['user_id'])) {
+            $userId = $payload['user_id'];
+        }
+    }
+
+    if (!$userId) {
+        http_response_code(401);
+        echo json_encode(['status' => 'error', 'message' => 'Unauthorized']);
+        exit;
+    }
+
+    $docType = $_POST['document_type'] ?? '';
+    $subjectId = $_POST['subject_id'] ?? '';
+    $academicYearId = $_POST['academic_year_id'] ?? '';
+
+    if (empty($docType) || empty($subjectId) || empty($academicYearId)) {
+        http_response_code(400);
+        echo json_encode(['status' => 'error', 'message' => 'document_type, subject_id, and academic_year_id are required']);
+        exit;
+    }
+
+    if (!isset($_FILES['file']) || $_FILES['file']['error'] !== UPLOAD_ERR_OK) {
+        http_response_code(400);
+        echo json_encode(['status' => 'error', 'message' => 'No file uploaded or upload error']);
+        exit;
+    }
+
+    $file = $_FILES['file'];
+    $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
+    
+    $allowedExt = ['pdf', 'doc', 'docx'];
+    if (!in_array(strtolower($ext), $allowedExt)) {
+        http_response_code(400);
+        echo json_encode(['status' => 'error', 'message' => 'Invalid file type. Only PDF and DOC/DOCX allowed.']);
+        exit;
+    }
+
+    $uploadDir = __DIR__ . '/uploads/administrasi/';
+    if (!file_exists($uploadDir)) {
+        mkdir($uploadDir, 0777, true);
+    }
+
+    $fileName = uniqid('admin_') . '.' . $ext;
+    $filePath = $uploadDir . $fileName;
+
+    if (move_uploaded_file($file['tmp_name'], $filePath)) {
+        $fileUrl = '/uploads/administrasi/' . $fileName;
+
+        try {
+            $stmt = $pdo->prepare("
+                INSERT INTO teaching_administrations 
+                (teacher_id, subject_id, academic_year_id, document_type, file_name, file_url, file_size)
+                VALUES (:tid, :sid, :ayid, :dtype, :fname, :furl, :fsize)
+                ON CONFLICT (teacher_id, subject_id, academic_year_id, document_type) 
+                DO UPDATE SET 
+                    file_name = EXCLUDED.file_name,
+                    file_url = EXCLUDED.file_url,
+                    file_size = EXCLUDED.file_size,
+                    updated_at = CURRENT_TIMESTAMP
+                RETURNING *
+            ");
+            $stmt->execute([
+                ':tid' => $userId,
+                ':sid' => $subjectId,
+                ':ayid' => $academicYearId,
+                ':dtype' => $docType,
+                ':fname' => $file['name'],
+                ':furl' => $fileUrl,
+                ':fsize' => $file['size']
+            ]);
+            $saved = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            echo json_encode(['status' => 'success', 'data' => $saved]);
+        } catch (PDOException $e) {
+            http_response_code(500);
+            echo json_encode(['status' => 'error', 'message' => 'Database error: ' . $e->getMessage()]);
+        }
+    } else {
+        http_response_code(500);
+        echo json_encode(['status' => 'error', 'message' => 'Failed to save uploaded file']);
+    }
+    exit;
+}
+
 echo json_encode(['app' => 'Anise API Server', 'version' => '1.0']);
