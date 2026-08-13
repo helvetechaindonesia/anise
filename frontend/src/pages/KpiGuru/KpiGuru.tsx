@@ -31,7 +31,7 @@ export default function KpiGuru() {
       </div>
 
       {/* Main KPI Card */}
-      <div className="bg-white rounded-3xl shadow-lg shadow-[#19414d]/5 border border-[#e5e4e7] overflow-hidden relative">
+      <div className="bg-white rounded-3xl shadow-lg shadow-[#19414d]/5 border-2 border-[#e5e4e7] overflow-hidden relative">
         {/* Header Periode */}
         <div className="bg-gradient-to-r from-[#19414d] to-[#256173] p-4 flex items-center justify-between text-white">
           <div className="flex items-center gap-2">
