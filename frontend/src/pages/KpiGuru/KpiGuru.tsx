@@ -1,26 +1,11 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Target, UsersThree, FileText, SealCheck } from '@phosphor-icons/react';
 import { useAppStore } from '../../store/useAppStore';
+import { useDataStore } from '../../store/useDataStore';
 
 export default function KpiGuru() {
   const { userProfile } = useAppStore();
-  
-  // Dummy data dynamization
-  const [kpiData, setKpiData] = useState({
-    periode: 'Juli - Desember 2026',
-    praktikKinerja: 'Sesuai Ekspektasi',
-    perilakuKerja: 'Sesuai Ekspektasi',
-    predikatAkhir: 'Baik',
-    aspekBerAkhlak: [
-      { nama: 'Berorientasi Pelayanan', nilai: 'Diatas Ekspektasi', desc: 'Selalu ramah dan cekatan melayani siswa/wali.' },
-      { nama: 'Akuntabel', nilai: 'Sesuai Ekspektasi', desc: 'Melaksanakan tugas mengajar dengan jujur dan disiplin.' },
-      { nama: 'Kompeten', nilai: 'Sesuai Ekspektasi', desc: 'Terus belajar dan mengembangkan kapabilitas keguruan.' },
-      { nama: 'Harmonis', nilai: 'Diatas Ekspektasi', desc: 'Membangun lingkungan kerja yang kondusif.' },
-      { nama: 'Loyal', nilai: 'Sesuai Ekspektasi', desc: 'Menjaga nama baik sesama guru, pimpinan, dan sekolah.' },
-      { nama: 'Adaptif', nilai: 'Sesuai Ekspektasi', desc: 'Berinovasi dan antusias dalam menggerakkan perubahan.' },
-      { nama: 'Kolaboratif', nilai: 'Sesuai Ekspektasi', desc: 'Membangun kerja sama yang sinergis dalam MGMP.' }
-    ]
-  });
+  const kpiData = useDataStore((state) => state.kpiGuruData);
 
   const getBadgeColor = (nilai: string) => {
     switch (nilai.toLowerCase()) {
@@ -101,7 +86,10 @@ export default function KpiGuru() {
         <div className="bg-gradient-to-r from-[#19414d]/5 to-transparent p-5 border-t border-[#e5e4e7] flex justify-between items-center">
           <div className="flex items-center gap-2">
             <Target className="w-5 h-5 text-[#19414d]" weight="duotone" />
-            <h4 className="font-bold text-[#19414d] text-sm">Predikat Kinerja Akhir</h4>
+            <div>
+              <h4 className="font-bold text-[#19414d] text-sm">Predikat Kinerja Akhir</h4>
+              <p className="text-[10px] text-[#6b6375] font-semibold mt-0.5">Total Skor: {kpiData.score} / 100</p>
+            </div>
           </div>
           <div className={`px-4 py-1.5 rounded-xl text-xs font-black border ${getBadgeColor(kpiData.predikatAkhir)} shadow-sm`}>
             {kpiData.predikatAkhir}

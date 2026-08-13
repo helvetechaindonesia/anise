@@ -19,6 +19,7 @@ export default function Home() {
   const [isLoadingTasks, setIsLoadingTasks] = useState(false);
 
   const [poinData, setPoinData] = useState<{ finalScore: number, grade: string } | null>(null);
+  const kpiGuruData = useDataStore((state) => state.kpiGuruData);
 
   useEffect(() => {
     const fetchTeachers = async () => {
@@ -82,6 +83,10 @@ export default function Home() {
     setActiveTab('jurnal');
   };
 
+  const isGuru = userProfile?.role_type?.toLowerCase() === 'guru';
+  const displayScore = isGuru ? kpiGuruData.score : (poinData?.finalScore || 100);
+  const displayGrade = isGuru ? kpiGuruData.predikatAkhir : (poinData?.grade || 'Baik');
+
   return (
     <div className="space-y-4 pt-5 animate-in fade-in duration-200">
       <div className="flex flex-col gap-1.5">
@@ -93,14 +98,14 @@ export default function Home() {
           <div className="bg-white rounded-[9px] p-3 h-full w-full">
             <div className="mb-2">
               <h2 className="text-[15px] font-extrabold text-[#19414d] tracking-tight">
-                Selamat {new Date().getHours() < 11 ? 'Pagi' : new Date().getHours() < 15 ? 'Siang' : new Date().getHours() < 18 ? 'Sore' : 'Malam'}, {userProfile?.full_name?.split(' ')[0] || 'Pelajar'}!!
+                Selamat {new Date().getHours() < 11 ? 'Pagi' : new Date().getHours() < 15 ? 'Siang' : new Date().getHours() < 18 ? 'Sore' : 'Malam'}, {userProfile?.full_name?.split(' ')[0] || (isGuru ? 'Guru' : 'Pelajar')}!!
               </h2>
             </div>
             <div className="flex items-center gap-2">
               <div className="flex-1 bg-emerald-100 rounded-full h-1.5 overflow-hidden">
-                <div className="bg-emerald-500 h-full rounded-full transition-all duration-500" style={{ width: `${Math.min(((poinData?.finalScore || 100) / 100) * 100, 100)}%` }}></div>
+                <div className="bg-emerald-500 h-full rounded-full transition-all duration-500" style={{ width: `${Math.min((displayScore / 100) * 100, 100)}%` }}></div>
               </div>
-              <span className="text-[10px] font-extrabold text-[#6b6375] shrink-0">{poinData?.finalScore || 100} / 100 ({poinData?.grade || 'Baik'})</span>
+              <span className="text-[10px] font-extrabold text-[#6b6375] shrink-0">{displayScore} / 100 ({displayGrade})</span>
             </div>
           </div>
         </div>

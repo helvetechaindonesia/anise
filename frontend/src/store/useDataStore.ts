@@ -9,6 +9,14 @@ interface DataState {
   mutasiPoin: PoinMutasi[];
   habits: HabitItem[];
   chatMessages: { sender: 'user' | 'bot', text: string }[];
+  kpiGuruData: {
+    periode: string;
+    praktikKinerja: string;
+    perilakuKerja: string;
+    predikatAkhir: string;
+    aspekBerAkhlak: Array<{nama: string, nilai: string, desc: string}>;
+    score: number;
+  };
   
   // Actions
   setJurnalList: (jurnals: JurnalTimeline[]) => void;
@@ -51,6 +59,22 @@ export const useDataStore = create<DataState>((set) => ({
   chatMessages: [
     { sender: 'bot', text: 'Halo Budi! Saya adalah Anise AI Assistant. Ada yang bisa saya bantu terkait jadwal pelajaran, tugas, atau poin prestasi Anda?' }
   ],
+  kpiGuruData: {
+    periode: 'Juli - Desember 2026',
+    praktikKinerja: 'Sesuai Ekspektasi',
+    perilakuKerja: 'Sesuai Ekspektasi',
+    predikatAkhir: 'Baik',
+    score: 88,
+    aspekBerAkhlak: [
+      { nama: 'Berorientasi Pelayanan', nilai: 'Diatas Ekspektasi', desc: 'Selalu ramah dan cekatan melayani siswa/wali.' },
+      { nama: 'Akuntabel', nilai: 'Sesuai Ekspektasi', desc: 'Melaksanakan tugas mengajar dengan jujur dan disiplin.' },
+      { nama: 'Kompeten', nilai: 'Sesuai Ekspektasi', desc: 'Terus belajar dan mengembangkan kapabilitas keguruan.' },
+      { nama: 'Harmonis', nilai: 'Diatas Ekspektasi', desc: 'Membangun lingkungan kerja yang kondusif.' },
+      { nama: 'Loyal', nilai: 'Sesuai Ekspektasi', desc: 'Menjaga nama baik sesama guru, pimpinan, dan sekolah.' },
+      { nama: 'Adaptif', nilai: 'Sesuai Ekspektasi', desc: 'Berinovasi dan antusias dalam menggerakkan perubahan.' },
+      { nama: 'Kolaboratif', nilai: 'Sesuai Ekspektasi', desc: 'Membangun kerja sama yang sinergis dalam MGMP.' }
+    ]
+  },
 
   setJurnalList: (jurnals) => set({ jurnalList: jurnals }),
   addNotification: (notif) => set((state) => ({ notifications: [notif, ...state.notifications] })),
