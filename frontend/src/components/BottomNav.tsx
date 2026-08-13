@@ -1,5 +1,6 @@
 import React from 'react';
-import { House, BookOpen, Trophy, User, Scan } from '@phosphor-icons/react';
+import { House, BookOpen, Trophy, User, Scan, ChartLineUp } from '@phosphor-icons/react';
+import { useAppStore } from '../store/useAppStore';
 
 interface BottomNavProps {
   activeTab: string;
@@ -8,6 +9,8 @@ interface BottomNavProps {
 }
 
 const BottomNav: React.FC<BottomNavProps> = ({ activeTab, setActiveTab, startPresensi }) => {
+  const role = useAppStore(state => state.role);
+
   const renderTab = (tab: { id: string; icon: any; label: string }) => {
     const isActive = activeTab === tab.id;
     return (
@@ -39,7 +42,10 @@ const BottomNav: React.FC<BottomNavProps> = ({ activeTab, setActiveTab, startPre
           {/* Empty space for center button */}
           <div className="flex justify-center items-center pointer-events-none" />
 
-          {renderTab({ id: 'poin', icon: Trophy, label: 'Poin' })}
+          {role === 'guru' 
+            ? renderTab({ id: 'poin', icon: ChartLineUp, label: 'KPI' })
+            : renderTab({ id: 'poin', icon: Trophy, label: 'Poin' })
+          }
           {renderTab({ id: 'profile', icon: User, label: 'Profile' })}
         </div>
 

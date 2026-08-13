@@ -22,7 +22,7 @@ interface PoinData {
 }
 
 export default function Poin() {
-  const { token } = useAppStore();
+  const { token, role } = useAppStore();
   const [data, setData] = useState<PoinData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
@@ -53,7 +53,7 @@ export default function Poin() {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-[#6b6375]">
         <SpinnerGap className="w-8 h-8 animate-spin text-[#19414d] mb-4" />
-        <p className="text-sm font-semibold">Memuat riwayat karakter...</p>
+        <p className="text-sm font-semibold">Memuat data...</p>
       </div>
     );
   }
@@ -70,8 +70,12 @@ export default function Poin() {
   return (
     <div className="space-y-6 pt-5 animate-in fade-in duration-200">
       <div>
-        <h2 className="text-xl font-bold text-[#19414d]">Poin & Prestasi</h2>
-        <p className="text-xs text-[#6b6375]">Akumulasi nilai karakter selama tahun ajaran ini</p>
+        <h2 className="text-xl font-bold text-[#19414d]">
+          {role === 'guru' ? 'Key Performance Indicator (KPI)' : 'Poin & Prestasi'}
+        </h2>
+        <p className="text-xs text-[#6b6375]">
+          {role === 'guru' ? 'Akumulasi penilaian kinerja Anda' : 'Akumulasi nilai karakter selama tahun ajaran ini'}
+        </p>
       </div>
 
       {/* Main Score Card */}
