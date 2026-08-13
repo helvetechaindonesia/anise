@@ -82,13 +82,13 @@ export default function Poin() {
         
         <div className="relative z-10 flex justify-between items-start">
           <div>
-            <span className="text-[10px] uppercase tracking-widest text-[#fcfbf7]/60 font-bold block mb-1">Nilai Akhir Karakter</span>
+            <span className="text-[10px] uppercase tracking-widest text-[#fcfbf7]/60 font-bold block mb-1">Nilai Kedisiplinan Akhir</span>
             <div className="flex items-baseline gap-2">
               <span className="text-4xl font-extrabold tracking-tight">{data.finalScore}</span>
               <span className="text-sm font-bold text-emerald-400">/ {data.grade}</span>
             </div>
             <p className="text-[10px] text-[#fcfbf7]/70 mt-2 max-w-[200px] leading-relaxed">
-              Dihitung dari basis poin 100 ditambah prestasi dan dikurangi pelanggaran.
+              Skor dimulai dari 100, lalu dikurangi oleh total poin pelanggaran. Prestasi tidak bisa menghapus pelanggaran.
             </p>
           </div>
           <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center border border-white/20 shadow-inner backdrop-blur-sm">

@@ -2004,7 +2004,10 @@ if ($uri === '/api/poin' && $_SERVER['REQUEST_METHOD'] === 'GET') {
         }
 
         $baseScore = 100;
-        $finalScore = $baseScore + $prestasi - $pelanggaran;
+        // Standar Sekolah: Nilai Sikap hanya dikurangi oleh Pelanggaran (Demerit System).
+        // Prestasi tidak bisa sembarangan "menghapus" poin pelanggaran berat secara matematis.
+        $finalScore = $baseScore - $pelanggaran;
+        if ($finalScore < 0) $finalScore = 0;
 
         $grade = 'Cukup';
         if ($finalScore >= 90) $grade = 'Sangat Baik';
