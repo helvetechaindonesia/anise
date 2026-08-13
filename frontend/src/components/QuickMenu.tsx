@@ -76,7 +76,10 @@ const QuickMenu: React.FC<QuickMenuProps> = ({ startPresensi, setActiveTab }) =>
           <span className="text-[10px] font-bold mt-2.5 text-[#121212] tracking-tight leading-tight">Agenda Penilaian</span>
         </button>
 
-        <button className="flex flex-col items-center justify-center text-center cursor-pointer group">
+        <button 
+          onClick={() => setActiveTab('lapor_kesiswaan')}
+          className="flex flex-col items-center justify-center text-center cursor-pointer group"
+        >
           <div className="w-12 h-12 rounded-full bg-[#19414d] flex items-center justify-center text-white shadow-lg shadow-[#19414d]/20 group-hover:scale-105 active:scale-95 transition-all">
             <WarningCircle className="w-6 h-6" weight="duotone" />
           </div>

@@ -19,6 +19,7 @@ import RiwayatPresensi from './pages/RiwayatPresensi/RiwayatPresensi';
 import Profile from './pages/Profile/Profile';
 import Login from './pages/Login/Login';
 import AgendaPenilaian from './pages/AgendaPenilaian/AgendaPenilaian';
+import LaporKesiswaan from './pages/Lapor/LaporKesiswaan';
 
 export default function App() {
   const { 
@@ -152,6 +153,7 @@ export default function App() {
       case 'presensi': return <RiwayatPresensi />;
       case 'profile': return <Profile />;
       case 'agenda_penilaian': return <AgendaPenilaian />;
+      case 'lapor_kesiswaan': return <LaporKesiswaan />;
       default: return <Home />;
     }
   };

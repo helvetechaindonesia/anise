@@ -405,3 +405,16 @@ CREATE TABLE IF NOT EXISTS assessments (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+-- 31. STUDENT REPORTS (Lapor Kesiswaan)
+CREATE TABLE IF NOT EXISTS student_reports (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    academic_year_id UUID REFERENCES academic_years(id) ON DELETE CASCADE,
+    reporter_id UUID REFERENCES siswa_profiles(user_id) ON DELETE CASCADE,
+    category VARCHAR(50) NOT NULL CHECK (category IN ('BULLYING', 'FASILITAS_RUSAK', 'PELANGGARAN_LAIN', 'SARAN')),
+    description TEXT NOT NULL,
+    attachment_url VARCHAR(255),
+    status VARCHAR(50) DEFAULT 'PENDING' CHECK (status IN ('PENDING', 'DIPROSES', 'SELESAI')),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

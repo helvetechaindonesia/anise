@@ -2292,4 +2292,102 @@ if ($uri === '/api/siswa/assessments' && $_SERVER['REQUEST_METHOD'] === 'GET') {
     exit;
 }
 
+// Endpoint: Lapor Kesiswaan (GET History)
+if ($uri === '/api/siswa/reports' && $_SERVER['REQUEST_METHOD'] === 'GET') {
+    $authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
+    if (empty($authHeader) && function_exists('apache_request_headers')) {
+        $headers = apache_request_headers();
+        $authHeader = $headers['Authorization'] ?? '';
+    }
+    $userId = null;
+    $role = null;
+    if (preg_match('/Bearer\s(\S+)/', $authHeader, $matches)) {
+        $payload = verify_jwt($matches[1], $jwt_secret);
+        if ($payload && isset($payload['user_id'])) {
+            $userId = $payload['user_id'];
+            $role = $payload['role'];
+        }
+    }
+    if (!$userId || $role !== 'SISWA') {
+        http_response_code(401);
+        echo json_encode(['status' => 'error', 'message' => 'Unauthorized']);
+        exit;
+    }
+
+    try {
+        $stmt = $pdo->prepare("
+            SELECT id, category, description, status, TO_CHAR(created_at, 'DD Mon YYYY HH24:MI') as date
+            FROM student_reports
+            WHERE reporter_id = :uid 
+              AND academic_year_id = (SELECT id FROM academic_years WHERE is_active = true LIMIT 1)
+            ORDER BY created_at DESC
+        ");
+        $stmt->execute(['uid' => $userId]);
+        $reports = $stmt->fetchAll();
+
+        echo json_encode(['status' => 'success', 'data' => $reports]);
+    } catch (PDOException $e) {
+        http_response_code(500);
+        echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+    }
+    exit;
+}
+
+// Endpoint: Lapor Kesiswaan (POST Submit)
+if ($uri === '/api/siswa/reports' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
+    if (empty($authHeader) && function_exists('apache_request_headers')) {
+        $headers = apache_request_headers();
+        $authHeader = $headers['Authorization'] ?? '';
+    }
+    $userId = null;
+    $role = null;
+    if (preg_match('/Bearer\s(\S+)/', $authHeader, $matches)) {
+        $payload = verify_jwt($matches[1], $jwt_secret);
+        if ($payload && isset($payload['user_id'])) {
+            $userId = $payload['user_id'];
+            $role = $payload['role'];
+        }
+    }
+    if (!$userId || $role !== 'SISWA') {
+        http_response_code(401);
+        echo json_encode(['status' => 'error', 'message' => 'Unauthorized']);
+        exit;
+    }
+
+    $input = json_decode(file_get_contents('php://input'), true);
+    $category = $input['category'] ?? '';
+    $description = $input['description'] ?? '';
+
+    if (empty($category) || empty($description)) {
+        http_response_code(400);
+        echo json_encode(['status' => 'error', 'message' => 'Kategori dan deskripsi wajib diisi']);
+        exit;
+    }
+
+    try {
+        $stmtAY = $pdo->prepare("SELECT id FROM academic_years WHERE is_active = true LIMIT 1");
+        $stmtAY->execute();
+        $ay = $stmtAY->fetch();
+        $ayId = $ay ? $ay['id'] : null;
+
+        $stmt = $pdo->prepare("
+            INSERT INTO student_reports (id, academic_year_id, reporter_id, category, description, status)
+            VALUES (uuid_generate_v4(), :ayid, :uid, :cat, :desc, 'PENDING')
+        ");
+        $stmt->execute([
+            'ayid' => $ayId,
+            'uid' => $userId,
+            'cat' => $category,
+            'desc' => $description
+        ]);
+
+        echo json_encode(['status' => 'success', 'message' => 'Laporan berhasil dikirim']);
+    } catch (PDOException $e) {
+        http_response_code(500);
+        echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+    }
+    exit;
+}
+
 echo json_encode(['app' => 'Anise API Server', 'version' => '1.0']);
