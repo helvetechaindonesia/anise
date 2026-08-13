@@ -2603,4 +2603,55 @@ if ($uri === '/api/siswa/habits/month' && $_SERVER['REQUEST_METHOD'] === 'GET') 
     exit;
 }
 
+// Endpoint: Change Password
+if ($uri === '/api/user/password' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
+    if (empty($authHeader) && function_exists('apache_request_headers')) {
+        $headers = apache_request_headers();
+        $authHeader = $headers['Authorization'] ?? '';
+    }
+    $userId = null;
+    if (preg_match('/Bearer\s(\S+)/', $authHeader, $matches)) {
+        $payload = verify_jwt($matches[1], $jwt_secret);
+        if ($payload && isset($payload['user_id'])) {
+            $userId = $payload['user_id'];
+        }
+    }
+    if (!$userId) {
+        http_response_code(401);
+        echo json_encode(['status' => 'error', 'message' => 'Unauthorized']);
+        exit;
+    }
+
+    $input = json_decode(file_get_contents('php://input'), true);
+    $oldPass = $input['old_password'] ?? '';
+    $newPass = $input['new_password'] ?? '';
+
+    if (empty($oldPass) || empty($newPass)) {
+        echo json_encode(['status' => 'error', 'message' => 'Sandi lama dan baru wajib diisi']);
+        exit;
+    }
+
+    try {
+        $stmt = $pdo->prepare("SELECT password_hash FROM users WHERE id = :uid");
+        $stmt->execute(['uid' => $userId]);
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$user || !password_verify($oldPass, $user['password_hash'])) {
+            echo json_encode(['status' => 'error', 'message' => 'Sandi lama tidak sesuai']);
+            exit;
+        }
+
+        $newHash = password_hash($newPass, PASSWORD_BCRYPT);
+        $updateStmt = $pdo->prepare("UPDATE users SET password_hash = :hash WHERE id = :uid");
+        $updateStmt->execute(['hash' => $newHash, 'uid' => $userId]);
+
+        echo json_encode(['status' => 'success', 'message' => 'Sandi berhasil diubah']);
+    } catch (PDOException $e) {
+        http_response_code(500);
+        echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+    }
+    exit;
+}
+
 echo json_encode(['app' => 'Anise API Server', 'version' => '1.0']);

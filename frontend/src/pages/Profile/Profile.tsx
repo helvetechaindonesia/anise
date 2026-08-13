@@ -3,12 +3,14 @@ import { ShieldCheck, Bookmarks, Question, CaretRight, Scan, PencilSimple, Check
 import { useAppStore } from '../../store/useAppStore';
 import { getDefaultAvatar } from '../../utils/avatar';
 import FaceEnrollment from '../../components/FaceEnrollment';
+import ChangePasswordModal from '../../components/ChangePasswordModal';
 
 export default function Profile() {
   const { role, setRole, userProfile, updateUserProfile, logout } = useAppStore();
   
   const [isEditing, setIsEditing] = useState(false);
   const [showEnrollment, setShowEnrollment] = useState(false);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
   
   const [editForm, setEditForm] = useState({
     full_name: userProfile?.full_name || '',
@@ -133,7 +135,10 @@ export default function Profile() {
 
       {/* Settings list */}
       <div className="bg-white rounded-xl border border-[#e5e4e7] overflow-hidden divide-y divide-[#e5e4e7]">
-        <div className="p-3.5 flex justify-between items-center text-xs hover:bg-[#19414d]/5 transition-colors cursor-pointer">
+        <div 
+          onClick={() => setShowPasswordModal(true)}
+          className="p-3.5 flex justify-between items-center text-xs hover:bg-[#19414d]/5 transition-colors cursor-pointer"
+        >
           <div className="flex items-center gap-2.5 font-bold text-[#121212]">
             <ShieldCheck className="w-5 h-5 text-[#19414d]" weight="duotone" />
             Keamanan Akun
@@ -186,6 +191,10 @@ export default function Profile() {
           onSuccess={() => setShowEnrollment(false)}
           onCancel={() => setShowEnrollment(false)}
         />
+      )}
+
+      {showPasswordModal && (
+        <ChangePasswordModal onClose={() => setShowPasswordModal(false)} />
       )}
     </div>
   );
