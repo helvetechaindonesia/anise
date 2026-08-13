@@ -56,7 +56,17 @@ export default function Profile() {
               <PencilSimple className="w-4 h-4" />
             </button>
             <h3 className="text-base font-bold text-[#121212] mt-3">{userProfile?.full_name || 'Belum ada nama'}</h3>
-            <p className="text-xs text-[#6b6375]">Siswa {userProfile?.class_name || '-'} • NIS. {userProfile?.nis || '-'} • NISN. {userProfile?.nisn || '-'}</p>
+            <div className="flex flex-wrap justify-center items-center gap-2 mt-2">
+              <span className="px-2.5 py-1 bg-indigo-50 text-indigo-700 rounded-lg text-[10px] font-bold">
+                Kelas {userProfile?.class_name || '-'}
+              </span>
+              <span className="px-2.5 py-1 bg-zinc-100 text-[#6b6375] rounded-lg text-[10px] font-bold">
+                NIS: {userProfile?.nis || '-'}
+              </span>
+              <span className="px-2.5 py-1 bg-zinc-100 text-[#6b6375] rounded-lg text-[10px] font-bold">
+                NISN: {userProfile?.nisn || '-'}
+              </span>
+            </div>
           </>
         ) : (
           <div className="mt-4 space-y-3 px-2 text-left">
