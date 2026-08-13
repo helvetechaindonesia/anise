@@ -31,14 +31,14 @@ export default function KpiGuru() {
       </div>
 
       {/* Main KPI Card */}
-      <div className="bg-white rounded-3xl shadow-sm border border-[#e5e4e7] overflow-hidden relative">
+      <div className="bg-white rounded-3xl shadow-lg shadow-[#19414d]/5 border border-[#e5e4e7] overflow-hidden relative">
         {/* Header Periode */}
-        <div className="bg-[#f8fafc] p-4 border-b border-[#e5e4e7] flex items-center justify-between">
+        <div className="bg-gradient-to-r from-[#19414d] to-[#256173] p-4 flex items-center justify-between text-white">
           <div className="flex items-center gap-2">
-            <SealCheck className="w-5 h-5 text-[#19414d]" weight="fill" />
-            <span className="font-bold text-[#121212] text-sm">Predikat Kinerja</span>
+            <SealCheck className="w-6 h-6 text-emerald-400" weight="duotone" />
+            <span className="font-bold text-[15px] tracking-wide">Predikat Kinerja</span>
           </div>
-          <div className="bg-[#19414d]/10 text-[#19414d] px-3 py-1 rounded-full text-[10px] font-bold tracking-wide">
+          <div className="bg-white/20 text-white backdrop-blur-sm px-3 py-1 rounded-full text-[10px] font-bold tracking-wider border border-white/10 shadow-inner">
             {kpiData.periode}
           </div>
         </div>
@@ -46,36 +46,40 @@ export default function KpiGuru() {
         {/* Content */}
         <div className="divide-y divide-[#e5e4e7]">
           {/* Praktik Kinerja */}
-          <div className="p-5 flex justify-between items-start gap-4 hover:bg-[#f8fafc] transition-colors">
+          <div className="p-5 flex justify-between items-start gap-4 bg-blue-50/30 hover:bg-blue-50/60 transition-colors">
             <div className="flex-1">
-              <div className="flex items-center gap-2 mb-1">
-                <FileText className="w-4 h-4 text-[#6b6375]" weight="duotone" />
+              <div className="flex items-center gap-2 mb-1.5">
+                <div className="p-1.5 bg-blue-100 rounded-lg shrink-0">
+                  <FileText className="w-4 h-4 text-blue-600" weight="duotone" />
+                </div>
                 <h4 className="font-bold text-[#121212] text-sm">Praktik Kinerja</h4>
               </div>
-              <p className="text-[11px] text-[#6b6375] leading-relaxed">
+              <p className="text-[11px] text-[#6b6375] leading-relaxed ml-8">
                 Berdasarkan dokumen Tindak Lanjut dan Refleksi Tindak Lanjut.
               </p>
             </div>
-            <div className="shrink-0 text-right flex flex-col items-end">
-              <span className={`px-2.5 py-1 rounded-lg text-[10px] font-bold border ${getBadgeColor(kpiData.praktikKinerja)}`}>
+            <div className="shrink-0 text-right flex flex-col items-end pt-1">
+              <span className={`px-2.5 py-1 rounded-lg text-[10px] font-bold border ${getBadgeColor(kpiData.praktikKinerja)} shadow-sm`}>
                 {kpiData.praktikKinerja}
               </span>
             </div>
           </div>
 
           {/* Perilaku Kerja */}
-          <div className="p-5 flex justify-between items-start gap-4 hover:bg-[#f8fafc] transition-colors">
+          <div className="p-5 flex justify-between items-start gap-4 bg-purple-50/30 hover:bg-purple-50/60 transition-colors">
             <div className="flex-1">
-              <div className="flex items-center gap-2 mb-1">
-                <UsersThree className="w-4 h-4 text-[#6b6375]" weight="duotone" />
+              <div className="flex items-center gap-2 mb-1.5">
+                <div className="p-1.5 bg-purple-100 rounded-lg shrink-0">
+                  <UsersThree className="w-4 h-4 text-purple-600" weight="duotone" />
+                </div>
                 <h4 className="font-bold text-[#121212] text-sm">Perilaku Kerja</h4>
               </div>
-              <p className="text-[11px] text-[#6b6375] leading-relaxed">
+              <p className="text-[11px] text-[#6b6375] leading-relaxed ml-8">
                 Berdasarkan penilaian terhadap 7 aspek Perilaku Kerja.
               </p>
             </div>
-            <div className="shrink-0 text-right flex flex-col items-end">
-              <span className={`px-2.5 py-1 rounded-lg text-[10px] font-bold border ${getBadgeColor(kpiData.perilakuKerja)}`}>
+            <div className="shrink-0 text-right flex flex-col items-end pt-1">
+              <span className={`px-2.5 py-1 rounded-lg text-[10px] font-bold border ${getBadgeColor(kpiData.perilakuKerja)} shadow-sm`}>
                 {kpiData.perilakuKerja}
               </span>
             </div>
@@ -83,27 +87,29 @@ export default function KpiGuru() {
         </div>
 
         {/* Final Predikat */}
-        <div className="bg-gradient-to-r from-[#19414d]/5 to-transparent p-5 border-t border-[#e5e4e7]">
-          <div className="flex justify-between items-center mb-3">
-            <div className="flex items-center gap-2">
-              <Target className="w-5 h-5 text-[#19414d]" weight="duotone" />
+        <div className="bg-gradient-to-br from-emerald-50/80 to-blue-50/80 p-5 border-t border-emerald-100">
+          <div className="flex justify-between items-center mb-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-white rounded-xl shadow-sm border border-emerald-100 shrink-0">
+                <Target className="w-6 h-6 text-emerald-600" weight="duotone" />
+              </div>
               <div>
-                <h4 className="font-bold text-[#19414d] text-sm">Predikat Kinerja Akhir</h4>
-                <p className="text-[10px] text-[#6b6375] font-semibold mt-0.5">Total Skor: {kpiData.score} / 100</p>
+                <h4 className="font-bold text-[#121212] text-sm mb-0.5">Predikat Kinerja Akhir</h4>
+                <p className="text-[11px] text-[#6b6375] font-semibold">Total Skor: <span className="text-[#19414d] font-bold">{kpiData.score}</span> / 100</p>
               </div>
             </div>
-            <div className={`px-4 py-1.5 rounded-xl text-xs font-black border ${getBadgeColor(kpiData.predikatAkhir)} shadow-sm`}>
+            <div className={`px-4 py-2 rounded-xl text-xs font-black border ${getBadgeColor(kpiData.predikatAkhir)} shadow-md`}>
               {kpiData.predikatAkhir}
             </div>
           </div>
           
           {/* Progress Bar */}
-          <div className="w-full bg-[#e5e4e7] rounded-full h-2.5 overflow-hidden shadow-inner">
+          <div className="w-full bg-white rounded-full h-3 overflow-hidden shadow-inner border border-emerald-100/50">
             <div 
-              className={`h-full rounded-full transition-all duration-1000 ${
-                kpiData.score >= 90 ? 'bg-emerald-500' : 
-                kpiData.score >= 75 ? 'bg-blue-500' : 
-                'bg-amber-500'
+              className={`h-full rounded-full transition-all duration-1000 shadow-sm ${
+                kpiData.score >= 90 ? 'bg-gradient-to-r from-emerald-400 to-emerald-500' : 
+                kpiData.score >= 75 ? 'bg-gradient-to-r from-blue-400 to-blue-500' : 
+                'bg-gradient-to-r from-amber-400 to-amber-500'
               }`} 
               style={{ width: `${Math.min((kpiData.score / 100) * 100, 100)}%` }}
             ></div>
