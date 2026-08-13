@@ -38,38 +38,54 @@ export default function Profile() {
 
   return (
     <div className="space-y-6 pt-5 pb-10">
-      <div className="text-center py-4 relative">
-        <div className="w-24 h-24 rounded-full border-4 border-white shadow-lg mx-auto overflow-hidden bg-[#19414d]/5">
-          <img
-            src={userProfile?.avatar_url || getDefaultAvatar(userProfile?.gender)}
-            alt={userProfile?.full_name || "Profile"}
-            className="w-full h-full object-cover rounded-full"
-          />
-        </div>
-        
+      <div className="py-4">
         {!isEditing ? (
-          <>
-            <button 
-              onClick={() => setIsEditing(true)}
-              className="absolute top-4 right-4 p-2 bg-white rounded-full shadow-sm border border-[#e5e4e7] text-[#19414d] hover:bg-zinc-50"
-            >
-              <PencilSimple className="w-4 h-4" />
-            </button>
-            <h3 className="text-base font-bold text-[#121212] mt-3">{userProfile?.full_name || 'Belum ada nama'}</h3>
-            <div className="flex flex-wrap justify-center items-center gap-2 mt-2">
-              <span className="px-2.5 py-1 bg-indigo-50 text-indigo-700 rounded-lg text-[10px] font-bold">
-                Kelas {userProfile?.class_name || '-'}
-              </span>
-              <span className="px-2.5 py-1 bg-zinc-100 text-[#6b6375] rounded-lg text-[10px] font-bold">
-                NIS: {userProfile?.nis || '-'}
-              </span>
-              <span className="px-2.5 py-1 bg-zinc-100 text-[#6b6375] rounded-lg text-[10px] font-bold">
-                NISN: {userProfile?.nisn || '-'}
-              </span>
+          <div className="flex items-center gap-4 bg-white p-4 rounded-2xl border border-[#e5e4e7] shadow-sm">
+            <div className="w-20 h-20 shrink-0 rounded-full border-4 border-indigo-50 shadow-md overflow-hidden bg-[#19414d]/5">
+              <img
+                src={userProfile?.avatar_url || getDefaultAvatar(userProfile?.gender)}
+                alt={userProfile?.full_name || "Profile"}
+                className="w-full h-full object-cover rounded-full"
+              />
             </div>
-          </>
+            
+            <div className="flex-1 min-w-0">
+              <h3 className="text-base font-bold text-[#121212] leading-tight truncate">{userProfile?.full_name || 'Belum ada nama'}</h3>
+              
+              <div className="flex items-center gap-1.5 mt-1">
+                <span className="text-[11px] text-[#6b6375] font-medium">Kelas {userProfile?.class_name || '-'}</span>
+                <span className="text-[10px] text-[#d1d5db]">•</span>
+                <span className="text-[11px] text-[#6b6375] font-medium">NIS. {userProfile?.nis || '-'}</span>
+              </div>
+              
+              <div className="mt-0.5 mb-2.5">
+                <span className="text-[10px] text-[#9ca3af] font-semibold tracking-wide">NISN. {userProfile?.nisn || '-'}</span>
+              </div>
+              
+              <button 
+                onClick={() => setIsEditing(true)}
+                className="px-4 py-1.5 bg-[#19414d] text-white rounded-lg text-[10px] font-bold flex items-center gap-1.5 hover:bg-[#122e36] transition-colors shadow-sm inline-flex"
+              >
+                <PencilSimple className="w-3.5 h-3.5" weight="bold" />
+                Edit Profile
+              </button>
+            </div>
+          </div>
         ) : (
-          <div className="mt-4 space-y-3 px-2 text-left">
+          <div className="space-y-3 px-2 text-left bg-white p-4 rounded-2xl border border-[#e5e4e7] shadow-sm">
+            <div className="flex items-center gap-4 mb-4 pb-4 border-b border-[#e5e4e7]/50">
+              <div className="w-14 h-14 shrink-0 rounded-full border-2 border-indigo-50 overflow-hidden bg-[#19414d]/5">
+                <img
+                  src={userProfile?.avatar_url || getDefaultAvatar(userProfile?.gender)}
+                  alt={userProfile?.full_name || "Profile"}
+                  className="w-full h-full object-cover rounded-full"
+                />
+              </div>
+              <div>
+                <h4 className="text-sm font-bold text-[#121212]">Edit Data Profil</h4>
+                <p className="text-[10px] text-[#6b6375]">Pastikan data sesuai dengan aslinya</p>
+              </div>
+            </div>
             <div>
               <label className="text-[10px] font-bold text-[#6b6375] uppercase ml-1">Nama Lengkap</label>
               <input 
