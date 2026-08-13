@@ -38,7 +38,10 @@ const BottomNav: React.FC<BottomNavProps> = ({ activeTab, setActiveTab, startPre
         {/* Grid of 5 columns */}
         <div className="grid grid-cols-5 h-full items-center">
           {renderTab({ id: 'home', icon: House, label: 'Home' })}
-          {renderTab({ id: 'jurnal', icon: BookOpen, label: 'Jadwal' })}
+          {isGuru 
+            ? renderTab({ id: 'jurnal', icon: BookOpen, label: 'Jurnal' })
+            : renderTab({ id: 'jurnal', icon: BookOpen, label: 'Jadwal' })
+          }
           
           {/* Empty space for center button */}
           <div className="flex justify-center items-center pointer-events-none" />
