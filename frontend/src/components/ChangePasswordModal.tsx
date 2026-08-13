@@ -9,6 +9,7 @@ interface ChangePasswordModalProps {
 
 export default function ChangePasswordModal({ onClose }: ChangePasswordModalProps) {
   const token = useAppStore((state) => state.token);
+  const logout = useAppStore((state) => state.logout);
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -51,9 +52,10 @@ export default function ChangePasswordModal({ onClose }: ChangePasswordModalProp
       const data = await res.json();
       
       if (data.status === 'success') {
-        setSuccessMsg('Sandi berhasil diubah! Silakan login kembali dengan sandi baru jika diperlukan.');
+        setSuccessMsg('Sandi berhasil diubah! Mengeluarkan akun dalam 3 detik...');
         setTimeout(() => {
           onClose();
+          logout();
         }, 3000);
       } else {
         setErrorMsg(data.message || 'Gagal mengubah sandi');
