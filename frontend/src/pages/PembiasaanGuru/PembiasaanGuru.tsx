@@ -51,7 +51,7 @@ export default function PembiasaanGuru() {
       </div>
 
       {/* Summary Cards */}
-      <div className="flex gap-3 overflow-x-auto pb-2 snap-x hide-scrollbar -mx-4 px-4">
+      <div className="grid grid-cols-4 gap-2">
         {[
           { icon: Sun, label: 'Bangun', count: 156, color: 'emerald' },
           { icon: Star, label: 'Ibadah', count: 124, color: 'indigo' },
@@ -61,12 +61,12 @@ export default function PembiasaanGuru() {
           { icon: UsersThree, label: 'Sosial', count: 178, color: 'purple' },
           { icon: Moon, label: 'Tidur', count: 92, color: 'teal' },
         ].map((stat, i) => (
-          <div key={i} className={`bg-${stat.color}-50 rounded-2xl p-3 border border-${stat.color}-100 flex flex-col items-center justify-center text-center min-w-[80px] snap-center`}>
-            <div className={`w-8 h-8 bg-${stat.color}-200 text-${stat.color}-700 rounded-full flex items-center justify-center mb-1`}>
-              <stat.icon className="w-5 h-5" weight="fill" />
+          <div key={i} className={`bg-${stat.color}-50 rounded-2xl p-2 border border-${stat.color}-100 flex flex-col items-center justify-center text-center`}>
+            <div className={`w-6 h-6 bg-${stat.color}-200 text-${stat.color}-700 rounded-full flex items-center justify-center mb-1`}>
+              <stat.icon className="w-3.5 h-3.5" weight="fill" />
             </div>
-            <span className={`text-lg font-bold text-${stat.color}-800`}>{stat.count}</span>
-            <span className={`text-[9px] font-bold text-${stat.color}-600 uppercase`}>{stat.label}</span>
+            <span className={`text-sm font-bold text-${stat.color}-800`}>{stat.count}</span>
+            <span className={`text-[8px] font-bold text-${stat.color}-600 uppercase`}>{stat.label}</span>
           </div>
         ))}
       </div>
@@ -123,7 +123,7 @@ export default function PembiasaanGuru() {
                   </div>
                   
                   {/* Indicators */}
-                  <div className="flex gap-1.5 overflow-x-auto hide-scrollbar pb-1">
+                  <div className="flex flex-wrap gap-1.5 pt-1">
                     {[
                       { icon: Sun, label: 'Pagi' },
                       { icon: Star, label: 'Ibadah' },
