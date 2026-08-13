@@ -27,22 +27,28 @@ export default defineConfig({
         display: 'standalone',
         icons: [
           {
-            src: '/assets/Logo-apk.svg',
-            sizes: 'any',
-            type: 'image/svg+xml',
-            purpose: 'any maskable'
-          },
-          {
-            src: '/assets/pwa-192x192.png?v=2',
+            src: '/assets/pwa-192x192.png?v=3',
             sizes: '192x192',
             type: 'image/png',
-            purpose: 'any maskable'
+            purpose: 'any'
           },
           {
-            src: '/assets/pwa-512x512.png?v=2',
+            src: '/assets/pwa-512x512.png?v=3',
             sizes: '512x512',
             type: 'image/png',
-            purpose: 'any maskable'
+            purpose: 'any'
+          },
+          {
+            src: '/assets/pwa-192x192.png?v=3',
+            sizes: '192x192',
+            type: 'image/png',
+            purpose: 'maskable'
+          },
+          {
+            src: '/assets/pwa-512x512.png?v=3',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'maskable'
           }
         ]
       }
