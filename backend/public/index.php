@@ -3,7 +3,7 @@
 header("Content-Type: application/json");
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
+header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With, ngrok-skip-browser-warning");
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
@@ -1954,6 +1954,101 @@ if ($uri === '/api/siswa/habits/month' && $_SERVER['REQUEST_METHOD'] === 'GET') 
         $dailyCounts = $stmt->fetchAll();
 
         echo json_encode(['status' => 'success', 'data' => $dailyCounts]);
+    } catch (PDOException $e) {
+        http_response_code(500);
+        echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+    }
+    exit;
+}
+
+// Endpoint: Get Poin & Prestasi Siswa
+if ($uri === '/api/poin' && $_SERVER['REQUEST_METHOD'] === 'GET') {
+    $authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
+    if (empty($authHeader) && function_exists('apache_request_headers')) {
+        $headers = apache_request_headers();
+        $authHeader = $headers['Authorization'] ?? '';
+    }
+    $userId = null;
+    if (preg_match('/Bearer\s(\S+)/', $authHeader, $matches)) {
+        $payload = verify_jwt($matches[1], $jwt_secret);
+        if ($payload && isset($payload['user_id'])) $userId = $payload['user_id'];
+    }
+    if (!$userId) {
+        http_response_code(401);
+        echo json_encode(['status' => 'error', 'message' => 'Unauthorized']);
+        exit;
+    }
+
+    try {
+        // Get Active Academic Year
+        $stmtAY = $pdo->prepare("SELECT id FROM academic_years WHERE is_active = true LIMIT 1");
+        $stmtAY->execute();
+        $ay = $stmtAY->fetch();
+        $ayId = $ay ? $ay['id'] : null;
+
+        // Calculate Totals
+        $stmtTotals = $pdo->prepare("
+            SELECT type, SUM(points_change) as total
+            FROM student_point_logs
+            WHERE student_id = :uid AND academic_year_id = :ayid AND status = 'APPROVED'
+            GROUP BY type
+        ");
+        $stmtTotals->execute(['uid' => $userId, 'ayid' => $ayId]);
+        $totals = $stmtTotals->fetchAll();
+
+        $prestasi = 0;
+        $pelanggaran = 0;
+        foreach ($totals as $t) {
+            if ($t['type'] === 'PRESTASI') $prestasi = (int)$t['total'];
+            if ($t['type'] === 'PELANGGARAN') $pelanggaran = (int)$t['total'];
+        }
+
+        $baseScore = 100;
+        $finalScore = $baseScore + $prestasi - $pelanggaran;
+
+        $grade = 'Cukup';
+        if ($finalScore >= 90) $grade = 'Sangat Baik';
+        else if ($finalScore >= 75) $grade = 'Baik';
+        else if ($finalScore >= 60) $grade = 'Cukup';
+        else $grade = 'Kurang';
+
+        // Get History
+        $stmtHistory = $pdo->prepare("
+            SELECT l.id, r.title, r.category, l.type, l.points_change, l.description, l.incident_date, u.full_name as reporter_name
+            FROM student_point_logs l
+            JOIN point_rules r ON l.point_rule_id = r.id
+            LEFT JOIN users u ON l.reporter_id = u.id
+            WHERE l.student_id = :uid AND l.academic_year_id = :ayid AND l.status = 'APPROVED'
+            ORDER BY l.incident_date DESC, l.created_at DESC
+        ");
+        $stmtHistory->execute(['uid' => $userId, 'ayid' => $ayId]);
+        $historyRaw = $stmtHistory->fetchAll();
+
+        $history = array_map(function($h) {
+            $dateObj = new DateTime($h['incident_date']);
+            return [
+                'id' => $h['id'],
+                'title' => $h['title'],
+                'type' => strtolower($h['type']),
+                'category' => $h['category'],
+                'points' => (int)$h['points_change'],
+                'notes' => $h['description'],
+                'date' => $dateObj->format('d M Y'),
+                'reporter' => $h['reporter_name']
+            ];
+        }, $historyRaw);
+
+        echo json_encode([
+            'status' => 'success',
+            'data' => [
+                'baseScore' => $baseScore,
+                'totalPrestasi' => $prestasi,
+                'totalPelanggaran' => $pelanggaran,
+                'finalScore' => $finalScore,
+                'grade' => $grade,
+                'history' => $history
+            ]
+        ]);
     } catch (PDOException $e) {
         http_response_code(500);
         echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);

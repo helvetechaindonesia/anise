@@ -11,13 +11,14 @@ import { CheckCircle, Clock, XCircle, FileText, SpinnerGap } from '@phosphor-ico
 
 export default function Home() {
   const { setActiveTab, role, hasPresensiToday, startPresensi, userProfile, token, setSelectedTeacherFilter } = useAppStore();
-  const mutasiPoin = useDataStore((state) => state.mutasiPoin);
 
   const [teachers, setTeachers] = useState<any[]>([]);
   const [isLoadingTeachers, setIsLoadingTeachers] = useState(false);
 
   const [latestTasks, setLatestTasks] = useState<TugasItem[]>([]);
   const [isLoadingTasks, setIsLoadingTasks] = useState(false);
+
+  const [poinData, setPoinData] = useState<{ finalScore: number, grade: string } | null>(null);
 
   useEffect(() => {
     const fetchTeachers = async () => {
@@ -36,6 +37,7 @@ export default function Home() {
         setIsLoadingTeachers(false);
       }
     };
+    
     const fetchTasks = async () => {
       setIsLoadingTasks(true);
       try {
@@ -44,8 +46,6 @@ export default function Home() {
         });
         const data = await res.json();
         if (data.status === 'success') {
-          // Sort by newest due date or just take the first 7 as they might be sorted by backend
-          // We assume backend returns newest first, so we just slice 7
           setLatestTasks(data.data?.slice(0, 7) || []);
         }
       } catch (err) {
@@ -55,13 +55,27 @@ export default function Home() {
       }
     };
 
+    const fetchPoin = async () => {
+      try {
+        const res = await fetch(API_BASE_URL + '/api/poin', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+        if (data.status === 'success') {
+          setPoinData({ finalScore: data.data.finalScore, grade: data.data.grade });
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
     if (token && role === 'siswa') {
       fetchTeachers();
       fetchTasks();
+      fetchPoin();
     }
   }, [token, role]);
 
-  const totalPoin = 100 + mutasiPoin.reduce((acc, curr) => acc + curr.points, 0);
 
   const handleTeacherClick = (teacher: any) => {
     setSelectedTeacherFilter({ id: teacher.teacher_id, name: teacher.teacher_name });
@@ -84,9 +98,9 @@ export default function Home() {
             </div>
             <div className="flex items-center gap-2">
               <div className="flex-1 bg-emerald-100 rounded-full h-1.5 overflow-hidden">
-                <div className="bg-emerald-500 h-full rounded-full transition-all duration-500" style={{ width: `${Math.min((totalPoin / 100) * 100, 100)}%` }}></div>
+                <div className="bg-emerald-500 h-full rounded-full transition-all duration-500" style={{ width: `${Math.min(((poinData?.finalScore || 100) / 100) * 100, 100)}%` }}></div>
               </div>
-              <span className="text-[10px] font-extrabold text-[#6b6375] shrink-0">{Math.min(totalPoin, 100)} / 100 Poin</span>
+              <span className="text-[10px] font-extrabold text-[#6b6375] shrink-0">{poinData?.finalScore || 100} / 100 ({poinData?.grade || 'Baik'})</span>
             </div>
           </div>
         </div>
