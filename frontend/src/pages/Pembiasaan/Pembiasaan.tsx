@@ -238,7 +238,7 @@ export default function Pembiasaan() {
                 <PolarGrid stroke="#9ca3af" />
                 <PolarAngleAxis dataKey="subject" tick={{ fill: '#4b5563', fontSize: 10, fontWeight: 700 }} />
                 <PolarRadiusAxis angle={30} domain={[0, 31]} tick={false} axisLine={false} />
-                <Radar name="Skor" dataKey="A" stroke="#10b981" strokeWidth={2} fill="#10b981" fillOpacity={0.5} />
+                <Radar name="Skor" dataKey="A" stroke="#10b981" strokeWidth={2} fill="#10b981" fillOpacity={0.5} isAnimationActive={false} />
               </RadarChart>
             </div>
           </div>
