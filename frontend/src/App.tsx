@@ -21,6 +21,7 @@ import Login from './pages/Login/Login';
 import AgendaPenilaian from './pages/AgendaPenilaian/AgendaPenilaian';
 import LaporKesiswaan from './pages/Lapor/LaporKesiswaan';
 import UploadBerkas from './pages/UploadBerkas/UploadBerkas';
+import PembiasaanGuru from './pages/PembiasaanGuru/PembiasaanGuru';
 
 export default function App() {
   const { 
@@ -164,7 +165,7 @@ export default function App() {
       case 'home': return <Home />;
       case 'jurnal': return useAppStore.getState().userProfile?.role_type?.toLowerCase() === 'guru' ? <JurnalGuru /> : <Jurnal />;
       case 'daftar_tugas': return useAppStore.getState().userProfile?.role_type?.toLowerCase() === 'guru' ? <DaftarTugasGuru /> : <DaftarTugas />;
-      case 'pembiasaan': return <Pembiasaan />;
+      case 'pembiasaan': return useAppStore.getState().userProfile?.role_type?.toLowerCase() === 'guru' ? <PembiasaanGuru /> : <Pembiasaan />;
       case 'poin': return <Poin />;
       case 'notifikasi': return <Notifikasi />;
       case 'presensi': return <RiwayatPresensi />;
