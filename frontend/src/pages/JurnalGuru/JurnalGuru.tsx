@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
-import { CaretRight, BookOpen, Clock, Users, WarningCircle, CheckCircle, Warning, XCircle, Image as ImageIcon, Camera, Plus, CalendarBlank } from '@phosphor-icons/react';
+import React, { useState, useEffect } from 'react';
+import { CaretRight, BookOpen, Clock, WarningCircle, CheckCircle, Warning, QrCode, CalendarBlank, Plus } from '@phosphor-icons/react';
 import { useAppStore } from '../../store/useAppStore';
+import TambahJurnalGuru from './TambahJurnalGuru';
+import QRCode from 'react-qr-code';
 
 // --- Dashboard Component ---
-function JurnalDashboard({ onSelectJournal }: { onSelectJournal: (j: any) => void }) {
+function JurnalDashboard({ onSelectJournal, onAddJournal }: { onSelectJournal: (j: any) => void, onAddJournal: () => void }) {
   // Dummy history
   const dummyHistory = [
     { id: 101, class: '10 IPA 1', subject: 'Matematika', time: 'Senin, 07:15 - 08:45', status: 'completed', materi: 'Trigonometri Lanjut' },
@@ -19,7 +21,7 @@ function JurnalDashboard({ onSelectJournal }: { onSelectJournal: (j: any) => voi
           <p className="text-xs text-[#6b6375] font-medium mt-0.5">Riwayat KBM & Laporan</p>
         </div>
         <button 
-          onClick={() => onSelectJournal({ id: Date.now(), class: 'Pilih Kelas', subject: 'Pilih Mata Pelajaran', time: 'Sekarang', status: 'active', materi: '' })}
+          onClick={onAddJournal}
           className="w-10 h-10 bg-[#19414d] text-white rounded-full flex items-center justify-center shadow-lg hover:scale-105 transition-transform"
         >
           <Plus className="w-5 h-5" weight="bold" />
@@ -55,31 +57,19 @@ function JurnalDashboard({ onSelectJournal }: { onSelectJournal: (j: any) => voi
   );
 }
 
-// --- Detail/Form Component ---
-const dummyStudents = [
-  { id: 1, name: 'Ahmad Fauzi', nisn: '0012345678', gender: 'L' },
-  { id: 2, name: 'Bunga Lestari', nisn: '0012345679', gender: 'P' },
-  { id: 3, name: 'Chandra Wijaya', nisn: '0012345680', gender: 'L' },
-  { id: 4, name: 'Dina Mariana', nisn: '0012345681', gender: 'P' },
-  { id: 5, name: 'Eko Prasetyo', nisn: '0012345682', gender: 'L' },
-];
-
+// --- Detail/Form Component (VERIFIKASI / QR CODE PRESENSI) ---
 function DetailJurnalGuru({ journal, onBack }: { journal: any, onBack: () => void }) {
   const { userProfile } = useAppStore();
   const isCompleted = journal.status === 'completed';
 
-  const [materi, setMateri] = useState(isCompleted ? (journal.materi || 'Materi sudah diisi sebelumnya.') : '');
   const [catatan, setCatatan] = useState(isCompleted ? 'Tidak ada kejadian khusus.' : '');
-  const [presensi, setPresensi] = useState<Record<number, string>>(
-    dummyStudents.reduce((acc, student) => ({ ...acc, [student.id]: isCompleted ? 'H' : 'H' }), {})
-  );
-
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [showQR, setShowQR] = useState(false);
 
-  const handlePresensiChange = (studentId: number, status: string) => {
-    if (isCompleted) return;
-    setPresensi(prev => ({ ...prev, [studentId]: status }));
-  };
+  // Auto close QR code when completed
+  useEffect(() => {
+    if (isCompleted) setShowQR(false);
+  }, [isCompleted]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -96,8 +86,8 @@ function DetailJurnalGuru({ journal, onBack }: { journal: any, onBack: () => voi
         <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mb-4">
           <CheckCircle className="w-10 h-10 text-emerald-500" weight="fill" />
         </div>
-        <h2 className="text-xl font-bold text-[#19414d] mb-2">Jurnal Berhasil Disimpan</h2>
-        <p className="text-xs text-[#6b6375]">Laporan mengajar dan presensi kelas telah tercatat di sistem.</p>
+        <h2 className="text-xl font-bold text-[#19414d] mb-2">Verifikasi Berhasil</h2>
+        <p className="text-xs text-[#6b6375]">Sesi kelas dan catatan pelanggaran telah ditutup dan disimpan.</p>
       </div>
     );
   }
@@ -114,7 +104,7 @@ function DetailJurnalGuru({ journal, onBack }: { journal: any, onBack: () => voi
         </button>
         <div>
           <h2 className="text-xl font-bold text-[#19414d] leading-tight">Detail Jurnal</h2>
-          <p className="text-[11px] text-[#6b6375] mt-0.5">{isCompleted ? 'Arsip Laporan KBM' : 'Laporan KBM Harian'}</p>
+          <p className="text-[11px] text-[#6b6375] mt-0.5">{isCompleted ? 'Arsip Laporan KBM' : 'Verifikasi KBM Berjalan'}</p>
         </div>
       </div>
 
@@ -145,129 +135,88 @@ function DetailJurnalGuru({ journal, onBack }: { journal: any, onBack: () => voi
 
       <form onSubmit={handleSubmit} className="space-y-6">
         
-        {/* Materi Pembelajaran */}
-        <div className="space-y-3">
-          <div className="flex items-center gap-2">
-            <div className="p-2 bg-blue-50 rounded-xl">
-              <BookOpen className="w-5 h-5 text-blue-600" weight="duotone" />
-            </div>
-            <h3 className="font-bold text-[#121212] text-[15px]">Materi & Kegitan</h3>
-          </div>
-          <textarea 
-            required
-            rows={3}
-            disabled={isCompleted}
-            value={materi}
-            onChange={(e) => setMateri(e.target.value)}
-            placeholder="Tuliskan KD, materi pokok, atau deskripsi kegiatan belajar mengajar hari ini..."
-            className="w-full text-sm font-medium p-4 rounded-2xl border-2 border-[#e5e4e7] bg-white focus:outline-none focus:border-[#19414d] focus:ring-4 focus:ring-[#19414d]/10 transition-all resize-none shadow-sm placeholder:text-[#a09caf] disabled:bg-[#f8fafc] disabled:text-[#6b6375]"
-          />
-        </div>
-
-        {/* Presensi Kelas Jurnal */}
+        {/* Fitur Presensi QR Code */}
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="p-2 bg-purple-50 rounded-xl">
-                <Users className="w-5 h-5 text-purple-600" weight="duotone" />
+              <div className="p-2 bg-emerald-50 rounded-xl">
+                <QrCode className="w-5 h-5 text-emerald-600" weight="duotone" />
               </div>
-              <h3 className="font-bold text-[#121212] text-[15px]">Presensi Jurnal</h3>
+              <h3 className="font-bold text-[#121212] text-[15px]">Presensi Jurnal (Otomatis)</h3>
             </div>
-            <span className="text-[10px] bg-[#e5e4e7] text-[#6b6375] px-2 py-1 rounded-md font-bold">
-              {dummyStudents.length} Siswa
-            </span>
           </div>
           
-          <div className="bg-white rounded-2xl border-2 border-[#e5e4e7] shadow-sm overflow-hidden">
-            <div className="p-3 bg-[#f8fafc] border-b border-[#e5e4e7] grid grid-cols-12 gap-2 text-[10px] font-bold text-[#6b6375] uppercase tracking-wider text-center">
-              <div className="col-span-6 text-left pl-2">Nama Siswa</div>
-              <div className="col-span-6">Status</div>
-            </div>
-            
-            <div className="divide-y divide-[#e5e4e7]/60">
-              {dummyStudents.map((student) => {
-                const status = presensi[student.id];
-                const isAbsent = status !== 'H';
+          <div className="bg-white rounded-2xl border-2 border-[#e5e4e7] shadow-sm p-5 flex flex-col items-center justify-center text-center space-y-4">
+            {isCompleted ? (
+              <div className="flex flex-col items-center gap-2 py-4">
+                <CheckCircle className="w-12 h-12 text-emerald-500" weight="fill" />
+                <div>
+                  <p className="font-bold text-[#121212]">Presensi Selesai</p>
+                  <p className="text-[11px] text-[#6b6375] mt-1">Sesi KBM ini telah ditutup, presensi tidak dapat diakses lagi.</p>
+                </div>
+              </div>
+            ) : showQR ? (
+              <div className="animate-in zoom-in duration-300 w-full flex flex-col items-center">
+                <div className="bg-white p-4 rounded-xl border-2 border-[#19414d] shadow-lg mb-3">
+                  <QRCode value={`anise-jurnal-${journal.id}-${Date.now()}`} size={160} fgColor="#19414d" />
+                </div>
+                <p className="text-xs font-bold text-[#19414d]">Minta siswa memindai QR Code ini</p>
+                <p className="text-[10px] text-[#6b6375] mt-1">QR Code akan kadaluarsa otomatis saat sesi ditutup.</p>
                 
-                return (
-                  <div key={student.id} className={`p-3 grid grid-cols-12 gap-2 items-center transition-colors ${isAbsent ? 'bg-rose-50/30' : 'hover:bg-[#f8fafc]'}`}>
-                    <div className="col-span-6 pl-2">
-                      <p className={`text-xs font-bold leading-tight truncate ${isAbsent ? 'text-rose-900' : 'text-[#121212]'}`}>{student.name}</p>
-                      <p className="text-[9px] text-[#6b6375] mt-0.5">{student.nisn}</p>
-                    </div>
-                    
-                    <div className="col-span-6 flex justify-end gap-1 pr-2">
-                      <button 
-                        type="button"
-                        onClick={() => handlePresensiChange(student.id, 'H')}
-                        disabled={isCompleted}
-                        className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-[10px] font-black transition-all ${
-                          status === 'H' ? 'bg-emerald-100 text-emerald-700 ring-2 ring-emerald-500 ring-offset-1' : 'bg-[#f0f0f0] text-[#a09caf]'
-                        }`}
-                      >
-                        H
-                      </button>
-                      <button 
-                        type="button"
-                        onClick={() => handlePresensiChange(student.id, 'S')}
-                        disabled={isCompleted}
-                        className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-[10px] font-black transition-all ${
-                          status === 'S' ? 'bg-blue-100 text-blue-700 ring-2 ring-blue-500 ring-offset-1' : 'bg-[#f0f0f0] text-[#a09caf]'
-                        }`}
-                      >
-                        S
-                      </button>
-                      <button 
-                        type="button"
-                        onClick={() => handlePresensiChange(student.id, 'I')}
-                        disabled={isCompleted}
-                        className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-[10px] font-black transition-all ${
-                          status === 'I' ? 'bg-amber-100 text-amber-700 ring-2 ring-amber-500 ring-offset-1' : 'bg-[#f0f0f0] text-[#a09caf]'
-                        }`}
-                      >
-                        I
-                      </button>
-                      <button 
-                        type="button"
-                        onClick={() => handlePresensiChange(student.id, 'A')}
-                        disabled={isCompleted}
-                        className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-[10px] font-black transition-all ${
-                          status === 'A' ? 'bg-rose-100 text-rose-700 ring-2 ring-rose-500 ring-offset-1' : 'bg-[#f0f0f0] text-[#a09caf]'
-                        }`}
-                      >
-                        A
-                      </button>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+                <button 
+                  type="button"
+                  onClick={() => setShowQR(false)}
+                  className="mt-4 px-4 py-1.5 text-xs font-bold text-rose-500 hover:bg-rose-50 rounded-full transition-colors"
+                >
+                  Tutup QR Code
+                </button>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center gap-3 py-2 w-full">
+                <div className="w-16 h-16 bg-[#f8fafc] rounded-full flex items-center justify-center border border-[#e5e4e7]">
+                  <QrCode className="w-8 h-8 text-[#6b6375]" weight="duotone" />
+                </div>
+                <div>
+                  <p className="text-xs text-[#6b6375]">Siswa akan mencatat kehadiran secara otomatis dengan memindai QR dari HP Anda.</p>
+                </div>
+                <button 
+                  type="button"
+                  onClick={() => setShowQR(true)}
+                  className="w-full mt-2 py-2.5 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-xl font-bold text-sm shadow-sm hover:bg-emerald-100 transition-colors flex justify-center items-center gap-2"
+                >
+                  <QrCode className="w-4 h-4" weight="bold" />
+                  Hasilkan QR Presensi
+                </button>
+              </div>
+            )}
           </div>
-          <p className="text-[10px] font-semibold text-[#6b6375] pl-2 flex items-center gap-1.5">
-            <WarningCircle className="w-3.5 h-3.5" />
-            H: Hadir, S: Sakit, I: Izin, A: Alfa
-          </p>
         </div>
 
-        {/* Catatan Tambahan */}
+        {/* Catatan Tambahan / Pelanggaran */}
         <div className="space-y-3 pb-8">
           <div className="flex items-center gap-2">
             <div className="p-2 bg-amber-50 rounded-xl">
               <Warning className="w-5 h-5 text-amber-600" weight="duotone" />
             </div>
-            <h3 className="font-bold text-[#121212] text-[15px]">Catatan / Kejadian</h3>
+            <h3 className="font-bold text-[#121212] text-[15px]">Catatan / Insiden Kelas</h3>
           </div>
           <textarea 
-            rows={2}
+            rows={3}
             disabled={isCompleted}
             value={catatan}
             onChange={(e) => setCatatan(e.target.value)}
-            placeholder="Tidak ada catatan (opsional)..."
+            placeholder="Tuliskan jika ada siswa bermasalah, indisipliner, atau kejadian khusus (opsional)..."
             className="w-full text-sm font-medium p-4 rounded-2xl border-2 border-[#e5e4e7] bg-white focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-500/10 transition-all resize-none shadow-sm placeholder:text-[#a09caf] disabled:bg-[#f8fafc] disabled:text-[#6b6375]"
           />
+          {!isCompleted && (
+            <p className="text-[10px] font-semibold text-[#6b6375] pl-2 flex items-center gap-1.5">
+              <WarningCircle className="w-3.5 h-3.5" />
+              Siswa yang dicatat di sini dapat dilanjutkan ke Lapor Kesiswaan
+            </p>
+          )}
         </div>
 
-        {/* Submit Action */}
+        {/* Submit Action (Tutup Sesi) */}
         {!isCompleted && (
           <div className="fixed bottom-0 left-0 right-0 p-4 bg-white/80 backdrop-blur-md border-t border-[#e5e4e7] z-40 max-w-md mx-auto">
             <button 
@@ -275,7 +224,7 @@ function DetailJurnalGuru({ journal, onBack }: { journal: any, onBack: () => voi
               className="w-full py-3.5 bg-[#19414d] text-white rounded-xl font-bold text-sm shadow-lg shadow-[#19414d]/20 hover:bg-[#122e36] active:scale-[0.98] transition-all flex justify-center items-center gap-2"
             >
               <CheckCircle className="w-5 h-5" weight="bold" />
-              Simpan Jurnal & Presensi
+              Tutup & Verifikasi Sesi
             </button>
           </div>
         )}
@@ -287,6 +236,11 @@ function DetailJurnalGuru({ journal, onBack }: { journal: any, onBack: () => voi
 // --- Main Export ---
 export default function JurnalGuru() {
   const { selectedJournalGuru, setSelectedJournalGuru } = useAppStore();
+  const [isCreatingNew, setIsCreatingNew] = useState(false);
+
+  if (isCreatingNew) {
+    return <TambahJurnalGuru onBack={() => setIsCreatingNew(false)} />;
+  }
 
   if (selectedJournalGuru) {
     return (
@@ -297,5 +251,5 @@ export default function JurnalGuru() {
     );
   }
 
-  return <JurnalDashboard onSelectJournal={setSelectedJournalGuru} />;
+  return <JurnalDashboard onSelectJournal={setSelectedJournalGuru} onAddJournal={() => setIsCreatingNew(true)} />;
 }
