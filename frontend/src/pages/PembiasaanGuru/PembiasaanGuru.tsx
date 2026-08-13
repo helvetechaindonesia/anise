@@ -1,30 +1,30 @@
 import React, { useState } from 'react';
-import { MagnifyingGlass, FunnelSimple, CheckCircle, WarningCircle, BookBookmark, HandCoins, Users, X } from '@phosphor-icons/react';
+import { MagnifyingGlass, FunnelSimple, CheckCircle, WarningCircle, BookBookmark, HandCoins, Users, X, Sun, Star, Basketball, ForkKnife, BookOpen, UsersThree, Moon } from '@phosphor-icons/react';
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer } from 'recharts';
 import { getDefaultAvatar } from '../../utils/avatar';
 
-// Mock data
+// Mock data based on 7 habits
 const mockStudents = [
-  { id: 1, name: 'Aditya Pratama', kelas: '10 IPA 1', sholat: true, sedekah: false, bacaBuku: true, stats: [
-    { subject: 'Dhuha', A: 80, fullMark: 100 }, { subject: 'Sedekah', A: 40, fullMark: 100 }, { subject: 'Literasi', A: 90, fullMark: 100 }, { subject: 'Disiplin', A: 70, fullMark: 100 }, { subject: 'Sikap', A: 85, fullMark: 100 }
+  { id: 1, name: 'Aditya Pratama', kelas: '10 IPA 1', habits: [true, false, true, true, false, true, false], stats: [
+    { subject: 'Bangun Pagi', A: 80, fullMark: 100 }, { subject: 'Beribadah', A: 40, fullMark: 100 }, { subject: 'Berolahraga', A: 90, fullMark: 100 }, { subject: 'Makan Sehat', A: 70, fullMark: 100 }, { subject: 'Belajar', A: 85, fullMark: 100 }, { subject: 'Sosial', A: 60, fullMark: 100 }, { subject: 'Tidur', A: 50, fullMark: 100 }
   ]},
-  { id: 2, name: 'Budi Santoso', kelas: '10 IPA 1', sholat: true, sedekah: true, bacaBuku: true, stats: [
-    { subject: 'Dhuha', A: 90, fullMark: 100 }, { subject: 'Sedekah', A: 85, fullMark: 100 }, { subject: 'Literasi', A: 80, fullMark: 100 }, { subject: 'Disiplin', A: 95, fullMark: 100 }, { subject: 'Sikap', A: 90, fullMark: 100 }
+  { id: 2, name: 'Budi Santoso', kelas: '10 IPA 1', habits: [true, true, true, true, true, true, true], stats: [
+    { subject: 'Bangun Pagi', A: 90, fullMark: 100 }, { subject: 'Beribadah', A: 85, fullMark: 100 }, { subject: 'Berolahraga', A: 80, fullMark: 100 }, { subject: 'Makan Sehat', A: 95, fullMark: 100 }, { subject: 'Belajar', A: 90, fullMark: 100 }, { subject: 'Sosial', A: 95, fullMark: 100 }, { subject: 'Tidur', A: 90, fullMark: 100 }
   ]},
-  { id: 3, name: 'Citra Kirana', kelas: '10 IPS 2', sholat: false, sedekah: false, bacaBuku: false, stats: [
-    { subject: 'Dhuha', A: 30, fullMark: 100 }, { subject: 'Sedekah', A: 20, fullMark: 100 }, { subject: 'Literasi', A: 40, fullMark: 100 }, { subject: 'Disiplin', A: 50, fullMark: 100 }, { subject: 'Sikap', A: 60, fullMark: 100 }
+  { id: 3, name: 'Citra Kirana', kelas: '10 IPS 2', habits: [false, false, false, true, false, false, false], stats: [
+    { subject: 'Bangun Pagi', A: 30, fullMark: 100 }, { subject: 'Beribadah', A: 20, fullMark: 100 }, { subject: 'Berolahraga', A: 40, fullMark: 100 }, { subject: 'Makan Sehat', A: 50, fullMark: 100 }, { subject: 'Belajar', A: 60, fullMark: 100 }, { subject: 'Sosial', A: 40, fullMark: 100 }, { subject: 'Tidur', A: 30, fullMark: 100 }
   ]},
-  { id: 4, name: 'Dewi Lestari', kelas: '11 IPA 2', sholat: true, sedekah: false, bacaBuku: false, stats: [
-    { subject: 'Dhuha', A: 85, fullMark: 100 }, { subject: 'Sedekah', A: 30, fullMark: 100 }, { subject: 'Literasi', A: 50, fullMark: 100 }, { subject: 'Disiplin', A: 75, fullMark: 100 }, { subject: 'Sikap', A: 80, fullMark: 100 }
+  { id: 4, name: 'Dewi Lestari', kelas: '11 IPA 2', habits: [true, true, false, true, true, false, true], stats: [
+    { subject: 'Bangun Pagi', A: 85, fullMark: 100 }, { subject: 'Beribadah', A: 80, fullMark: 100 }, { subject: 'Berolahraga', A: 30, fullMark: 100 }, { subject: 'Makan Sehat', A: 75, fullMark: 100 }, { subject: 'Belajar', A: 80, fullMark: 100 }, { subject: 'Sosial', A: 50, fullMark: 100 }, { subject: 'Tidur', A: 85, fullMark: 100 }
   ]},
-  { id: 5, name: 'Eko Patrio', kelas: '11 IPS 1', sholat: false, sedekah: true, bacaBuku: true, stats: [
-    { subject: 'Dhuha', A: 45, fullMark: 100 }, { subject: 'Sedekah', A: 90, fullMark: 100 }, { subject: 'Literasi', A: 85, fullMark: 100 }, { subject: 'Disiplin', A: 65, fullMark: 100 }, { subject: 'Sikap', A: 70, fullMark: 100 }
+  { id: 5, name: 'Eko Patrio', kelas: '11 IPS 1', habits: [false, true, true, true, true, true, false], stats: [
+    { subject: 'Bangun Pagi', A: 45, fullMark: 100 }, { subject: 'Beribadah', A: 90, fullMark: 100 }, { subject: 'Berolahraga', A: 85, fullMark: 100 }, { subject: 'Makan Sehat', A: 85, fullMark: 100 }, { subject: 'Belajar', A: 70, fullMark: 100 }, { subject: 'Sosial', A: 80, fullMark: 100 }, { subject: 'Tidur', A: 40, fullMark: 100 }
   ]},
-  { id: 6, name: 'Fajar Nugraha', kelas: '12 IPA 1', sholat: true, sedekah: true, bacaBuku: false, stats: [
-    { subject: 'Dhuha', A: 95, fullMark: 100 }, { subject: 'Sedekah', A: 80, fullMark: 100 }, { subject: 'Literasi', A: 45, fullMark: 100 }, { subject: 'Disiplin', A: 85, fullMark: 100 }, { subject: 'Sikap', A: 75, fullMark: 100 }
+  { id: 6, name: 'Fajar Nugraha', kelas: '12 IPA 1', habits: [true, true, true, true, false, false, true], stats: [
+    { subject: 'Bangun Pagi', A: 95, fullMark: 100 }, { subject: 'Beribadah', A: 80, fullMark: 100 }, { subject: 'Berolahraga', A: 75, fullMark: 100 }, { subject: 'Makan Sehat', A: 85, fullMark: 100 }, { subject: 'Belajar', A: 40, fullMark: 100 }, { subject: 'Sosial', A: 50, fullMark: 100 }, { subject: 'Tidur', A: 90, fullMark: 100 }
   ]},
-  { id: 7, name: 'Gita Gutawa', kelas: '12 IPS 2', sholat: true, sedekah: true, bacaBuku: true, stats: [
-    { subject: 'Dhuha', A: 90, fullMark: 100 }, { subject: 'Sedekah', A: 95, fullMark: 100 }, { subject: 'Literasi', A: 90, fullMark: 100 }, { subject: 'Disiplin', A: 90, fullMark: 100 }, { subject: 'Sikap', A: 95, fullMark: 100 }
+  { id: 7, name: 'Gita Gutawa', kelas: '12 IPS 2', habits: [true, true, true, true, true, true, true], stats: [
+    { subject: 'Bangun Pagi', A: 90, fullMark: 100 }, { subject: 'Beribadah', A: 95, fullMark: 100 }, { subject: 'Berolahraga', A: 90, fullMark: 100 }, { subject: 'Makan Sehat', A: 90, fullMark: 100 }, { subject: 'Belajar', A: 95, fullMark: 100 }, { subject: 'Sosial', A: 95, fullMark: 100 }, { subject: 'Tidur', A: 90, fullMark: 100 }
   ]},
 ];
 
@@ -38,11 +38,7 @@ export default function PembiasaanGuru() {
   );
 
   const getCompletedCount = (student: typeof mockStudents[0]) => {
-    let count = 0;
-    if (student.sholat) count++;
-    if (student.sedekah) count++;
-    if (student.bacaBuku) count++;
-    return count;
+    return student.habits.filter(Boolean).length;
   };
 
   return (
@@ -55,28 +51,24 @@ export default function PembiasaanGuru() {
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-3 gap-3">
-        <div className="bg-emerald-50 rounded-2xl p-3 border border-emerald-100 flex flex-col items-center justify-center text-center">
-          <div className="w-8 h-8 bg-emerald-200 text-emerald-700 rounded-full flex items-center justify-center mb-1">
-            <CheckCircle className="w-5 h-5" weight="fill" />
+      <div className="flex gap-3 overflow-x-auto pb-2 snap-x hide-scrollbar -mx-4 px-4">
+        {[
+          { icon: Sun, label: 'Bangun', count: 156, color: 'emerald' },
+          { icon: Star, label: 'Ibadah', count: 124, color: 'indigo' },
+          { icon: Basketball, label: 'Olahraga', count: 89, color: 'rose' },
+          { icon: ForkKnife, label: 'Makan', count: 210, color: 'amber' },
+          { icon: BookOpen, label: 'Belajar', count: 145, color: 'blue' },
+          { icon: UsersThree, label: 'Sosial', count: 178, color: 'purple' },
+          { icon: Moon, label: 'Tidur', count: 92, color: 'teal' },
+        ].map((stat, i) => (
+          <div key={i} className={`bg-${stat.color}-50 rounded-2xl p-3 border border-${stat.color}-100 flex flex-col items-center justify-center text-center min-w-[80px] snap-center`}>
+            <div className={`w-8 h-8 bg-${stat.color}-200 text-${stat.color}-700 rounded-full flex items-center justify-center mb-1`}>
+              <stat.icon className="w-5 h-5" weight="fill" />
+            </div>
+            <span className={`text-lg font-bold text-${stat.color}-800`}>{stat.count}</span>
+            <span className={`text-[9px] font-bold text-${stat.color}-600 uppercase`}>{stat.label}</span>
           </div>
-          <span className="text-lg font-bold text-emerald-800">124</span>
-          <span className="text-[9px] font-bold text-emerald-600 uppercase">Sholat Dhuha</span>
-        </div>
-        <div className="bg-amber-50 rounded-2xl p-3 border border-amber-100 flex flex-col items-center justify-center text-center">
-          <div className="w-8 h-8 bg-amber-200 text-amber-700 rounded-full flex items-center justify-center mb-1">
-            <HandCoins className="w-5 h-5" weight="fill" />
-          </div>
-          <span className="text-lg font-bold text-amber-800">89</span>
-          <span className="text-[9px] font-bold text-amber-600 uppercase">Sedekah</span>
-        </div>
-        <div className="bg-indigo-50 rounded-2xl p-3 border border-indigo-100 flex flex-col items-center justify-center text-center">
-          <div className="w-8 h-8 bg-indigo-200 text-indigo-700 rounded-full flex items-center justify-center mb-1">
-            <BookBookmark className="w-5 h-5" weight="fill" />
-          </div>
-          <span className="text-lg font-bold text-indigo-800">210</span>
-          <span className="text-[9px] font-bold text-indigo-600 uppercase">Membaca</span>
-        </div>
+        ))}
       </div>
 
       {/* Search Bar */}
@@ -125,25 +117,27 @@ export default function PembiasaanGuru() {
                       <h4 className="text-xs font-bold text-[#121212]">{student.name}</h4>
                       <p className="text-[10px] font-medium text-[#6b6375]">{student.kelas}</p>
                     </div>
-                    <div className={`px-2 py-0.5 rounded text-[9px] font-bold ${completed === 3 ? 'bg-emerald-100 text-emerald-700' : completed > 0 ? 'bg-amber-100 text-amber-700' : 'bg-rose-100 text-rose-700'}`}>
-                      {completed}/3 Selesai
+                    <div className={`px-2 py-0.5 rounded text-[9px] font-bold ${completed === 7 ? 'bg-emerald-100 text-emerald-700' : completed > 0 ? 'bg-amber-100 text-amber-700' : 'bg-rose-100 text-rose-700'}`}>
+                      {completed}/7 Selesai
                     </div>
                   </div>
                   
                   {/* Indicators */}
-                  <div className="flex gap-2">
-                    <div className={`flex items-center gap-1 px-1.5 py-1 rounded border ${student.sholat ? 'bg-emerald-50 border-emerald-100 text-emerald-600' : 'bg-gray-50 border-gray-100 text-gray-400'}`}>
-                      {student.sholat ? <CheckCircle className="w-3 h-3" weight="fill" /> : <WarningCircle className="w-3 h-3" />}
-                      <span className="text-[9px] font-bold">Dhuha</span>
-                    </div>
-                    <div className={`flex items-center gap-1 px-1.5 py-1 rounded border ${student.sedekah ? 'bg-emerald-50 border-emerald-100 text-emerald-600' : 'bg-gray-50 border-gray-100 text-gray-400'}`}>
-                      {student.sedekah ? <CheckCircle className="w-3 h-3" weight="fill" /> : <WarningCircle className="w-3 h-3" />}
-                      <span className="text-[9px] font-bold">Sedekah</span>
-                    </div>
-                    <div className={`flex items-center gap-1 px-1.5 py-1 rounded border ${student.bacaBuku ? 'bg-emerald-50 border-emerald-100 text-emerald-600' : 'bg-gray-50 border-gray-100 text-gray-400'}`}>
-                      {student.bacaBuku ? <CheckCircle className="w-3 h-3" weight="fill" /> : <WarningCircle className="w-3 h-3" />}
-                      <span className="text-[9px] font-bold">Membaca</span>
-                    </div>
+                  <div className="flex gap-1.5 overflow-x-auto hide-scrollbar pb-1">
+                    {[
+                      { icon: Sun, label: 'Pagi' },
+                      { icon: Star, label: 'Ibadah' },
+                      { icon: Basketball, label: 'Olah' },
+                      { icon: ForkKnife, label: 'Makan' },
+                      { icon: BookOpen, label: 'Belajar' },
+                      { icon: UsersThree, label: 'Sosial' },
+                      { icon: Moon, label: 'Tidur' },
+                    ].map((item, idx) => (
+                      <div key={idx} className={`flex items-center gap-1 px-1.5 py-1 rounded border shrink-0 ${student.habits[idx] ? 'bg-emerald-50 border-emerald-100 text-emerald-600' : 'bg-gray-50 border-gray-100 text-gray-400'}`}>
+                        <item.icon className="w-3 h-3" weight={student.habits[idx] ? "fill" : "regular"} />
+                        <span className="text-[9px] font-bold">{item.label}</span>
+                      </div>
+                    ))}
                   </div>
                 </div>
               );
@@ -208,7 +202,7 @@ export default function PembiasaanGuru() {
                 <div className="bg-[#fcfbf7] p-3 rounded-xl border border-[#e5e4e7]">
                   <p className="text-[10px] text-[#6b6375] font-semibold mb-1">Konsistensi</p>
                   <p className="text-xl font-black text-emerald-600">
-                    {getCompletedCount(selectedStudent) === 3 ? 'Tinggi' : getCompletedCount(selectedStudent) > 0 ? 'Sedang' : 'Rendah'}
+                    {getCompletedCount(selectedStudent) === 7 ? 'Tinggi' : getCompletedCount(selectedStudent) >= 4 ? 'Sedang' : 'Rendah'}
                   </p>
                 </div>
               </div>
