@@ -9,7 +9,8 @@ interface BottomNavProps {
 }
 
 const BottomNav: React.FC<BottomNavProps> = ({ activeTab, setActiveTab, startPresensi }) => {
-  const role = useAppStore(state => state.role);
+  const userProfile = useAppStore(state => state.userProfile);
+  const isGuru = userProfile?.role_type?.toLowerCase() === 'guru';
 
   const renderTab = (tab: { id: string; icon: any; label: string }) => {
     const isActive = activeTab === tab.id;
@@ -42,7 +43,7 @@ const BottomNav: React.FC<BottomNavProps> = ({ activeTab, setActiveTab, startPre
           {/* Empty space for center button */}
           <div className="flex justify-center items-center pointer-events-none" />
 
-          {role === 'guru' 
+          {isGuru 
             ? renderTab({ id: 'poin', icon: ChartLineUp, label: 'KPI' })
             : renderTab({ id: 'poin', icon: Trophy, label: 'Poin' })
           }

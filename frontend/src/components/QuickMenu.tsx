@@ -1,5 +1,5 @@
 import React from 'react';
-import { Scan, Notebook, CheckSquareOffset, ClipboardText, WarningCircle, Sparkle, Trophy, BookBookmark } from '@phosphor-icons/react';
+import { Scan, Notebook, CheckSquareOffset, ClipboardText, WarningCircle, Sparkle, Trophy, BookBookmark, ChartLineUp } from '@phosphor-icons/react';
 import { useAppStore } from '../store/useAppStore';
 
 interface QuickMenuProps {
@@ -9,6 +9,9 @@ interface QuickMenuProps {
 
 const QuickMenu: React.FC<QuickMenuProps> = ({ startPresensi, setActiveTab }) => {
   const setShowAiChat = useAppStore((state) => state.setShowAiChat);
+  const userProfile = useAppStore((state) => state.userProfile);
+  const isGuru = userProfile?.role_type?.toLowerCase() === 'guru';
+
   return (
     <div className="!mt-8">
       <h4 className="text-xs font-bold text-[#6b6375] uppercase tracking-wider mb-3">Layanan Cepat</h4>
@@ -61,9 +64,9 @@ const QuickMenu: React.FC<QuickMenuProps> = ({ startPresensi, setActiveTab }) =>
           className="flex flex-col items-center justify-center text-center cursor-pointer group"
         >
           <div className="w-12 h-12 rounded-full bg-[#19414d] flex items-center justify-center text-white shadow-lg shadow-[#19414d]/20 group-hover:scale-105 active:scale-95 transition-all">
-            <Trophy className="w-6 h-6" weight="duotone" />
+            {isGuru ? <ChartLineUp className="w-6 h-6" weight="duotone" /> : <Trophy className="w-6 h-6" weight="duotone" />}
           </div>
-          <span className="text-[10px] font-bold mt-2.5 text-[#121212] tracking-tight leading-tight">Poin & Prestasi</span>
+          <span className="text-[10px] font-bold mt-2.5 text-[#121212] tracking-tight leading-tight">{isGuru ? 'KPI' : 'Poin & Prestasi'}</span>
         </button>
 
         <button 

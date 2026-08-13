@@ -22,7 +22,8 @@ interface PoinData {
 }
 
 export default function Poin() {
-  const { token, role } = useAppStore();
+  const { token, userProfile } = useAppStore();
+  const isGuru = userProfile?.role_type?.toLowerCase() === 'guru';
   const [data, setData] = useState<PoinData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
@@ -71,10 +72,10 @@ export default function Poin() {
     <div className="space-y-6 pt-5 animate-in fade-in duration-200">
       <div>
         <h2 className="text-xl font-bold text-[#19414d]">
-          {role === 'guru' ? 'Key Performance Indicator (KPI)' : 'Poin & Prestasi'}
+          {isGuru ? 'Key Performance Indicator (KPI)' : 'Poin & Prestasi'}
         </h2>
         <p className="text-xs text-[#6b6375]">
-          {role === 'guru' ? 'Akumulasi penilaian kinerja Anda' : 'Akumulasi nilai karakter selama tahun ajaran ini'}
+          {isGuru ? 'Akumulasi penilaian kinerja Anda' : 'Akumulasi nilai karakter selama tahun ajaran ini'}
         </p>
       </div>
 
