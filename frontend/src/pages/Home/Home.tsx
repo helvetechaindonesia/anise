@@ -95,9 +95,9 @@ export default function Home() {
         } else {
           // Dummy data fallback for demo
           setLatestTasks([
-            { id: 201, title: 'Tugas Proyek Tengah Semester', subject: 'Matematika - 10 IPA 1', due: 'Besok, 23:59', status: 'Belum Dikerjakan' },
-            { id: 202, title: 'Latihan Soal Matriks', subject: 'Matematika - 11 IPA 1', due: 'Senin Depan', status: 'Belum Dikerjakan' },
-            { id: 203, title: 'Tugas Harian 1', subject: 'Matematika - 10 IPS 2', due: 'Selesai', status: 'Selesai' },
+            { id: '201', title: 'Tugas Proyek Tengah Semester', subject: 'Matematika - 10 IPA 1', due: 'Besok, 23:59', status: 'Belum Dikerjakan', desc: '', points: 100 },
+            { id: '202', title: 'Latihan Soal Matriks', subject: 'Matematika - 11 IPA 1', due: 'Senin Depan', status: 'Belum Dikerjakan', desc: '', points: 100 },
+            { id: '203', title: 'Tugas Harian 1', subject: 'Matematika - 10 IPS 2', due: 'Selesai', status: 'Selesai', desc: '', points: 100 },
           ]);
         }
       } catch (err) {
