@@ -52,15 +52,41 @@ export default function Profile() {
             <div className="flex-1 min-w-0">
               <h3 className="text-base font-bold text-[#121212] leading-tight truncate">{userProfile?.full_name || 'Belum ada nama'}</h3>
               
-              <div className="flex items-center gap-1.5 mt-1">
-                <span className="text-[11px] text-[#6b6375] font-medium">Kelas {userProfile?.class_name || '-'}</span>
-                <span className="text-[10px] text-[#d1d5db]">•</span>
-                <span className="text-[11px] text-[#6b6375] font-medium">NIS. {userProfile?.nis || '-'}</span>
-              </div>
-              
-              <div className="mt-0.5 mb-2.5">
-                <span className="text-[10px] text-[#9ca3af] font-semibold tracking-wide">NISN. {userProfile?.nisn || '-'}</span>
-              </div>
+              {userProfile?.role_type?.toLowerCase() === 'guru' ? (
+                <>
+                  <div className="flex flex-wrap items-center gap-1.5 mt-1">
+                    {userProfile?.structural_roles && (
+                      <span className="text-[11px] px-2 py-0.5 bg-indigo-50 text-indigo-700 rounded-md font-semibold">
+                        {userProfile.structural_roles}
+                      </span>
+                    )}
+                    {userProfile?.homeroom_class && (
+                      <span className="text-[11px] px-2 py-0.5 bg-emerald-50 text-emerald-700 rounded-md font-semibold">
+                        Wali {userProfile.homeroom_class}
+                      </span>
+                    )}
+                  </div>
+                  <div className="mt-1.5 mb-2.5 space-y-0.5">
+                    <p className="text-[10px] text-[#6b6375] font-semibold truncate">
+                      NIP/NUPTK: {userProfile?.nip_nuptk || '-'}
+                    </p>
+                    <p className="text-[10px] text-[#9ca3af] font-medium truncate">
+                      Guru Mapel: {userProfile?.subjects || '-'}
+                    </p>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="flex items-center gap-1.5 mt-1">
+                    <span className="text-[11px] text-[#6b6375] font-medium">Kelas {userProfile?.class_name || '-'}</span>
+                    <span className="text-[10px] text-[#d1d5db]">•</span>
+                    <span className="text-[11px] text-[#6b6375] font-medium">NIS. {userProfile?.nis || '-'}</span>
+                  </div>
+                  <div className="mt-0.5 mb-2.5">
+                    <span className="text-[10px] text-[#9ca3af] font-semibold tracking-wide">NISN. {userProfile?.nisn || '-'}</span>
+                  </div>
+                </>
+              )}
               
               <button 
                 onClick={() => setIsEditing(true)}
