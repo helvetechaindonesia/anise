@@ -67,6 +67,7 @@ const QuickMenu: React.FC<QuickMenuProps> = ({ startPresensi, setActiveTab }) =>
         </button>
 
         <button 
+          onClick={() => setActiveTab('agenda_penilaian')}
           className="flex flex-col items-center justify-center text-center cursor-pointer group"
         >
           <div className="w-12 h-12 rounded-full bg-[#19414d] flex items-center justify-center text-white shadow-lg shadow-[#19414d]/20 group-hover:scale-105 active:scale-95 transition-all">

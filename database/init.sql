@@ -387,3 +387,21 @@ CREATE TABLE IF NOT EXISTS guru_bk_classes (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT unique_guru_bk_class UNIQUE (guru_id, class_id, academic_year_id)
 );
+
+-- 30. ASSESSMENTS (Agenda Penilaian)
+CREATE TABLE IF NOT EXISTS assessments (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    academic_year_id UUID REFERENCES academic_years(id) ON DELETE CASCADE,
+    class_id UUID REFERENCES classes(id) ON DELETE CASCADE,
+    subject_id UUID REFERENCES subjects(id) ON DELETE CASCADE,
+    teacher_id UUID REFERENCES guru_profiles(user_id) ON DELETE SET NULL,
+    title VARCHAR(255) NOT NULL,
+    assessment_type VARCHAR(50) CHECK (assessment_type IN ('ULANGAN_HARIAN', 'PTS', 'PAS', 'PRAKTEK', 'TUGAS_BESAR')),
+    assessment_date DATE NOT NULL,
+    start_time TIME NOT NULL,
+    end_time TIME NOT NULL,
+    status VARCHAR(50) DEFAULT 'UPCOMING' CHECK (status IN ('UPCOMING', 'ONGOING', 'COMPLETED')),
+    description TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

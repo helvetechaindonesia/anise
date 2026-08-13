@@ -18,6 +18,7 @@ import Notifikasi from './pages/Notifikasi/Notifikasi';
 import RiwayatPresensi from './pages/RiwayatPresensi/RiwayatPresensi';
 import Profile from './pages/Profile/Profile';
 import Login from './pages/Login/Login';
+import AgendaPenilaian from './pages/AgendaPenilaian/AgendaPenilaian';
 
 export default function App() {
   const { 
@@ -150,6 +151,7 @@ export default function App() {
       case 'notifikasi': return <Notifikasi />;
       case 'presensi': return <RiwayatPresensi />;
       case 'profile': return <Profile />;
+      case 'agenda_penilaian': return <AgendaPenilaian />;
       default: return <Home />;
     }
   };

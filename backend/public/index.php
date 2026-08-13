@@ -2209,4 +2209,87 @@ if ($uri === '/api/guru/poin' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     exit;
 }
 
+// Endpoint: Get Assessment Agenda (Agenda Penilaian)
+if ($uri === '/api/siswa/assessments' && $_SERVER['REQUEST_METHOD'] === 'GET') {
+    $authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
+    if (empty($authHeader) && function_exists('apache_request_headers')) {
+        $headers = apache_request_headers();
+        $authHeader = $headers['Authorization'] ?? '';
+    }
+    $userId = null;
+    $role = null;
+    if (preg_match('/Bearer\s(\S+)/', $authHeader, $matches)) {
+        $payload = verify_jwt($matches[1], $jwt_secret);
+        if ($payload && isset($payload['user_id'])) {
+            $userId = $payload['user_id'];
+            $role = $payload['role'];
+        }
+    }
+    if (!$userId || $role !== 'SISWA') {
+        http_response_code(401);
+        echo json_encode(['status' => 'error', 'message' => 'Unauthorized']);
+        exit;
+    }
+
+    try {
+        $stmt = $pdo->prepare("
+            SELECT a.id, a.title, a.assessment_type, a.assessment_date, 
+                   TO_CHAR(a.start_time, 'HH24:MI') as start_time, 
+                   TO_CHAR(a.end_time, 'HH24:MI') as end_time, 
+                   a.status, a.description,
+                   s.name as subject_name,
+                   u.full_name as teacher_name
+            FROM assessments a
+            JOIN subjects s ON a.subject_id = s.id
+            LEFT JOIN users u ON a.teacher_id = u.id
+            JOIN class_students cs ON a.class_id = cs.class_id
+            WHERE cs.student_id = :uid 
+              AND cs.status = 'AKTIF'
+              AND a.academic_year_id = (SELECT id FROM academic_years WHERE is_active = true LIMIT 1)
+            ORDER BY a.assessment_date ASC, a.start_time ASC
+        ");
+        $stmt->execute(['uid' => $userId]);
+        $assessmentsRaw = $stmt->fetchAll();
+
+        // Separate them into upcoming vs past for convenience (frontend could also do this)
+        $today = date('Y-m-d');
+        $upcoming = [];
+        $past = [];
+
+        foreach ($assessmentsRaw as $a) {
+            $dateObj = new DateTime($a['assessment_date']);
+            $formattedDate = $dateObj->format('l, d M Y');
+            // Indonesian localization for days
+            $days = [
+                'Sunday' => 'Minggu', 'Monday' => 'Senin', 'Tuesday' => 'Selasa',
+                'Wednesday' => 'Rabu', 'Thursday' => 'Kamis', 'Friday' => 'Jumat', 'Saturday' => 'Sabtu'
+            ];
+            foreach ($days as $en => $id) {
+                $formattedDate = str_replace($en, $id, $formattedDate);
+            }
+            $months = [
+                'Jan' => 'Jan', 'Feb' => 'Feb', 'Mar' => 'Mar', 'Apr' => 'Apr', 'May' => 'Mei', 'Jun' => 'Jun',
+                'Jul' => 'Jul', 'Aug' => 'Agt', 'Sep' => 'Sep', 'Oct' => 'Okt', 'Nov' => 'Nov', 'Dec' => 'Des'
+            ];
+            foreach ($months as $en => $id) {
+                $formattedDate = str_replace($en, $id, $formattedDate);
+            }
+
+            $a['formatted_date'] = $formattedDate;
+            
+            if ($a['assessment_date'] >= $today) {
+                $upcoming[] = $a;
+            } else {
+                $past[] = $a;
+            }
+        }
+
+        echo json_encode(['status' => 'success', 'data' => ['upcoming' => $upcoming, 'past' => $past]]);
+    } catch (PDOException $e) {
+        http_response_code(500);
+        echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+    }
+    exit;
+}
+
 echo json_encode(['app' => 'Anise API Server', 'version' => '1.0']);
