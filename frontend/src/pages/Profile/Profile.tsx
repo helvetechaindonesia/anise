@@ -161,21 +161,7 @@ export default function Profile() {
         </div>
       </div>
 
-      {/* Demo Mode / Switch Role */}
-      <div className="flex items-center justify-between p-3.5 bg-amber-50 rounded-xl border border-amber-200">
-        <div>
-          <span className="text-[10px] text-amber-800 font-bold block">Demo Integrasi Stack</span>
-          <span className="text-[9px] text-amber-700">Simulasikan switch role untuk test UI</span>
-        </div>
-        <button
-          onClick={() => {
-            setRole(role === 'siswa' ? 'guru' : 'siswa');
-          }}
-          className="px-3 py-1.5 bg-amber-600 text-white text-[10px] font-bold rounded-lg hover:bg-amber-700 transition-colors cursor-pointer"
-        >
-          Pindah ke {role === 'siswa' ? 'Guru' : 'Siswa'}
-        </button>
-      </div>
+
 
       {/* Logout Action Button */}
       <button 
