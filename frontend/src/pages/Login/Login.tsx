@@ -1,7 +1,7 @@
 import { API_BASE_URL } from '../../utils/apiConfig';
 import React, { useState } from 'react';
 import { useAppStore } from '../../store/useAppStore';
-import { Leaf, SpinnerGap, Eye, EyeSlash } from '@phosphor-icons/react';
+import { SpinnerGap, Eye, EyeSlash } from '@phosphor-icons/react';
 
 export default function Login() {
   const setIsAuthenticated = useAppStore(state => state.setIsAuthenticated);
@@ -54,12 +54,14 @@ export default function Login() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#f8fafc] to-[#e2e8f0] flex flex-col items-center justify-center p-4">
       {/* App Logo & Name */}
-      <div className="flex items-center gap-2 mb-8 animate-in slide-in-from-top-10 duration-700">
-        <div className="w-12 h-12 bg-[#19414d] rounded-xl flex items-center justify-center shadow-lg">
-          <Leaf className="w-7 h-7 text-emerald-400" weight="duotone" />
-        </div>
+      <div className="flex items-center gap-3 mb-8 animate-in slide-in-from-top-10 duration-700">
+        <img 
+          src="/assets/logo-smk.png" 
+          alt="Logo SMK N 1 Sragi" 
+          className="w-14 h-14 object-contain drop-shadow-sm"
+        />
         <h1 className="text-3xl font-extrabold text-[#19414d] tracking-tight">
-          SMA N 1
+          SMK N 1 Sragi
         </h1>
       </div>
 
