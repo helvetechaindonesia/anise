@@ -1,19 +1,36 @@
 import React, { useState } from 'react';
-import { MagnifyingGlass, FunnelSimple, CheckCircle, WarningCircle, BookBookmark, HandCoins, Users } from '@phosphor-icons/react';
+import { MagnifyingGlass, FunnelSimple, CheckCircle, WarningCircle, BookBookmark, HandCoins, Users, X } from '@phosphor-icons/react';
+import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer } from 'recharts';
+import { getDefaultAvatar } from '../../utils/avatar';
 
 // Mock data
 const mockStudents = [
-  { id: 1, name: 'Aditya Pratama', kelas: '10 IPA 1', sholat: true, sedekah: false, bacaBuku: true },
-  { id: 2, name: 'Budi Santoso', kelas: '10 IPA 1', sholat: true, sedekah: true, bacaBuku: true },
-  { id: 3, name: 'Citra Kirana', kelas: '10 IPS 2', sholat: false, sedekah: false, bacaBuku: false },
-  { id: 4, name: 'Dewi Lestari', kelas: '11 IPA 2', sholat: true, sedekah: false, bacaBuku: false },
-  { id: 5, name: 'Eko Patrio', kelas: '11 IPS 1', sholat: false, sedekah: true, bacaBuku: true },
-  { id: 6, name: 'Fajar Nugraha', kelas: '12 IPA 1', sholat: true, sedekah: true, bacaBuku: false },
-  { id: 7, name: 'Gita Gutawa', kelas: '12 IPS 2', sholat: true, sedekah: true, bacaBuku: true },
+  { id: 1, name: 'Aditya Pratama', kelas: '10 IPA 1', sholat: true, sedekah: false, bacaBuku: true, stats: [
+    { subject: 'Dhuha', A: 80, fullMark: 100 }, { subject: 'Sedekah', A: 40, fullMark: 100 }, { subject: 'Literasi', A: 90, fullMark: 100 }, { subject: 'Disiplin', A: 70, fullMark: 100 }, { subject: 'Sikap', A: 85, fullMark: 100 }
+  ]},
+  { id: 2, name: 'Budi Santoso', kelas: '10 IPA 1', sholat: true, sedekah: true, bacaBuku: true, stats: [
+    { subject: 'Dhuha', A: 90, fullMark: 100 }, { subject: 'Sedekah', A: 85, fullMark: 100 }, { subject: 'Literasi', A: 80, fullMark: 100 }, { subject: 'Disiplin', A: 95, fullMark: 100 }, { subject: 'Sikap', A: 90, fullMark: 100 }
+  ]},
+  { id: 3, name: 'Citra Kirana', kelas: '10 IPS 2', sholat: false, sedekah: false, bacaBuku: false, stats: [
+    { subject: 'Dhuha', A: 30, fullMark: 100 }, { subject: 'Sedekah', A: 20, fullMark: 100 }, { subject: 'Literasi', A: 40, fullMark: 100 }, { subject: 'Disiplin', A: 50, fullMark: 100 }, { subject: 'Sikap', A: 60, fullMark: 100 }
+  ]},
+  { id: 4, name: 'Dewi Lestari', kelas: '11 IPA 2', sholat: true, sedekah: false, bacaBuku: false, stats: [
+    { subject: 'Dhuha', A: 85, fullMark: 100 }, { subject: 'Sedekah', A: 30, fullMark: 100 }, { subject: 'Literasi', A: 50, fullMark: 100 }, { subject: 'Disiplin', A: 75, fullMark: 100 }, { subject: 'Sikap', A: 80, fullMark: 100 }
+  ]},
+  { id: 5, name: 'Eko Patrio', kelas: '11 IPS 1', sholat: false, sedekah: true, bacaBuku: true, stats: [
+    { subject: 'Dhuha', A: 45, fullMark: 100 }, { subject: 'Sedekah', A: 90, fullMark: 100 }, { subject: 'Literasi', A: 85, fullMark: 100 }, { subject: 'Disiplin', A: 65, fullMark: 100 }, { subject: 'Sikap', A: 70, fullMark: 100 }
+  ]},
+  { id: 6, name: 'Fajar Nugraha', kelas: '12 IPA 1', sholat: true, sedekah: true, bacaBuku: false, stats: [
+    { subject: 'Dhuha', A: 95, fullMark: 100 }, { subject: 'Sedekah', A: 80, fullMark: 100 }, { subject: 'Literasi', A: 45, fullMark: 100 }, { subject: 'Disiplin', A: 85, fullMark: 100 }, { subject: 'Sikap', A: 75, fullMark: 100 }
+  ]},
+  { id: 7, name: 'Gita Gutawa', kelas: '12 IPS 2', sholat: true, sedekah: true, bacaBuku: true, stats: [
+    { subject: 'Dhuha', A: 90, fullMark: 100 }, { subject: 'Sedekah', A: 95, fullMark: 100 }, { subject: 'Literasi', A: 90, fullMark: 100 }, { subject: 'Disiplin', A: 90, fullMark: 100 }, { subject: 'Sikap', A: 95, fullMark: 100 }
+  ]},
 ];
 
 export default function PembiasaanGuru() {
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedStudent, setSelectedStudent] = useState<typeof mockStudents[0] | null>(null);
   
   const filteredStudents = mockStudents.filter(student => 
     student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -98,7 +115,11 @@ export default function PembiasaanGuru() {
               const completed = getCompletedCount(student);
               
               return (
-                <div key={student.id} className="p-3 hover:bg-[#f8fafc] transition-colors">
+                <div 
+                  key={student.id} 
+                  className="p-3 hover:bg-[#f8fafc] transition-colors cursor-pointer"
+                  onClick={() => setSelectedStudent(student)}
+                >
                   <div className="flex justify-between items-start mb-2">
                     <div>
                       <h4 className="text-xs font-bold text-[#121212]">{student.name}</h4>
@@ -130,6 +151,72 @@ export default function PembiasaanGuru() {
           )}
         </div>
       </div>
+
+      {/* Insight Modal */}
+      {selectedStudent && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 animate-in fade-in duration-200 backdrop-blur-sm" onClick={() => setSelectedStudent(null)}>
+          <div className="bg-white rounded-3xl w-full max-w-sm overflow-hidden shadow-2xl relative" onClick={e => e.stopPropagation()}>
+            <button 
+              onClick={() => setSelectedStudent(null)} 
+              className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-[#f8fafc] text-[#6b6375] hover:bg-[#e5e4e7] hover:text-[#121212] transition-colors z-10"
+            >
+              <X className="w-4 h-4" weight="bold" />
+            </button>
+            
+            <div className="p-6 flex flex-col items-center border-b border-[#e5e4e7] bg-[#f8fafc]/50">
+              <div className="w-16 h-16 rounded-full border-2 border-emerald-100 bg-white p-1 mb-3">
+                <img 
+                  src={getDefaultAvatar()} 
+                  alt={selectedStudent.name} 
+                  className="w-full h-full rounded-full object-cover"
+                />
+              </div>
+              <h3 className="font-bold text-lg text-[#121212] text-center">{selectedStudent.name}</h3>
+              <p className="text-xs font-medium text-[#6b6375] bg-[#e5e4e7] px-3 py-1 rounded-full mt-2">Kelas {selectedStudent.kelas}</p>
+            </div>
+            
+            <div className="p-5">
+              <h4 className="text-xs font-bold text-[#19414d] uppercase tracking-wider mb-4 flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-emerald-500"></span> Analisis Karakter
+              </h4>
+              
+              <div className="h-64 w-full -ml-4">
+                <ResponsiveContainer width="100%" height="100%">
+                  <RadarChart cx="50%" cy="50%" outerRadius="70%" data={selectedStudent.stats}>
+                    <PolarGrid stroke="#e5e4e7" />
+                    <PolarAngleAxis dataKey="subject" tick={{ fill: '#6b6375', fontSize: 10, fontWeight: 700 }} />
+                    <PolarRadiusAxis angle={30} domain={[0, 100]} tick={false} axisLine={false} />
+                    <Radar 
+                      name={selectedStudent.name} 
+                      dataKey="A" 
+                      stroke="#10b981" 
+                      strokeWidth={2}
+                      fill="#10b981" 
+                      fillOpacity={0.2} 
+                    />
+                  </RadarChart>
+                </ResponsiveContainer>
+              </div>
+
+              <div className="mt-4 grid grid-cols-2 gap-3">
+                <div className="bg-[#fcfbf7] p-3 rounded-xl border border-[#e5e4e7]">
+                  <p className="text-[10px] text-[#6b6375] font-semibold mb-1">Skor Rata-Rata</p>
+                  <p className="text-xl font-black text-[#19414d]">
+                    {Math.round(selectedStudent.stats.reduce((acc, curr) => acc + curr.A, 0) / 5)}<span className="text-[11px] font-semibold text-[#9ca3af]">/100</span>
+                  </p>
+                </div>
+                <div className="bg-[#fcfbf7] p-3 rounded-xl border border-[#e5e4e7]">
+                  <p className="text-[10px] text-[#6b6375] font-semibold mb-1">Konsistensi</p>
+                  <p className="text-xl font-black text-emerald-600">
+                    {getCompletedCount(selectedStudent) === 3 ? 'Tinggi' : getCompletedCount(selectedStudent) > 0 ? 'Sedang' : 'Rendah'}
+                  </p>
+                </div>
+              </div>
+            </div>
+            
+          </div>
+        </div>
+      )}
 
     </div>
   );
