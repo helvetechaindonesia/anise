@@ -124,19 +124,35 @@ export default function App() {
     setNewChatInput('');
 
     setTimeout(() => {
-      let botResponse = 'Maaf, saya tidak mengerti pertanyaan tersebut. Coba tanyakan mengenai "tenggat tugas" atau "poin prestasi".';
+      let botResponse = '';
       const msgLower = userMsg.toLowerCase();
-      if (msgLower.includes('tugas') || msgLower.includes('pr')) {
-        botResponse = 'Anda memiliki 2 tugas yang ditugaskan. Tugas terdekat adalah "Trigonometri Lanjut & Analisis Gelombang" di kelas Matematika Peminatan yang dikumpulkan Besok pukul 12:00 WIB.';
+      
+      const userName = useAppStore.getState().userProfile?.full_name?.split(' ')[0] || 'Kak';
+
+      if (msgLower.includes('tugas') || msgLower.includes('pr') || msgLower.includes('kerjain apa')) {
+        botResponse = `Untuk saat ini, ${userName} punya 2 tugas aktif nih. Yang paling mepet itu tugas Matematika Peminatan (Trigonometri Lanjut) yang harus dikumpulkan besok jam 12:00 WIB. Semangat ngerjainnya ya! 📚`;
       } else if (msgLower.includes('poin') || msgLower.includes('prestasi') || msgLower.includes('pelanggaran')) {
-        botResponse = `Saat ini Anda berada di peringkat 5 terbaik se-kelas!`;
+        botResponse = `Poin kedisiplinan ${userName} aman kok, malah masuk peringkat 5 besar se-kelas! Tetap pertahankan prestasinya dan hindari keterlambatan ya. 🏆`;
       } else if (msgLower.includes('absen') || msgLower.includes('presensi') || msgLower.includes('hadir')) {
         botResponse = useAppStore.getState().hasPresensiToday
-          ? 'Anda sudah melakukan presensi masuk hari ini pada pukul 07:12 WIB dengan status HADIR.'
-          : 'Anda belum melakukan presensi hari ini. Silakan klik tombol "Presensi" di layanan cepat untuk melakukan scan wajah & GPS.';
-      } else if (msgLower.includes('halo') || msgLower.includes('hai')) {
-        botResponse = 'Halo Budi! Ada yang bisa saya bantu untuk kegiatan belajarmu hari ini?';
+          ? `Sip! ${userName} sudah terekam hadir hari ini jam 07:12 WIB. Fokus belajar ya hari ini!`
+          : `Sepertinya ${userName} belum melakukan presensi hari ini. Yuk, buka menu "Presensi" di beranda dan scan wajah sekarang biar nggak kehitung alpa. 📸`;
+      } else if (msgLower.includes('jadwal') || msgLower.includes('pelajaran') || msgLower.includes('hari ini')) {
+        botResponse = `Jadwal ${userName} hari ini lumayan padat: ada Matematika Peminatan, Fisika, dan Bahasa Inggris. Jangan lupa istirahat yang cukup pas jam istirahat ya! ⏰`;
+      } else if (msgLower.includes('ulangan') || msgLower.includes('ujian') || msgLower.includes('agenda')) {
+        botResponse = `Besok pagi jam 08:00 ada Ulangan Harian Trigonometri lho. Jangan lupa bawa kalkulator saintifik ya. Semoga nilainya memuaskan! 💯`;
+      } else if (msgLower.includes('lapor') || msgLower.includes('bully') || msgLower.includes('rusak')) {
+        botResponse = `Kalau ${userName} melihat ada kejadian kurang menyenangkan atau fasilitas yang rusak, jangan ragu lapor lewat menu "Lapor Kesiswaan" ya. Privasi kamu 100% aman dan langsung ditangani sama guru BK. 🛡️`;
+      } else if (msgLower.includes('halo') || msgLower.includes('hai') || msgLower.includes('pagi') || msgLower.includes('siang') || msgLower.includes('malam')) {
+        botResponse = `Halo ${userName}! 👋 Saya Anise, asisten cerdas dari sekolahmu. Ada yang bisa saya bantu buat ngelancarin hari belajarmu ini?`;
+      } else if (msgLower.includes('terima kasih') || msgLower.includes('makasih') || msgLower.includes('thanks')) {
+        botResponse = `Sama-sama, ${userName}! Senang bisa bantu. Kalau butuh apa-apa lagi, panggil Anise aja ya! ✨`;
+      } else if (msgLower.includes('capek') || msgLower.includes('pusing') || msgLower.includes('lelah')) {
+        botResponse = `Wajar banget kok merasa capek, ${userName}. Belajar itu butuh tenaga ekstra. Coba minum air putih dan istirahat bentar deh. Kalau udah segeran, baru gas lagi! 💪`;
+      } else {
+        botResponse = `Wah, pertanyaan ${userName} cukup unik! Sayangnya untuk saat ini Anise baru paham info seputar presensi, tugas, poin, agenda, dan info sekolah. Ada hal lain dari menu tersebut yang mau ditanyakan? 🤔`;
       }
+      
       addChatMessage({ sender: 'bot', text: botResponse });
     }, 1000);
   };
