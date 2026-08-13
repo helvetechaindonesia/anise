@@ -17,7 +17,7 @@ export default defineConfig({
         enabled: true
       },
       manifest: {
-        name: 'Anise Presensi',
+        name: 'Anise - Manajemen Pendidikan',
         short_name: 'Anise',
         id: '/',
         start_url: '/',
