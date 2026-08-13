@@ -225,15 +225,13 @@ export default function Pembiasaan() {
           {/* Radar Chart */}
           <div className="bg-white p-5 rounded-2xl border border-[#e5e4e7] shadow-sm">
             <h4 className="text-xs font-bold text-[#19414d] uppercase tracking-wider mb-4 text-center">Sebaran Karakter Bulan Ini</h4>
-            <div className="w-full h-[250px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <RadarChart cx="50%" cy="50%" outerRadius="70%" data={radarData}>
-                  <PolarGrid stroke="#e5e4e7" />
-                  <PolarAngleAxis dataKey="subject" tick={{ fill: '#6b6375', fontSize: 10, fontWeight: 600 }} />
-                  <PolarRadiusAxis angle={30} domain={[0, 31]} tick={false} axisLine={false} />
-                  <Radar name="Skor" dataKey="A" stroke="#10b981" fill="#10b981" fillOpacity={0.4} />
-                </RadarChart>
-              </ResponsiveContainer>
+            <div className="w-full flex justify-center items-center overflow-hidden">
+              <RadarChart width={300} height={250} cx="50%" cy="50%" outerRadius="70%" data={radarData}>
+                <PolarGrid stroke="#e5e4e7" />
+                <PolarAngleAxis dataKey="subject" tick={{ fill: '#6b6375', fontSize: 10, fontWeight: 600 }} />
+                <PolarRadiusAxis angle={30} domain={[0, 31]} tick={false} axisLine={false} />
+                <Radar name="Skor" dataKey="A" stroke="#10b981" fill="#10b981" fillOpacity={0.4} />
+              </RadarChart>
             </div>
           </div>
 
