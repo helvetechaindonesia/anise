@@ -21,6 +21,7 @@ import Login from './pages/Login/Login';
 import AgendaPenilaian from './pages/AgendaPenilaian/AgendaPenilaian';
 import LaporKesiswaan from './pages/Lapor/LaporKesiswaan';
 import UploadBerkas from './pages/UploadBerkas/UploadBerkas';
+import KpiGuru from './pages/KpiGuru/KpiGuru';
 import PembiasaanGuru from './pages/PembiasaanGuru/PembiasaanGuru';
 
 export default function App() {
@@ -166,7 +167,7 @@ export default function App() {
       case 'jurnal': return useAppStore.getState().userProfile?.role_type?.toLowerCase() === 'guru' ? <JurnalGuru /> : <Jurnal />;
       case 'daftar_tugas': return useAppStore.getState().userProfile?.role_type?.toLowerCase() === 'guru' ? <DaftarTugasGuru /> : <DaftarTugas />;
       case 'pembiasaan': return useAppStore.getState().userProfile?.role_type?.toLowerCase() === 'guru' ? <PembiasaanGuru /> : <Pembiasaan />;
-      case 'poin': return <Poin />;
+      case 'poin': return useAppStore.getState().userProfile?.role_type?.toLowerCase() === 'guru' ? <KpiGuru /> : <Poin />;
       case 'notifikasi': return <Notifikasi />;
       case 'presensi': return <RiwayatPresensi />;
       case 'profile': return <Profile />;
