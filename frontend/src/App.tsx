@@ -32,19 +32,6 @@ export default function App() {
   const { chatMessages, addChatMessage } = useDataStore();
 
   useEffect(() => {
-    // Graceful fade out for the native-like splash screen
-    const splash = document.getElementById('welcome-splash');
-    if (splash && window.getComputedStyle(splash).display !== 'none') {
-      setTimeout(() => {
-        splash.style.opacity = '0';
-        setTimeout(() => {
-          splash.remove();
-        }, 500);
-      }, 2000); // Wait 2 seconds before fading out
-    }
-  }, []);
-
-  useEffect(() => {
     if (!token) {
       setIsInitializing(false);
       return;
