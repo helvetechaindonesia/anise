@@ -21,6 +21,8 @@ export default function Profile() {
     nis: userProfile?.nis || '',
     nip_nuptk: userProfile?.nip_nuptk || '',
     subjects: userProfile?.subjects || '',
+    homeroom_class: userProfile?.homeroom_class || '',
+    structural_roles: userProfile?.structural_roles || '',
   });
 
   const handleSaveProfile = () => {
@@ -36,6 +38,8 @@ export default function Profile() {
       nis: userProfile?.nis || '',
       nip_nuptk: userProfile?.nip_nuptk || '',
       subjects: userProfile?.subjects || '',
+      homeroom_class: userProfile?.homeroom_class || '',
+      structural_roles: userProfile?.structural_roles || '',
     });
     setIsEditing(false);
   };
@@ -126,26 +130,50 @@ export default function Profile() {
               />
             </div>
             {userProfile?.role_type?.toLowerCase() === 'guru' ? (
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-[10px] font-bold text-[#6b6375] uppercase ml-1">NIP/NUPTK</label>
-                  <input 
-                    type="text" 
-                    value={editForm.nip_nuptk}
-                    onChange={(e) => setEditForm({...editForm, nip_nuptk: e.target.value})}
-                    className="w-full mt-1 p-2.5 text-sm bg-white border border-[#e5e4e7] rounded-xl focus:border-[#19414d] focus:outline-none"
-                  />
+              <>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-[10px] font-bold text-[#6b6375] uppercase ml-1">NIP/NUPTK</label>
+                    <input 
+                      type="text" 
+                      value={editForm.nip_nuptk}
+                      onChange={(e) => setEditForm({...editForm, nip_nuptk: e.target.value})}
+                      className="w-full mt-1 p-2.5 text-sm bg-white border border-[#e5e4e7] rounded-xl focus:border-[#19414d] focus:outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-bold text-[#6b6375] uppercase ml-1">Mata Pelajaran</label>
+                    <input 
+                      type="text" 
+                      value={editForm.subjects}
+                      onChange={(e) => setEditForm({...editForm, subjects: e.target.value})}
+                      className="w-full mt-1 p-2.5 text-sm bg-white border border-[#e5e4e7] rounded-xl focus:border-[#19414d] focus:outline-none"
+                    />
+                  </div>
                 </div>
-                <div>
-                  <label className="text-[10px] font-bold text-[#6b6375] uppercase ml-1">Mata Pelajaran</label>
-                  <input 
-                    type="text" 
-                    value={editForm.subjects}
-                    onChange={(e) => setEditForm({...editForm, subjects: e.target.value})}
-                    className="w-full mt-1 p-2.5 text-sm bg-white border border-[#e5e4e7] rounded-xl focus:border-[#19414d] focus:outline-none"
-                  />
+                <div className="grid grid-cols-2 gap-3 mt-3">
+                  <div>
+                    <label className="text-[10px] font-bold text-[#6b6375] uppercase ml-1">Wali Kelas</label>
+                    <input 
+                      type="text" 
+                      value={editForm.homeroom_class}
+                      onChange={(e) => setEditForm({...editForm, homeroom_class: e.target.value})}
+                      className="w-full mt-1 p-2.5 text-sm bg-white border border-[#e5e4e7] rounded-xl focus:border-[#19414d] focus:outline-none"
+                      placeholder="Mis: 10 IPA 1"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-bold text-[#6b6375] uppercase ml-1">Tugas Tambahan</label>
+                    <input 
+                      type="text" 
+                      value={editForm.structural_roles}
+                      onChange={(e) => setEditForm({...editForm, structural_roles: e.target.value})}
+                      className="w-full mt-1 p-2.5 text-sm bg-white border border-[#e5e4e7] rounded-xl focus:border-[#19414d] focus:outline-none"
+                      placeholder="Mis: Kepala Lab"
+                    />
+                  </div>
                 </div>
-              </div>
+              </>
             ) : (
               <div className="grid grid-cols-2 gap-3">
                 <div>
