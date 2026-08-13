@@ -115,7 +115,9 @@ export default function Home() {
       {/* Jurnal Pengajar Section */}
       <div className="!mt-8">
         <div className="flex justify-between items-center mb-3">
-          <h4 className="text-xs font-bold text-[#6b6375] uppercase tracking-wider">Jadwal Pelajaran</h4>
+          <h4 className="text-xs font-bold text-[#6b6375] uppercase tracking-wider">
+            {userProfile?.role_type?.toLowerCase() === 'guru' ? 'Jurnal Mengajar' : 'Jadwal Pelajaran'}
+          </h4>
           <UserList className="w-4 h-4 text-[#6b6375]" weight="duotone" />
         </div>
         
