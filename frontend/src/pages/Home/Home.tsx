@@ -147,7 +147,10 @@ export default function Home() {
               return (
                 <div
                   key={j.id}
-                  onClick={() => setActiveTab('jurnal')}
+                  onClick={() => {
+                    useAppStore.getState().setSelectedJournalGuru(j);
+                    setActiveTab('jurnal');
+                  }}
                   className={`w-[135px] h-[135px] shrink-0 rounded-2xl relative shadow-sm snap-start hover:scale-[1.02] transition-all cursor-pointer flex flex-col p-4 overflow-hidden group ${
                     isActive 
                       ? 'bg-gradient-to-br from-emerald-50 to-emerald-500/20 border border-emerald-300 ring-2 ring-emerald-100' 
