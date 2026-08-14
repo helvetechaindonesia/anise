@@ -59,6 +59,7 @@ export default function App() {
       .then(json => {
         if (json.status === 'success' && json.data) {
           setUserProfile(json.data);
+          useAppStore.getState().setHasPresensiToday(!!json.data.has_presensi_today);
           setIsAuthenticated(true);
         } else {
           setToken(null);

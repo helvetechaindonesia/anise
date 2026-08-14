@@ -204,6 +204,11 @@ if ($uri === '/api/user/me' && $_SERVER['REQUEST_METHOD'] === 'GET') {
             $user = $stmt->fetch();
             
             if ($user) {
+                // Cek presensi hari ini
+                $stmtAbsen = $pdo->prepare("SELECT 1 FROM attendances WHERE user_id = :uid AND tanggal = CURRENT_DATE LIMIT 1");
+                $stmtAbsen->execute(['uid' => $user['id']]);
+                $user['has_presensi_today'] = $stmtAbsen->fetch() ? true : false;
+
                 // Verifikasi Token Version
                 if (!isset($payload['token_version']) || (int)$payload['token_version'] !== (int)$user['token_version']) {
                     http_response_code(401);

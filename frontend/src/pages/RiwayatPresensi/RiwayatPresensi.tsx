@@ -5,7 +5,7 @@ import { useAppStore } from '../../store/useAppStore';
 
 export default function RiwayatPresensi() {
   const startPresensi = useAppStore((state) => state.startPresensi);
-  const token = localStorage.getItem('token');
+  const token = useAppStore((state) => state.token);
   const [isExpanded, setIsExpanded] = useState(false);
   const [stats, setStats] = useState<any>({ H: 0, T: 0, P: 0, Pulang_Asli: 0, TAM: 0, TAP: 0, TAMP: 0, Sakit: 0, Izin: 0, Alpa: 0 });
   const [history, setHistory] = useState<any[]>([]);
